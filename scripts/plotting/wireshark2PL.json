@@ -1,0 +1,2699 @@
+[
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:32.341593000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805792.341593000",
+          "frame.time_delta": "0.000000000",
+          "frame.time_delta_displayed": "0.000000000",
+          "frame.time_relative": "0.000000000",
+          "frame.number": "1",
+          "frame.len": "70",
+          "frame.cap_len": "70",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "56",
+          "ip.id": "0x0001",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0xa8f7",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "2338",
+          "udp.dstport": "53",
+          "udp.port": "2338",
+          "udp.port": "53",
+          "udp.length": "36",
+          "udp.checksum": "0x10d8",
+          "udp.checksum.status": "2",
+          "udp.stream": "0",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "00:01:01:00:00:01:00:00:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x0001",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "2"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:32.382231000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805792.382231000",
+          "frame.time_delta": "0.040638000",
+          "frame.time_delta_displayed": "0.040638000",
+          "frame.time_relative": "0.040638000",
+          "frame.number": "2",
+          "frame.len": "86",
+          "frame.cap_len": "86",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "72",
+          "ip.id": "0x8c2c",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "122",
+          "ip.proto": "17",
+          "ip.checksum": "0xe2bb",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "2338",
+          "udp.port": "53",
+          "udp.port": "2338",
+          "udp.length": "52",
+          "udp.checksum": "0x857a",
+          "udp.checksum.status": "2",
+          "udp.stream": "0",
+          "Timestamps": {
+            "udp.time_relative": "0.040638000",
+            "udp.time_delta": "0.040638000"
+          },
+          "udp.payload": "00:01:81:80:00:01:00:01:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:00:20:00:04:8e:fa:bb:8e"
+        },
+        "dns": {
+          "dns.id": "0x0001",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "google.com: type A, class IN, addr 142.250.187.142": {
+              "dns.resp.name": "google.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "32",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.142"
+            }
+          },
+          "dns.response_to": "1",
+          "dns.time": "0.040638000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:34.418805000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805794.418805000",
+          "frame.time_delta": "2.036574000",
+          "frame.time_delta_displayed": "2.036574000",
+          "frame.time_relative": "2.077212000",
+          "frame.number": "3",
+          "frame.len": "79",
+          "frame.cap_len": "79",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "65",
+          "ip.id": "0x93e7",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0x0000",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "55480",
+          "udp.dstport": "53",
+          "udp.port": "55480",
+          "udp.port": "53",
+          "udp.length": "45",
+          "udp.checksum": "0xd1fb",
+          "udp.checksum.status": "2",
+          "udp.stream": "1",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "3c:05:01:00:00:01:00:00:00:00:00:00:04:70:6c:61:79:0a:67:6f:6f:67:6c:65:61:70:69:73:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x3c05",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "play.googleapis.com: type A, class IN": {
+              "dns.qry.name": "play.googleapis.com",
+              "dns.qry.name.len": "19",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "4"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:34.485627000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805794.485627000",
+          "frame.time_delta": "0.066822000",
+          "frame.time_delta_displayed": "0.066822000",
+          "frame.time_relative": "2.144034000",
+          "frame.number": "4",
+          "frame.len": "95",
+          "frame.cap_len": "95",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "81",
+          "ip.id": "0x7697",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0x3848",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "55480",
+          "udp.port": "53",
+          "udp.port": "55480",
+          "udp.length": "61",
+          "udp.checksum": "0x210d",
+          "udp.checksum.status": "2",
+          "udp.stream": "1",
+          "Timestamps": {
+            "udp.time_relative": "0.066822000",
+            "udp.time_delta": "0.066822000"
+          },
+          "udp.payload": "3c:05:81:80:00:01:00:01:00:00:00:00:04:70:6c:61:79:0a:67:6f:6f:67:6c:65:61:70:69:73:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:01:11:00:04:d8:3a:ce:aa"
+        },
+        "dns": {
+          "dns.id": "0x3c05",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "play.googleapis.com: type A, class IN": {
+              "dns.qry.name": "play.googleapis.com",
+              "dns.qry.name.len": "19",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "play.googleapis.com: type A, class IN, addr 216.58.206.170": {
+              "dns.resp.name": "play.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "273",
+              "dns.resp.len": "4",
+              "dns.a": "216.58.206.170"
+            }
+          },
+          "dns.response_to": "3",
+          "dns.time": "0.066822000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:35.330531000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805795.330531000",
+          "frame.time_delta": "0.844904000",
+          "frame.time_delta_displayed": "0.844904000",
+          "frame.time_relative": "2.988938000",
+          "frame.number": "5",
+          "frame.len": "76",
+          "frame.cap_len": "76",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "62",
+          "ip.id": "0x93e8",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0x0000",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "59760",
+          "udp.dstport": "53",
+          "udp.port": "59760",
+          "udp.port": "53",
+          "udp.length": "42",
+          "udp.checksum": "0xd1f8",
+          "udp.checksum.status": "2",
+          "udp.stream": "2",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "96:ca:01:00:00:01:00:00:00:00:00:00:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x96ca",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.msftncsi.com: type A, class IN": {
+              "dns.qry.name": "www.msftncsi.com",
+              "dns.qry.name.len": "16",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "7"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:35.386330000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805795.386330000",
+          "frame.time_delta": "0.055799000",
+          "frame.time_delta_displayed": "0.055799000",
+          "frame.time_relative": "3.044737000",
+          "frame.number": "6",
+          "frame.len": "70",
+          "frame.cap_len": "70",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "56",
+          "ip.id": "0x0001",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0xa8f7",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "51284",
+          "udp.dstport": "53",
+          "udp.port": "51284",
+          "udp.port": "53",
+          "udp.length": "36",
+          "udp.checksum": "0x51a4",
+          "udp.checksum.status": "2",
+          "udp.stream": "3",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "00:02:01:00:00:01:00:00:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x0002",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "8"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:35.402673000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805795.402673000",
+          "frame.time_delta": "0.016343000",
+          "frame.time_delta_displayed": "0.016343000",
+          "frame.time_relative": "3.061080000",
+          "frame.number": "7",
+          "frame.len": "182",
+          "frame.cap_len": "182",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "168",
+          "ip.id": "0x9956",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0x1532",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "59760",
+          "udp.port": "53",
+          "udp.port": "59760",
+          "udp.length": "148",
+          "udp.checksum": "0xba60",
+          "udp.checksum.status": "2",
+          "udp.stream": "2",
+          "Timestamps": {
+            "udp.time_relative": "0.072142000",
+            "udp.time_delta": "0.072142000"
+          },
+          "udp.payload": "96:ca:81:80:00:01:00:04:00:00:00:00:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:00:00:01:00:01:c0:0c:00:05:00:01:00:00:0d:ef:00:20:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:09:65:64:67:65:73:75:69:74:65:03:6e:65:74:00:c0:2e:00:05:00:01:00:00:00:03:00:12:05:61:31:39:36:31:02:67:32:06:61:6b:61:6d:61:69:c0:49:c0:5a:00:01:00:01:00:00:00:14:00:04:d5:f3:17:31:c0:5a:00:01:00:01:00:00:00:14:00:04:d5:f3:17:2a"
+        },
+        "dns": {
+          "dns.id": "0x96ca",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "4",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.msftncsi.com: type A, class IN": {
+              "dns.qry.name": "www.msftncsi.com",
+              "dns.qry.name.len": "16",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "www.msftncsi.com: type CNAME, class IN, cname www.msftncsi.com.edgesuite.net": {
+              "dns.resp.name": "www.msftncsi.com",
+              "dns.resp.type": "5",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "3567",
+              "dns.resp.len": "32",
+              "dns.cname": "www.msftncsi.com.edgesuite.net"
+            },
+            "www.msftncsi.com.edgesuite.net: type CNAME, class IN, cname a1961.g2.akamai.net": {
+              "dns.resp.name": "www.msftncsi.com.edgesuite.net",
+              "dns.resp.type": "5",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "3",
+              "dns.resp.len": "18",
+              "dns.cname": "a1961.g2.akamai.net"
+            },
+            "a1961.g2.akamai.net: type A, class IN, addr 213.243.23.49": {
+              "dns.resp.name": "a1961.g2.akamai.net",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "20",
+              "dns.resp.len": "4",
+              "dns.a": "213.243.23.49"
+            },
+            "a1961.g2.akamai.net: type A, class IN, addr 213.243.23.42": {
+              "dns.resp.name": "a1961.g2.akamai.net",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "20",
+              "dns.resp.len": "4",
+              "dns.a": "213.243.23.42"
+            }
+          },
+          "dns.response_to": "5",
+          "dns.time": "0.072142000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:35.425443000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805795.425443000",
+          "frame.time_delta": "0.022770000",
+          "frame.time_delta_displayed": "0.022770000",
+          "frame.time_relative": "3.083850000",
+          "frame.number": "8",
+          "frame.len": "86",
+          "frame.cap_len": "86",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "72",
+          "ip.id": "0x08c5",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "122",
+          "ip.proto": "17",
+          "ip.checksum": "0x6623",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "51284",
+          "udp.port": "53",
+          "udp.port": "51284",
+          "udp.length": "52",
+          "udp.checksum": "0xc681",
+          "udp.checksum.status": "2",
+          "udp.stream": "3",
+          "Timestamps": {
+            "udp.time_relative": "0.039113000",
+            "udp.time_delta": "0.039113000"
+          },
+          "udp.payload": "00:02:81:80:00:01:00:01:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:00:05:00:04:8e:fa:bb:6e"
+        },
+        "dns": {
+          "dns.id": "0x0002",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "google.com: type A, class IN, addr 142.250.187.110": {
+              "dns.resp.name": "google.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "5",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.110"
+            }
+          },
+          "dns.response_to": "6",
+          "dns.time": "0.039113000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:37.229836000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805797.229836000",
+          "frame.time_delta": "1.804393000",
+          "frame.time_delta_displayed": "1.804393000",
+          "frame.time_relative": "4.888243000",
+          "frame.number": "9",
+          "frame.len": "78",
+          "frame.cap_len": "78",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "64",
+          "ip.id": "0x93e9",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0x0000",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "49250",
+          "udp.dstport": "53",
+          "udp.port": "49250",
+          "udp.port": "53",
+          "udp.length": "44",
+          "udp.checksum": "0xd1fa",
+          "udp.checksum.status": "2",
+          "udp.stream": "4",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "38:02:01:00:00:01:00:00:00:00:00:00:03:77:77:77:0a:67:6f:6f:67:6c:65:61:70:69:73:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x3802",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.googleapis.com: type A, class IN": {
+              "dns.qry.name": "www.googleapis.com",
+              "dns.qry.name.len": "18",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "10"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:37.269240000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805797.269240000",
+          "frame.time_delta": "0.039404000",
+          "frame.time_delta_displayed": "0.039404000",
+          "frame.time_relative": "4.927647000",
+          "frame.number": "10",
+          "frame.len": "334",
+          "frame.cap_len": "334",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "320",
+          "ip.id": "0xe89a",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "122",
+          "ip.proto": "17",
+          "ip.checksum": "0x8555",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "49250",
+          "udp.port": "53",
+          "udp.port": "49250",
+          "udp.length": "300",
+          "udp.checksum": "0xfd45",
+          "udp.checksum.status": "2",
+          "udp.stream": "4",
+          "Timestamps": {
+            "udp.time_relative": "0.039404000",
+            "udp.time_delta": "0.039404000"
+          },
+          "udp.payload": "38:02:81:80:00:01:00:10:00:00:00:00:03:77:77:77:0a:67:6f:6f:67:6c:65:61:70:69:73:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:a9:aa:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:a9:ca:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:11:ea:c0:0c:00:01:00:01:00:00:00:50:00:04:d8:3a:d6:8a:c0:0c:00:01:00:01:00:00:00:50:00:04:8e:fa:b8:8a:c0:0c:00:01:00:01:00:00:00:50:00:04:8e:fa:bb:6a:c0:0c:00:01:00:01:00:00:00:50:00:04:8e:fa:bb:8a:c0:0c:00:01:00:01:00:00:00:50:00:04:8e:fa:bb:aa:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:11:6a:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:11:8a:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:14:4a:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:11:ca:c0:0c:00:01:00:01:00:00:00:50:00:04:d8:3a:ce:aa:c0:0c:00:01:00:01:00:00:00:50:00:04:d8:3a:ce:ca:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:a9:6a:c0:0c:00:01:00:01:00:00:00:50:00:04:ac:d9:a9:8a"
+        },
+        "dns": {
+          "dns.id": "0x3802",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "16",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.googleapis.com: type A, class IN": {
+              "dns.qry.name": "www.googleapis.com",
+              "dns.qry.name.len": "18",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "www.googleapis.com: type A, class IN, addr 172.217.169.170": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.169.170"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.169.202": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.169.202"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.17.234": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.17.234"
+            },
+            "www.googleapis.com: type A, class IN, addr 216.58.214.138": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "216.58.214.138"
+            },
+            "www.googleapis.com: type A, class IN, addr 142.250.184.138": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.184.138"
+            },
+            "www.googleapis.com: type A, class IN, addr 142.250.187.106": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.106"
+            },
+            "www.googleapis.com: type A, class IN, addr 142.250.187.138": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.138"
+            },
+            "www.googleapis.com: type A, class IN, addr 142.250.187.170": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.170"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.17.106": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.17.106"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.17.138": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.17.138"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.20.74": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.20.74"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.17.202": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.17.202"
+            },
+            "www.googleapis.com: type A, class IN, addr 216.58.206.170": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "216.58.206.170"
+            },
+            "www.googleapis.com: type A, class IN, addr 216.58.206.202": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "216.58.206.202"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.169.106": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.169.106"
+            },
+            "www.googleapis.com: type A, class IN, addr 172.217.169.138": {
+              "dns.resp.name": "www.googleapis.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "80",
+              "dns.resp.len": "4",
+              "dns.a": "172.217.169.138"
+            }
+          },
+          "dns.response_to": "9",
+          "dns.time": "0.039404000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:38.438137000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805798.438137000",
+          "frame.time_delta": "1.168897000",
+          "frame.time_delta_displayed": "1.168897000",
+          "frame.time_relative": "6.096544000",
+          "frame.number": "11",
+          "frame.len": "70",
+          "frame.cap_len": "70",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "56",
+          "ip.id": "0x0001",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0xa8f7",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "6227",
+          "udp.dstport": "53",
+          "udp.port": "6227",
+          "udp.port": "53",
+          "udp.length": "36",
+          "udp.checksum": "0x01a5",
+          "udp.checksum.status": "2",
+          "udp.stream": "5",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "00:03:01:00:00:01:00:00:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x0003",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "12"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:38.483125000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805798.483125000",
+          "frame.time_delta": "0.044988000",
+          "frame.time_delta_displayed": "0.044988000",
+          "frame.time_relative": "6.141532000",
+          "frame.number": "12",
+          "frame.len": "86",
+          "frame.cap_len": "86",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "72",
+          "ip.id": "0xbb5f",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0xf388",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "6227",
+          "udp.port": "53",
+          "udp.port": "6227",
+          "udp.length": "52",
+          "udp.checksum": "0x75f6",
+          "udp.checksum.status": "2",
+          "udp.stream": "5",
+          "Timestamps": {
+            "udp.time_relative": "0.044988000",
+            "udp.time_delta": "0.044988000"
+          },
+          "udp.payload": "00:03:81:80:00:01:00:01:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:00:71:00:04:8e:fa:bb:8e"
+        },
+        "dns": {
+          "dns.id": "0x0003",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "google.com: type A, class IN, addr 142.250.187.142": {
+              "dns.resp.name": "google.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "113",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.142"
+            }
+          },
+          "dns.response_to": "11",
+          "dns.time": "0.044988000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:41.494646000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805801.494646000",
+          "frame.time_delta": "3.011521000",
+          "frame.time_delta_displayed": "3.011521000",
+          "frame.time_relative": "9.153053000",
+          "frame.number": "13",
+          "frame.len": "70",
+          "frame.cap_len": "70",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "56",
+          "ip.id": "0x0001",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0xa8f7",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "23294",
+          "udp.dstport": "53",
+          "udp.port": "23294",
+          "udp.port": "53",
+          "udp.length": "36",
+          "udp.checksum": "0xbef8",
+          "udp.checksum.status": "2",
+          "udp.stream": "6",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "00:04:01:00:00:01:00:00:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x0004",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "14"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:41.538458000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805801.538458000",
+          "frame.time_delta": "0.043812000",
+          "frame.time_delta_displayed": "0.043812000",
+          "frame.time_relative": "9.196865000",
+          "frame.number": "14",
+          "frame.len": "86",
+          "frame.cap_len": "86",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "72",
+          "ip.id": "0x55c7",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0x5921",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "23294",
+          "udp.port": "53",
+          "udp.port": "23294",
+          "udp.length": "52",
+          "udp.checksum": "0x334d",
+          "udp.checksum.status": "2",
+          "udp.stream": "6",
+          "Timestamps": {
+            "udp.time_relative": "0.043812000",
+            "udp.time_delta": "0.043812000"
+          },
+          "udp.payload": "00:04:81:80:00:01:00:01:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:00:6e:00:04:8e:fa:bb:8e"
+        },
+        "dns": {
+          "dns.id": "0x0004",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "google.com: type A, class IN, addr 142.250.187.142": {
+              "dns.resp.name": "google.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "110",
+              "dns.resp.len": "4",
+              "dns.a": "142.250.187.142"
+            }
+          },
+          "dns.response_to": "13",
+          "dns.time": "0.043812000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:44.551263000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805804.551263000",
+          "frame.time_delta": "3.012805000",
+          "frame.time_delta_displayed": "3.012805000",
+          "frame.time_relative": "12.209670000",
+          "frame.number": "15",
+          "frame.len": "70",
+          "frame.cap_len": "70",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "56",
+          "ip.id": "0x0001",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0xa8f7",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "36584",
+          "udp.dstport": "53",
+          "udp.port": "36584",
+          "udp.port": "53",
+          "udp.length": "36",
+          "udp.checksum": "0x8b0d",
+          "udp.checksum.status": "2",
+          "udp.stream": "7",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "00:05:01:00:00:01:00:00:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x0005",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "16"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:44.593927000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805804.593927000",
+          "frame.time_delta": "0.042664000",
+          "frame.time_delta_displayed": "0.042664000",
+          "frame.time_relative": "12.252334000",
+          "frame.number": "16",
+          "frame.len": "86",
+          "frame.cap_len": "86",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "72",
+          "ip.id": "0x340c",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0x7adc",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "36584",
+          "udp.port": "53",
+          "udp.port": "36584",
+          "udp.length": "52",
+          "udp.checksum": "0x9a66",
+          "udp.checksum.status": "2",
+          "udp.stream": "7",
+          "Timestamps": {
+            "udp.time_relative": "0.042664000",
+            "udp.time_delta": "0.042664000"
+          },
+          "udp.payload": "00:05:81:80:00:01:00:01:00:00:00:00:06:67:6f:6f:67:6c:65:03:63:6f:6d:00:00:01:00:01:c0:0c:00:01:00:01:00:00:01:29:00:04:d8:3a:d6:8e"
+        },
+        "dns": {
+          "dns.id": "0x0005",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "1",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "google.com: type A, class IN": {
+              "dns.qry.name": "google.com",
+              "dns.qry.name.len": "10",
+              "dns.count.labels": "2",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "google.com: type A, class IN, addr 216.58.214.142": {
+              "dns.resp.name": "google.com",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "297",
+              "dns.resp.len": "4",
+              "dns.a": "216.58.214.142"
+            }
+          },
+          "dns.response_to": "15",
+          "dns.time": "0.042664000"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:50.331419000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805810.331419000",
+          "frame.time_delta": "5.737492000",
+          "frame.time_delta_displayed": "5.737492000",
+          "frame.time_relative": "17.989826000",
+          "frame.number": "17",
+          "frame.len": "76",
+          "frame.cap_len": "76",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "34:e8:94:18:9f:c8",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.dst.oui": "3467412",
+            "eth.dst.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "d8:bb:c1:72:e2:ae",
+          "eth.src_tree": {
+            "eth.src_resolved": "Micro-St_72:e2:ae",
+            "eth.src.oui": "14203841",
+            "eth.src.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "62",
+          "ip.id": "0x93f2",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "64",
+          "ip.proto": "17",
+          "ip.checksum": "0x0000",
+          "ip.checksum.status": "2",
+          "ip.src": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.src_host": "192.168.1.5",
+          "ip.host": "192.168.1.5",
+          "ip.dst": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.dst_host": "8.8.8.8",
+          "ip.host": "8.8.8.8"
+        },
+        "udp": {
+          "udp.srcport": "54980",
+          "udp.dstport": "53",
+          "udp.port": "54980",
+          "udp.port": "53",
+          "udp.length": "42",
+          "udp.checksum": "0xd1f8",
+          "udp.checksum.status": "2",
+          "udp.stream": "8",
+          "Timestamps": {
+            "udp.time_relative": "0.000000000",
+            "udp.time_delta": "0.000000000"
+          },
+          "udp.payload": "4d:41:01:00:00:01:00:00:00:00:00:00:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:00:00:01:00:01"
+        },
+        "dns": {
+          "dns.id": "0x4d41",
+          "dns.flags": "0x0100",
+          "dns.flags_tree": {
+            "dns.flags.response": "0",
+            "dns.flags.opcode": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.z": "0",
+            "dns.flags.checkdisable": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "0",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.msftncsi.com: type A, class IN": {
+              "dns.qry.name": "www.msftncsi.com",
+              "dns.qry.name.len": "16",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "dns.response_in": "18"
+        }
+      }
+    }
+  },
+  {
+    "_index": "packets-2022-07-14",
+    "_type": "doc",
+    "_score": null,
+    "_source": {
+      "layers": {
+        "frame": {
+          "frame.interface_id": "0",
+          "frame.interface_id_tree": {
+            "frame.interface_name": "\\Device\\NPF_{FB636874-8A4A-4FE1-9FDF-0508ABB66DA0}",
+            "frame.interface_description": "Ethernet"
+          },
+          "frame.encap_type": "1",
+          "frame.time": "Jul 14, 2022 14:36:50.402779000 W. Europe Standard Time",
+          "frame.offset_shift": "0.000000000",
+          "frame.time_epoch": "1657805810.402779000",
+          "frame.time_delta": "0.071360000",
+          "frame.time_delta_displayed": "0.071360000",
+          "frame.time_relative": "18.061186000",
+          "frame.number": "18",
+          "frame.len": "182",
+          "frame.cap_len": "182",
+          "frame.marked": "0",
+          "frame.ignored": "0",
+          "frame.protocols": "eth:ethertype:ip:udp:dns",
+          "frame.coloring_rule.name": "UDP",
+          "frame.coloring_rule.string": "udp"
+        },
+        "eth": {
+          "eth.dst": "d8:bb:c1:72:e2:ae",
+          "eth.dst_tree": {
+            "eth.dst_resolved": "Micro-St_72:e2:ae",
+            "eth.dst.oui": "14203841",
+            "eth.dst.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.addr": "d8:bb:c1:72:e2:ae",
+            "eth.addr_resolved": "Micro-St_72:e2:ae",
+            "eth.addr.oui": "14203841",
+            "eth.addr.oui_resolved": "Micro-Star INTL CO., LTD.",
+            "eth.dst.lg": "0",
+            "eth.lg": "0",
+            "eth.dst.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.src": "34:e8:94:18:9f:c8",
+          "eth.src_tree": {
+            "eth.src_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.src.oui": "3467412",
+            "eth.src.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.addr": "34:e8:94:18:9f:c8",
+            "eth.addr_resolved": "Tp-LinkT_18:9f:c8",
+            "eth.addr.oui": "3467412",
+            "eth.addr.oui_resolved": "Tp-Link Technologies Co.,Ltd.",
+            "eth.src.lg": "0",
+            "eth.lg": "0",
+            "eth.src.ig": "0",
+            "eth.ig": "0"
+          },
+          "eth.type": "0x0800"
+        },
+        "ip": {
+          "ip.version": "4",
+          "ip.hdr_len": "20",
+          "ip.dsfield": "0x00",
+          "ip.dsfield_tree": {
+            "ip.dsfield.dscp": "0",
+            "ip.dsfield.ecn": "0"
+          },
+          "ip.len": "168",
+          "ip.id": "0xda45",
+          "ip.flags": "0x00",
+          "ip.flags_tree": {
+            "ip.flags.rb": "0",
+            "ip.flags.df": "0",
+            "ip.flags.mf": "0"
+          },
+          "ip.frag_offset": "0",
+          "ip.ttl": "58",
+          "ip.proto": "17",
+          "ip.checksum": "0xd442",
+          "ip.checksum.status": "2",
+          "ip.src": "8.8.8.8",
+          "ip.addr": "8.8.8.8",
+          "ip.src_host": "8.8.8.8",
+          "ip.host": "8.8.8.8",
+          "ip.dst": "192.168.1.5",
+          "ip.addr": "192.168.1.5",
+          "ip.dst_host": "192.168.1.5",
+          "ip.host": "192.168.1.5"
+        },
+        "udp": {
+          "udp.srcport": "53",
+          "udp.dstport": "54980",
+          "udp.port": "53",
+          "udp.port": "54980",
+          "udp.length": "148",
+          "udp.checksum": "0x1cd0",
+          "udp.checksum.status": "2",
+          "udp.stream": "8",
+          "Timestamps": {
+            "udp.time_relative": "0.071360000",
+            "udp.time_delta": "0.071360000"
+          },
+          "udp.payload": "4d:41:81:80:00:01:00:04:00:00:00:00:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:00:00:01:00:01:c0:0c:00:05:00:01:00:00:06:f9:00:20:03:77:77:77:08:6d:73:66:74:6e:63:73:69:03:63:6f:6d:09:65:64:67:65:73:75:69:74:65:03:6e:65:74:00:c0:2e:00:05:00:01:00:00:00:bf:00:12:05:61:31:39:36:31:02:67:32:06:61:6b:61:6d:61:69:c0:49:c0:5a:00:01:00:01:00:00:00:14:00:04:d5:f3:17:31:c0:5a:00:01:00:01:00:00:00:14:00:04:d5:f3:17:2a"
+        },
+        "dns": {
+          "dns.id": "0x4d41",
+          "dns.flags": "0x8180",
+          "dns.flags_tree": {
+            "dns.flags.response": "1",
+            "dns.flags.opcode": "0",
+            "dns.flags.authoritative": "0",
+            "dns.flags.truncated": "0",
+            "dns.flags.recdesired": "1",
+            "dns.flags.recavail": "1",
+            "dns.flags.z": "0",
+            "dns.flags.authenticated": "0",
+            "dns.flags.checkdisable": "0",
+            "dns.flags.rcode": "0"
+          },
+          "dns.count.queries": "1",
+          "dns.count.answers": "4",
+          "dns.count.auth_rr": "0",
+          "dns.count.add_rr": "0",
+          "Queries": {
+            "www.msftncsi.com: type A, class IN": {
+              "dns.qry.name": "www.msftncsi.com",
+              "dns.qry.name.len": "16",
+              "dns.count.labels": "3",
+              "dns.qry.type": "1",
+              "dns.qry.class": "0x0001"
+            }
+          },
+          "Answers": {
+            "www.msftncsi.com: type CNAME, class IN, cname www.msftncsi.com.edgesuite.net": {
+              "dns.resp.name": "www.msftncsi.com",
+              "dns.resp.type": "5",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "1785",
+              "dns.resp.len": "32",
+              "dns.cname": "www.msftncsi.com.edgesuite.net"
+            },
+            "www.msftncsi.com.edgesuite.net: type CNAME, class IN, cname a1961.g2.akamai.net": {
+              "dns.resp.name": "www.msftncsi.com.edgesuite.net",
+              "dns.resp.type": "5",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "191",
+              "dns.resp.len": "18",
+              "dns.cname": "a1961.g2.akamai.net"
+            },
+            "a1961.g2.akamai.net: type A, class IN, addr 213.243.23.49": {
+              "dns.resp.name": "a1961.g2.akamai.net",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "20",
+              "dns.resp.len": "4",
+              "dns.a": "213.243.23.49"
+            },
+            "a1961.g2.akamai.net: type A, class IN, addr 213.243.23.42": {
+              "dns.resp.name": "a1961.g2.akamai.net",
+              "dns.resp.type": "1",
+              "dns.resp.class": "0x0001",
+              "dns.resp.ttl": "20",
+              "dns.resp.len": "4",
+              "dns.a": "213.243.23.42"
+            }
+          },
+          "dns.response_to": "17",
+          "dns.time": "0.071360000"
+        }
+      }
+    }
+  }
+]

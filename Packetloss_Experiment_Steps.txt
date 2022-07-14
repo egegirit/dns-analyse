@@ -1,0 +1,8 @@
+1- Pick the next packetloss rate to test (from 10 to 90) and configure it on the server.
+2- Run wireshark packet capture on the client.
+3- Run the python script (sendDNSRequests.py) to start sending DNS queries.
+4- When the script ends, stop packet capture in wireshark and save the captured dns packets to a file.
+5- Open the saved file in wireshark again, export the file as JSON (file name: wireshark0PL.json "1PL" stands for 10% packet loss)  
+6- Repeat all the steps from 1 to 5 until all the packetloss rates are done.
+7- Run the plotter script (createPlots.py) that uses the json files to create a box plot and a bar plot 
+   that compares the latencies/failure rates regarding packetloss.

@@ -4,6 +4,10 @@ from scapy.all import *
 from scapy.layers.dns import DNSQR, DNS, DNSRR
 from scapy.layers.inet import IP, UDP
 
+###############################################################
+### Run packet capture program before executing this script ###
+###############################################################
+
 # Time to wait between the queries
 sleep_time = 5
 
@@ -42,7 +46,7 @@ def send_queries(sleep_time, log_file_name, execute_count):
     # dd/mm/YY H:M:S
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     # Write the current date and time to the file
-    f.write(f"Date and time: {dt_string} \n")
+    f.write(f"\nDate and time: {dt_string} \n")
     f.write(f"Query Tests for: {dns_request_qname} \n")
     f.write(f"Test parameters: (sleep time = {sleep_time}, execution count = {execute_count}) \n")
 
@@ -61,7 +65,8 @@ def send_queries(sleep_time, log_file_name, execute_count):
                       DNS(id=dns_trans_id, rd=dns_request_rd, qr=dns_request_qr, qd=DNSQR(qname=dns_request_qname))
         print(f"  DNS Request created")
 
-        # Measure time between sending and receiving
+        # Measure the (approximate) time between sending and receiving
+        # Note: the latency will be recorded and analysed outside this program
         start_time = time.time()
 
         # Send DNS Query and receive response 

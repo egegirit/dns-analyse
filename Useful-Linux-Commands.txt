@@ -1,0 +1,27 @@
+Bind 9 service is managed by systemd. 
+You can start the Bind DNS service and enable it to start at system reboot using the following command:
+systemctl start named
+systemctl enable named
+
+Check the status of the Bind:
+systemctl status named
+
+Verify the configuration files in bind9 for any error using the following command:
+named-checkconf
+
+Verify zone files:
+named-checkzone
+
+Packet capture with tcpdump, listens for packets on port 53, save the logs in tcpdump_log.pcap:
+sudo tcpdump -w tcpdump_log.pcap -nni any port 53
+
+read the output of tcpdump in a more human readable format (too much output!):
+tcpdump -r dump.out 
+
+Output wireshark logs in command line:
+sudo tshark -r <file> -T fields -e ip.src -e ip.dst -e dns.time -e dns.id
+
+File transfer from windows to linux:
+scp <FilePathInWindows> username@server_IP_Addr:<LinuxPathToSave>
+Example:
+scp C:\Users\egegirit\Desktop\script.py egegirit@192.168.***:/home/egegirit/Desktop  

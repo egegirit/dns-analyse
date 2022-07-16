@@ -25,3 +25,16 @@ File transfer from windows to linux:
 scp <FilePathInWindows> username@server_IP_Addr:<LinuxPathToSave>
 Example:
 scp C:\Users\egegirit\Desktop\script.py egegirit@192.168.***:/home/egegirit/Desktop  
+
+From Linux to windows:
+pscp.exe linux-username@linux-server-ipaddress: [source-DIR-inLinux] [destination-DIR-inWin]
+Example
+pscp.exe egegirit@192.168.1.***:/home/egegirit/Desktop/*** "C:\Users\***"
+
+
+Simulate x percent Packetloss:
+sudo tc qdisc add dev enp0s3 root netem loss x%
+
+to reset the packetloss:
+sudo tc qdisc del dev enp0s3 root
+sudo tc -s qdisc ls dev enp0s3

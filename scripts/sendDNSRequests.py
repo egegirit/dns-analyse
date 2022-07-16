@@ -11,19 +11,21 @@ from scapy.layers.inet import IP, UDP
 # Time to wait between the queries
 sleep_time = 5
 
+# Packetloss rate (real packetloss rate is configured manually on the server, this is only the file name)
+packetloss_rate = "00"
 # The file name to save the outputs
-log_file_name = "packetlossTests.txt"
+log_file_name = "packetlossTest" + packetloss_rate + ".txt"
 
 # Determines how many times the program sends the query
-execute_count = 5
+execute_count = 100
 
 # Set the parameters of the dns request
-dns_request_dest_ip = "8.8.8.8"  # For example the address of an open resolver like Googles 8.8.8.8
+dns_request_dest_ip = "192.168.1.254"  # For example the address of an open resolver like Googles 8.8.8.8
 dns_request_src_port = RandShort()
 dns_request_dest_port = 53
 dns_request_rd = 1  # Recursion desired
 dns_request_qr = 0  # message is a query (0), or a response (1)
-dns_request_qname = "google.com"  # "dnsexperiment1.de"
+dns_request_qname = "nameserver1.intranet.local"  # "dnsexperiment1.de"
 dns_trans_id = 0  # Increments after every send
 
 
@@ -77,15 +79,15 @@ def send_queries(sleep_time, log_file_name, execute_count):
 
         print("---------- Summary ----------")
         print(dns_response.summary())
-        print("---------- Name ----------")
+        # print("---------- Name ----------")
         # print('name:', dns_response.payload.payload.name)
         print('name:', dns_response[DNS].name)
         # print(repr(dns_response.payload.payload))
         print(repr(dns_response[DNS]))
-        print("---------- Layers ----------")
+        # print("---------- Layers ----------")
         # print('layers:', dns_response.payload.payload.ancount)
         print('layers:', dns_response[DNS].ancount)
-        print("---------- IP Addresses ----------")
+        # print("---------- IP Addresses ----------")
         for x in range(dns_response[DNS].ancount):
             print(dns_response[DNSRR][x].rdata)
 

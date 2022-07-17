@@ -47,7 +47,10 @@ for x in range(0, 10):  # 10 is excluded
     # print(data[1]['_source']['layers']['dns']['dns.time'])  # 0.044423000
     packetCount = len(jsonData)
     print(f"  Number of packets in JSON: {packetCount}")
+    response_count = 0
     # Examine all the captured packets in the JSON file
+    dns_id = ""  # DEBUG
+    duplicate = 0
     for i in range(0, packetCount):
         # Check if the packet is a DNS packet
         if 'dns' in jsonData[i]['_source']['layers']:
@@ -60,14 +63,22 @@ for x in range(0, 10):  # 10 is excluded
                     packetlossData[x].append(float(dns_time))
             # Get failure rate (RCODE only present when there is an Answers section in the JSON)
             # count of dns.flags.rcode != 0
-            if jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
-                rcode = jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
-                # If there was an error, store 1, if not, store 0. The count of 1's is the total failure count.
-                failure_rate_data[x].append(int(rcode))
-                #if rcode != 0:
-                #    failure_rate_data[x].append(1)
-                #else:
-                #    failure_rate_data[x].append(0)
+            if 'dns.flags.response' in jsonData[i]['_source']['layers']['dns']['dns.flags_tree']:  # DEBUG
+                # response_count = response_count + 1  # DEBUG
+                # print(f"Response count: {response_count}")  # DEBUG
+                if jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+                    if dns_id == jsonData[i]['_source']['layers']['dns']['dns.id']:  # DEBUG
+                        duplicate = duplicate + 1  # DEBUG
+                        #  print(f"Duplicate: {duplicate}")  # DEBUG
+                    else:
+                        rcode = jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+                        # If there was an error, store 1, if not, store 0. The count of 1's is the total failure count.
+                        failure_rate_data[x].append(int(rcode))
+                    dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
+                    #if rcode != 0:
+                    #    failure_rate_data[x].append(1)
+                    #else:
+                    #    failure_rate_data[x].append(0)
 
 # Create box plot for latency-packetloss
 

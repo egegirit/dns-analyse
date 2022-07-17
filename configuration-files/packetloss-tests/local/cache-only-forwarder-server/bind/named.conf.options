@@ -1,0 +1,25 @@
+ACL "trusted" {
+    192.168.1.0/24;
+};
+
+options{
+
+	directory "/var/cache/bind";
+	recursion yes;
+	allow-query { localhost; trusted; };
+	allow-query-cache { localhost; trusted; };
+	allow-recursion { localhost; trusted; };
+	
+	forwarders {
+		192.168.1.1;  // DNS resolver
+	};
+	
+	forward only;
+
+	// dnssec-validation auto;
+	// listen-on-v6 { any; };
+		
+	auth-nxdomain no;
+
+};
+

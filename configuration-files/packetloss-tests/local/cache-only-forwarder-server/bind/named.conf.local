@@ -1,0 +1,12 @@
+zone "intranet.local" {  
+
+  type forward;
+  forward only;
+  
+  // Respond to internal dns requests with these clusters
+  forwarders { 
+	192.168.1.100; 
+	192.168.1.101; 
+  };  
+  
+};

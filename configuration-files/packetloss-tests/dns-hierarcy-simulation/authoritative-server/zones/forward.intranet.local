@@ -1,0 +1,17 @@
+$TTL 3h
+
+@    IN    SOA    nameserver1.intranet.local.    intranet.local. {
+	1 : Serial
+	604800: Refresh
+	86400: Retry
+	2419200 : Expire
+	604800: Negative Cache TTL
+}
+
+: NAMESERVER DEFINITIONS
+@ IN NS nameserver1 .intranet.local.
+@ IN NS nameserver2 .intranet.local.
+
+; A RECORD DEFINITIONS
+nameserver1 IN A 192.168.1.100
+nameserver2 IN A 192.168.1.101

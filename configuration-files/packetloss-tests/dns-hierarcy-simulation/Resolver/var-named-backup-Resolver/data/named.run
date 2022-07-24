@@ -1,0 +1,122 @@
+managed-keys-zone: loaded serial 0
+zone 0.in-addr.arpa/IN: loaded serial 0
+zone 1.0.0.127.in-addr.arpa/IN: loaded serial 0
+zone localhost.localdomain/IN: loaded serial 0
+zone 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa/IN: loaded serial 0
+zone localhost/IN: loaded serial 0
+all zones loaded
+running
+validating ./NS: got insecure response; parent indicates it should be secure
+insecurity proof failed resolving './NS/IN': 192.168.1.30#53
+managed-keys-zone: Unable to fetch DNSKEY set '.': ncache nxrrset
+validating ./NS: got insecure response; parent indicates it should be secure
+resolver priming query complete
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: journal file is out of date: removing journal file
+managed-keys-zone: loaded serial 2
+zone 0.in-addr.arpa/IN: loaded serial 0
+zone 1.0.0.127.in-addr.arpa/IN: loaded serial 0
+zone localhost/IN: loaded serial 0
+zone 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa/IN: loaded serial 0
+zone localhost.localdomain/IN: loaded serial 0
+all zones loaded
+running
+validating ./NS: got insecure response; parent indicates it should be secure
+insecurity proof failed resolving './NS/IN': 192.168.1.30#53
+managed-keys-zone: Unable to fetch DNSKEY set '.': ncache nxrrset
+validating ./NS: got insecure response; parent indicates it should be secure
+resolver priming query complete
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: journal file is out of date: removing journal file
+managed-keys-zone: loaded serial 3
+all zones loaded
+running
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: journal file is out of date: removing journal file
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+resolver priming query complete
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+resolver priming query complete
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+resolver priming query complete
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.33#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 4
+all zones loaded
+running
+resolver priming query complete
+received control channel command 'flush'
+flushing caches in all views succeeded
+resolver priming query complete
+resolver priming query complete

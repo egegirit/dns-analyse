@@ -1,0 +1,28 @@
+managed-keys-zone: loaded serial 0
+zone local/IN: loaded serial 2022072101
+all zones loaded
+running
+zone local/IN: sending notifies (serial 2022072101)
+no longer listening on 192.168.1.31#53
+listening on IPv4 interface ens33:1, 192.168.1.31#53
+client @0x7f1e7c09e440 192.168.1.12#58432 (15.1.168.192.in-addr.arpa): query (cache) '15.1.168.192.in-addr.arpa/PTR/IN' denied
+client @0x7f1e7c09e440 192.168.1.12#50886 (15.1.168.192.in-addr.arpa): query (cache) '15.1.168.192.in-addr.arpa/PTR/IN' denied
+client @0x7f1e7c09e440 192.168.1.12#36591 (dns-tld): query (cache) 'dns-tld/A/IN' denied
+client @0x7f1e7c09e440 192.168.1.12#36591 (dns-tld): query (cache) 'dns-tld/AAAA/IN' denied
+client @0x7f1e7c09e440 192.168.1.12#36591 (dns-tld): query (cache) 'dns-tld/A/IN' denied
+client @0x7f1e7c09e440 192.168.1.12#36591 (dns-tld): query (cache) 'dns-tld/AAAA/IN' denied
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on ::1#53
+no longer listening on 192.168.1.31#53
+exiting
+managed-keys-zone: loaded serial 0
+zone local/IN: loaded serial 2022072101
+zone lol/IN: loaded serial 2022072101
+all zones loaded
+running
+zone local/IN: sending notifies (serial 2022072101)
+zone lol/IN: sending notifies (serial 2022072101)

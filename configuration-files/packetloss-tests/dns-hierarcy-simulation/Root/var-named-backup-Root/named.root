@@ -1,0 +1,21 @@
+$TTL 3H
+@	IN SOA	dns-root.	postmaster.dns-root. (
+		2022072102
+		1800
+		900
+		604800
+		5400
+		)
+	IN	NS	ns1.dns-root.
+	IN	NS	ns2.dns-root.
+local.	IN	NS	ns1.dns-tld.local.
+	IN	NS	ns2.dns-tld.local.
+lol.	IN	NS	ns1.dns-tld.lol.
+	IN	NS	ns2.dns-tld.lol.
+
+ns1.dns-root.	IN	A	192.168.1.30
+ns2.dns-root.	IN	A	192.168.1.30
+ns1.dns-tld.local.	IN	A	192.168.1.31
+ns2.dns-tld.local.	IN	A	192.168.1.31
+ns1.dns-tld.lol.	IN	A	192.168.1.31
+ns2.dns-tld.lol.	IN	A	192.168.1.31

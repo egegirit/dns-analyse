@@ -1,0 +1,4 @@
+.                       3600000      	NS		ns1.dns-root.
+			3600000		NS		ns2.dns-root.
+ns1.dns-root.      	3600000      	A     		192.168.1.30
+ns2.dns-root.		3600000		A		192.168.1.30

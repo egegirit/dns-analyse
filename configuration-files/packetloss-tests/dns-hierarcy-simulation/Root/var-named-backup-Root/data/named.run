@@ -1,0 +1,46 @@
+managed-keys-zone: loaded serial 0
+zone ./IN: loading from master file named.root failed: permission denied
+zone ./IN: not loaded due to errors.
+all zones loaded
+running
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.30#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 0
+zone ./IN: loaded serial 2022072101
+all zones loaded
+running
+zone ./IN: sending notifies (serial 2022072101)
+no longer listening on 192.168.1.30#53
+listening on IPv4 interface ens33:1, 192.168.1.30#53
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on ::1#53
+no longer listening on 192.168.1.30#53
+exiting
+managed-keys-zone: loaded serial 0
+zone ./IN: loaded serial 2022072101
+all zones loaded
+running
+zone ./IN: sending notifies (serial 2022072101)
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.30#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 0
+zone ./IN: loaded serial 2022072102
+all zones loaded
+running
+zone ./IN: sending notifies (serial 2022072102)

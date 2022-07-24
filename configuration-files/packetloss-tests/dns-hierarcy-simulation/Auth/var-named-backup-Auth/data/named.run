@@ -1,0 +1,76 @@
+managed-keys-zone: loaded serial 0
+zone intranet.local/IN: loaded serial 2022072201
+all zones loaded
+running
+zone intranet.local/IN: sending notifies (serial 2022072201)
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.32#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 0
+zone intranet.local/IN: loaded serial 2022072202
+all zones loaded
+running
+zone intranet.local/IN: sending notifies (serial 2022072202)
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on 192.168.1.32#53
+no longer listening on ::1#53
+exiting
+managed-keys-zone: loaded serial 0
+zone intranet.local/IN: loaded serial 2022072203
+all zones loaded
+running
+zone intranet.local/IN: sending notifies (serial 2022072203)
+no longer listening on 192.168.1.32#53
+no longer listening on 127.0.0.1#53
+no longer listening on ::1#53
+not listening on any interfaces
+not listening on any interfaces
+listening on IPv4 interface lo, 127.0.0.1#53
+listening on IPv6 interface lo, ::1#53
+listening on IPv4 interface ens33:1, 192.168.1.32#53
+client @0x7f7ddc0bd220 192.168.1.13#54091 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#46970 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#45243 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#42284 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#38439 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#41810 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#56933 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#49523 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#35389 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#42077 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#46803 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#41376 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#33318 (15.1.168.192.in-addr.arpa): query (cache) '15.1.168.192.in-addr.arpa/PTR/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#45636 (15.1.168.192.in-addr.arpa): query (cache) '15.1.168.192.in-addr.arpa/PTR/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#35325 (dns-auth): query (cache) 'dns-auth/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#35325 (dns-auth): query (cache) 'dns-auth/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#35325 (dns-auth): query (cache) 'dns-auth/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#35325 (dns-auth): query (cache) 'dns-auth/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#58758 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#52314 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/AAAA/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#41353 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+client @0x7f7ddc0bd220 192.168.1.13#34465 (udp.ping.teamviewer.com): query (cache) 'udp.ping.teamviewer.com/A/IN' denied
+received control channel command 'stop'
+shutting down: flushing changes
+stopping command channel on 127.0.0.1#953
+stopping command channel on ::1#953
+no longer listening on 127.0.0.1#53
+no longer listening on ::1#53
+no longer listening on 192.168.1.32#53
+exiting
+managed-keys-zone: loaded serial 0
+zone intranet.local/IN: loaded serial 2022072203
+zone intranet.lol/IN: loaded serial 2022072203
+all zones loaded
+running
+zone intranet.local/IN: sending notifies (serial 2022072203)
+zone intranet.lol/IN: sending notifies (serial 2022072203)

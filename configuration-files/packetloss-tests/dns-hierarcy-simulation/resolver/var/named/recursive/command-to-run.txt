@@ -1,6 +1,0 @@
-https://unixcop.com/how-to-configure-a-recursive-dns-server-using-bind/
-
-run named with -g and -c options so we can check if there are errors in our configuration. 
-The -g option will make our named run in the foreground and the -c option is for us to specify the location of our configuration file.
-
-# named -g -c /var/named/recursive/named.conf

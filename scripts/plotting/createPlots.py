@@ -34,7 +34,8 @@ failure_rate_90 = []
 failure_rate_95 = []
 
 failure_rate_data = [failure_rate_0, failure_rate_10, failure_rate_20, failure_rate_30, failure_rate_40,
-                     failure_rate_50, failure_rate_60, failure_rate_70, failure_rate_80, failure_rate_85, failure_rate_90, failure_rate_95]
+                     failure_rate_50, failure_rate_60, failure_rate_70, failure_rate_80, failure_rate_85,
+                     failure_rate_90, failure_rate_95]
 
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 index = 0
@@ -43,7 +44,7 @@ index = 0
 for current_packetloss_rate in packetloss_rates: 
     filename = "wireshark" + str(current_packetloss_rate) + "PL.json"
     print(f"Reading {filename}")
-    print(f"Index: {index}")
+    # print(f"Index: {index}")  # Debug
     if not os.path.exists("./" + filename):
         print(f"File not found: {filename}")
         exit()
@@ -60,6 +61,7 @@ for current_packetloss_rate in packetloss_rates:
     # Examine all the captured packets in the JSON file
     dns_id = ""  # DEBUG
     duplicate = 0
+    # duplicate_bool = False
     for i in range(0, packetCount):
         # Check if the packet is a DNS packet
         if 'dns' in jsonData[i]['_source']['layers']:
@@ -68,7 +70,7 @@ for current_packetloss_rate in packetloss_rates:
             # To get the dns_time, the packet must have an "Answers" section
             if 'Answers' in jsonData[i]['_source']['layers']['dns']:
                 if 'dns.time' in jsonData[i]['_source']['layers']['dns']:
-                    print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")
+                    # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
                     dns_time = jsonData[i]['_source']['layers']['dns']['dns.time']
                     packetlossData[index].append(float(dns_time))
             # Get failure rate (RCODE only present when there is an Answers section in the JSON)
@@ -77,25 +79,26 @@ for current_packetloss_rate in packetloss_rates:
                 # response_count = response_count + 1  # DEBUG
                 # print(f"Response count: {response_count}")  # DEBUG
                 if jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
-                    print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")
+                    # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
                     if dns_id == jsonData[i]['_source']['layers']['dns']['dns.id']:  # DEBUG
                         duplicate = duplicate + 1  # DEBUG
-                        print(f"Duplicate: {duplicate}")  # DEBUG
+                        # print(f"Duplicate: {duplicate}")  # DEBUG
                     else:
                         test_count += 1
-                        print(f"Unique packet Count: {test_count}")
+                        # print(f"Unique packet Count: {test_count}")  # DEBUG
                         rcode = jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
                         # If there was an error, store 1, if not, store 0. The count of 1's is the total failure count.
                         failure_rate_data[index].append(int(rcode))
-                    dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
+                    # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
+        dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # Detect duplicates
                     #if rcode != 0:
                     #    failure_rate_data[current_packetloss_rate].append(1)
                     #else:
                     #    failure_rate_data[current_packetloss_rate].append(0)
     index = index + 1
 
-# Create box plot for latency-packetloss
 
+# Create box plot for latency-packetloss
 fig2 = plt.figure(figsize=(10, 7))
 
 # Creating axes instance
@@ -148,9 +151,8 @@ failureRateData = {'00': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0, '60': 0
 # The bar plot acceps a dictionary like above. This for loop extracts the saved RCODE counts and converts them to a dictionary
 index = 0
 for current_packetloss_rate in packetloss_rates:
-    print(f"index: {index}")
-#for i in range(len(failure_rate_data)):
-    print(f"Data: {failure_rate_data[index]}")
+    # print(f"index: {index}") # DEBUG
+    # print(f"Data: {failure_rate_data[index]}") # DEBUG
     fail_count = 0
     for x in range(len(failure_rate_data[index])):
         if failure_rate_data[index][x] != 0:

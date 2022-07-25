@@ -38,3 +38,15 @@ sudo tc qdisc add dev enp0s3 root netem loss x%
 to reset the packetloss:
 sudo tc qdisc del dev enp0s3 root
 sudo tc -s qdisc ls dev enp0s3
+
+
+Assign static IP on CentOS 8:
+$ sudo nmcli connection modify <interface-name> IPv4.address <IPv4-Addr>
+
+To change the gateway and the dns settings:
+$ sudo nmcli connection modify <interface-name> IPv4.gateway <Gateway-Addr>
+$ sudo nmcli connection modify <interface-name> IPv4.dns <DNS-Addr>
+
+Finally, we set the method to manual to avoid using any other boot protocol for the interface. 
+This command sets the BOOTPROTO option to none in the interface configuration file:
+$ sudo nmcli connection modify <interface-name> IPv4.method manual

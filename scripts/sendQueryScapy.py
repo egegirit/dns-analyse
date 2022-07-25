@@ -28,6 +28,9 @@ dns_request_qr = 0  # message is a query (0), or a response (1)
 dns_request_qname = "nameserver1.intranet.lol"  
 dns_trans_id = 0  # Increments after every send
 
+# If scapy doesnt receive a dns answer because of packetloss, 
+# the program waits for an answer forever. To solve this, add timeout
+timeout_in_sec = 15
 
 def send_queries(sleep_time, log_file_name, execute_count):
     if log_file_name == "":
@@ -72,24 +75,26 @@ def send_queries(sleep_time, log_file_name, execute_count):
         start_time = time.time()
 
         # Send DNS Query and receive response 
-        dns_response = sr1(dns_request)
+        dns_response = sr1(dns_request, timeout=timeout_in_sec)
         measured_time = time.time() - start_time
         print(f"  DNS Response received")
         print(f"  DNS Response time: {measured_time}")
 
-        print("---------- Summary ----------")
-        print(dns_response.summary())
-        # print("---------- Name ----------")
-        # print('name:', dns_response.payload.payload.name)
-        print('name:', dns_response[DNS].name)
-        # print(repr(dns_response.payload.payload))
-        print(repr(dns_response[DNS]))
-        # print("---------- Layers ----------")
-        # print('layers:', dns_response.payload.payload.ancount)
-        print('layers:', dns_response[DNS].ancount)
-        # print("---------- IP Addresses ----------")
-        for x in range(dns_response[DNS].ancount):
-            print(dns_response[DNSRR][x].rdata)
+        # If timeout occurs, dns_response is not defined
+        if dns_response is not None:
+            print("---------- Summary ----------")
+            print(dns_response.summary())
+            # print("---------- Name ----------")
+            # print('name:', dns_response.payload.payload.name)
+            print('name:', dns_response[DNS].name)
+            # print(repr(dns_response.payload.payload))
+            print(repr(dns_response[DNS]))
+            # print("---------- Layers ----------")
+            # print('layers:', dns_response.payload.payload.ancount)
+            print('layers:', dns_response[DNS].ancount)
+            # print("---------- IP Addresses ----------")
+            for x in range(dns_response[DNS].ancount):
+                print(dns_response[DNSRR][x].rdata)
 
         print("---------- End Test ----------")
 

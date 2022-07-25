@@ -1,0 +1,5 @@
+Plotting is done after the captured packets are filtered with this condition:
+(ip.src == 192.168.1.9 || ip.src == 192.168.1.33) && (ip.dst == 192.168.1.9 || ip.dst == 192.168.1.33)
+
+Note: Filtering the packets captured with DNSPython library doesn't affect the result, no packets filtered.
+Filtering the packets captured with Scapy significantly reduces the captured packet count.

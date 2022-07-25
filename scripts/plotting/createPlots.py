@@ -85,9 +85,9 @@ for current_packetloss_rate in packetloss_rates:
                     #    # print(f"Duplicate: {duplicate}")  # DEBUG
                     #else:
                     #    test_count += 1
-                        # print(f"Unique packet Count: {test_count}")  # DEBUG
+                    #    # print(f"Unique packet Count: {test_count}")  # DEBUG
                     rcode = jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
-                        # If there was an error, store 1, if not, store 0. The count of 1's is the total failure count.
+                    #    # If there was an error, store 1, if not, store 0. The count of 1's is the total failure count.
                     failure_rate_data[index].append(int(rcode))
                     # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
         dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # Detect duplicates

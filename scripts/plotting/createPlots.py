@@ -139,7 +139,9 @@ ax.set_title('Packetloss-Latency')
 # bp = ax.violinplot(packetlossData)
 bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
                    widths=1.0, showextrema=True)
+# Mean is blue
 bp['cmeans'].set_color('b')
+# Median is green
 bp['cmedians'].set_color('g')
 
 # save plot as png

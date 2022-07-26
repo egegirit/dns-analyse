@@ -136,7 +136,11 @@ ax.set_xlabel('Packetloss in percantage')
 ax.set_title('Packetloss-Latency')
 
 # Create and save Violinplot
-bp = ax.violinplot(packetlossData)
+# bp = ax.violinplot(packetlossData)
+bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
+                   widths=1.0, showextrema=True)
+bp['cmeans'].set_color('b')
+bp['cmedians'].set_color('g')
 
 # save plot as png
 plt.savefig('violinPlotLatency.png', bbox_inches='tight')
@@ -151,13 +155,17 @@ failureRateData = {'00': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0, '60': 0
 # The bar plot acceps a dictionary like above. This for loop extracts the saved RCODE counts and converts them to a dictionary
 index = 0
 for current_packetloss_rate in packetloss_rates:
-    # print(f"index: {index}") # DEBUG
-    # print(f"Data: {failure_rate_data[index]}") # DEBUG
+    print(f"index: {index}")
+#for i in range(len(failure_rate_data)):
+    print(f"Data: {failure_rate_data[index]}")
     fail_count = 0
     for x in range(len(failure_rate_data[index])):
         if failure_rate_data[index][x] != 0:
             fail_count += 1
-    failureRateData[str(current_packetloss_rate)] = fail_count
+    if current_packetloss_rate == 0:
+        failureRateData['00'] = fail_count
+    else:
+        failureRateData[str(current_packetloss_rate)] = fail_count
     index = index + 1
 
 # print(failureRateData)

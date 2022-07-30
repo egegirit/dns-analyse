@@ -126,10 +126,9 @@ fig2 = plt.figure(figsize=(10, 7))
 # Creating axes instance
 ax = fig2.add_axes([0, 0, 1, 1])
 
-# TODO: Fix labels
-# y-axis labels
-ax.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '85', '90', '95'])  # '0',  '20', '40', '60', '80'
-# TODO: Fix UserWarning: FixedFormatter should only be used together with FixedLocator
+# Set the X axis labels/positions
+ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
 
 ax.set_ylabel('Latency in seconds')
 ax.set_xlabel('Packetloss in percantage')
@@ -138,11 +137,11 @@ ax.set_title('Packetloss-Latency')
 # Create and save Violinplot
 # bp = ax.violinplot(packetlossData)
 bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
-                   widths=1.0, showextrema=True)
+                   showextrema=True, widths=4.0, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
 # Mean is blue
 bp['cmeans'].set_color('b')
-# Median is green
-bp['cmedians'].set_color('g')
+# Median is red
+bp['cmedians'].set_color('r')
 
 # save plot as png
 plt.savefig('violinPlotLatency.png', bbox_inches='tight')

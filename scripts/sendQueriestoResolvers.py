@@ -11,7 +11,7 @@ import dns.reversename
 sleep_time = 5
 
 # Determines how many times the program sends the query
-execute_count = 1
+execute_count = 10
 
 # Domain names to query
 dns_request_qnames = [
@@ -75,6 +75,7 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
                 resolver.lifetime = 10
                 start_time = time.time()
                 print(f"  Sending DNS query to {current_resolver_ip}")
+                # Documentation: https://dnspython.readthedocs.io/en/latest/resolver-class.html
                 try:
                     answers = resolver.resolve(current_query,'A')     
                 # answers = dns.resolver.query(dns_request_qname, 'A', raise_on_no_answer=False)  # Alternative                  

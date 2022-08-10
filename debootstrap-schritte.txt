@@ -1,0 +1,43 @@
+// Debian 11 (bullseye) mit debootstrap installieren (nicht die minimale Version)
+
+$ sudo debootstrap --arch=amd64 bullseye /mnt 
+
+// Falls der "Release signed by unknown key" Fehler auftritt, kann der "--no-check-gpg" Flag verwendet werden.
+// sudo debootstrap --arch=amd64 --no-check-gpg bullseye /mnt 
+
+// Für chroot notwendige Verzeichnisse einbinden:
+$ sudo mount -o bind /dev /mnt/dev
+$ sudo mount -o bind /dev/pts /mnt/dev/pts
+$ sudo mount -t sysfs /sys /mnt/sys
+$ sudo mount -t proc /proc /mnt/proc
+$ sudo cp /proc/mounts /mnt/etc/mtab  
+
+// Für die Internetverbindung resolv.conf kopieren:
+$ sudo cp /etc/resolv.conf /mnt/etc/resolv.conf 
+
+// Mit chroot in das installierte System wechseln:
+$ sudo chroot /mnt 
+
+// Innerhalb des Systems Paketquellen neu einlesen:
+# apt update 
+
+// Install bind9:
+# apt-get install bind9 bind9utils bind9-doc bind9-host -y
+// Bind9 version überprüfen
+# named -v
+
+
+// Optionale Programme installieren
+// Install vim:
+# apt install vim
+
+// Install python3:
+# apt install python3
+# apt-get install python3-pip
+
+# pip install dnspython
+# python3 -m pip install --pre scapy[complete]
+# sudo apt install python3-scapy  
+
+// Optional: Zeitzone konfigurieren durch:
+# dpkg-reconfigure tzdata 

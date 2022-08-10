@@ -1,0 +1,15 @@
+$TTL 3600
+@	IN	SOA	ns1.packetloss.syssec-research.mmci.uni-saarland.de.	mail.packetloss.syssec-research.mmci.uni-saarland.de. (
+			2022072203
+			1800
+			900
+			806400
+			5400
+			)
+		NS	ns1.packetloss.syssec-research.mmci.uni-saarland.de.
+
+; NAMESERVER DEFINITIONS
+@ IN NS ns1 .packetloss.syssec-research.mmci.uni-saarland.de.
+
+; A RECORD DEFINITIONS
+ns1 IN A 139.19.117.11

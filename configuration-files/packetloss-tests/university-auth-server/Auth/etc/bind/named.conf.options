@@ -15,12 +15,7 @@ options {
 	listen-on-v6 { any; };
 };
 
-zone "packetloss.syssec-research.mmci.uni-saarlard.de" IN {
+zone "packetloss.syssec-research.mmci.uni-saarland.de" IN {
 	type master;
 	file "/etc/bind/ns1.zone";
-};
-
-zone "example.com" {
-	type primary;
-	file "/etc/bind/example.zone";
 };

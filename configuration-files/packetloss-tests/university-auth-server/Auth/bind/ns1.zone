@@ -1,0 +1,21 @@
+; base zone file for packetloss.syssec-research.mmci.uni-saarland.de
+$TTL 2d ; default TTL for zone
+$ORIGIN packetloss.syssec-research.mmci.uni-saarland.de. ; base domain-name
+
+; Start of Authority RR defining the key characteristics of the zone (domain)
+@	IN	SOA	ns1.packetloss.syssec-research.mmci.uni-saarland.de. packetloss.syssec-research.mmci.uni-saarland.de. (
+			1 ; serial number
+			1800 ; refresh
+			900 ; update retry
+			806400 ; expiry
+			5400 ; minimum
+			)
+			
+; name server RR for the domain			
+	NS	ns1.packetloss.syssec-research.mmci.uni-saarland.de.
+
+; Nameserver definition
+@	IN	NS	ns1.packetloss.syssec-research.mmci.uni-saarland.de.
+
+; A Record definition
+ns1	IN	A	139.19.117.11

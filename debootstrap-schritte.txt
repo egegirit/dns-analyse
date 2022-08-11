@@ -26,6 +26,14 @@ $ sudo chroot /mnt
 // Bind9 version überprüfen
 # named -v
 
+// Install dig command:
+# sudo apt install dnsutils
+// Check dig
+# dig -v
+
+
+// After changing bind configuration files
+service named restart
 
 // Optionale Programme installieren
 // Install vim:

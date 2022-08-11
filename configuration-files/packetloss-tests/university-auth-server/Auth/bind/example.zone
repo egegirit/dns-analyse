@@ -1,0 +1,12 @@
+$TTL 2d
+$ORIGIN example.com.
+@	IN	SOA	ns1.example.com. hostname.example.com. (
+		1
+		12h
+		15m
+		3w
+		2h	
+		)
+	IN	NS	ns1.example.com.
+
+ns1	IN	A	192.168.254.2

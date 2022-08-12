@@ -8,7 +8,7 @@ options {
 	directory "/var/cache/bind";
 
 	listen-on port 53 { clients; };
-	allow-query { clients; };
+	allow-query { any; };
 
 	// dnssec-validation auto;
 

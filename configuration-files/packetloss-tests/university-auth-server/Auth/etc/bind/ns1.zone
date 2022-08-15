@@ -4,18 +4,79 @@ $ORIGIN packetloss.syssec-research.mmci.uni-saarland.de. ; base domain-name
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
 @	IN	SOA	ns1.packetloss.syssec-research.mmci.uni-saarland.de. packetloss.syssec-research.mmci.uni-saarland.de. (
-			1 ; serial number
-			1800 ; refresh
-			900 ; update retry
-			806400 ; expiry
-			5400 ; minimum
+			1 ; serial number is a version number for the SOA record
+			1800 ; refresh (in seconds) time that secondary servers should wait before asking primarys for SOA record to see if its updated
+			900 ; update retry is the time a server should wait for asking an unresponsive primary nameserver for an update again
+			806400 ; expiry, if secondary doesn't get a response from primary for this amount of time, it should stop responding to queries for the zone
+			3600 ; minimum negative response caching TTL, inform other servers how long they should keep the data in the cache
 			)
 			
 ; name server RR for the domain			
 	NS	ns1.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver1.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver2.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver3.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver4.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver5.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver6.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver7.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver8.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver9.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver10.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver11.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver12.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver13.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver14.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver15.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver16.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver17.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver18.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver19.packetloss.syssec-research.mmci.uni-saarland.de.
+	NS	nameserver20.packetloss.syssec-research.mmci.uni-saarland.de.
 
 ; Nameserver definition
 @	IN	NS	ns1.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver1.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver2.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver3.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver4.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver5.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver6.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver7.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver8.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver9.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver10.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver11.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver12.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver13.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver14.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver15.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver16.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver17.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver18.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver19.packetloss.syssec-research.mmci.uni-saarland.de.
+@	IN	NS	nameserver20.packetloss.syssec-research.mmci.uni-saarland.de.
+
 
 ; A Record definition
 ns1	IN	A	139.19.117.11
+nameserver1	IN	A	192.168.1.1
+nameserver2	IN	A	192.168.1.2
+nameserver3	IN	A	192.168.1.3
+nameserver4	IN	A	192.168.1.4
+nameserver5	IN	A	192.168.1.5
+nameserver6	IN	A	192.168.1.6
+nameserver7	IN	A	192.168.1.7
+nameserver8	IN	A	192.168.1.8
+nameserver9	IN	A	192.168.1.9
+nameserver10	IN	A	192.168.1.10
+nameserver11	IN	A	192.168.1.11
+nameserver12	IN	A	192.168.1.12
+nameserver13	IN	A	192.168.1.13
+nameserver14	IN	A	192.168.1.14
+nameserver15	IN	A	192.168.1.15
+nameserver16	IN	A	192.168.1.16
+nameserver17	IN	A	192.168.1.17
+nameserver18	IN	A	192.168.1.18
+nameserver19	IN	A	192.168.1.19
+nameserver20	IN	A	192.168.1.20

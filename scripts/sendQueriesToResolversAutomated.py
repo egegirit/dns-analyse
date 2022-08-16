@@ -17,101 +17,12 @@ execute_count = 1
 
 # Domain names to query (TEST)
 # dns_request_qnames = [
-#    "google.com", 
-#    "amazon.com", 
+#    "google.com",
+#    "amazon.com",
 #    "securitycharms.com",
-#    "twitch.tv", 
+#    "twitch.tv",
 #    "udemy.com"
 # ]
-
-# Queries to send to resolvers
-dns_request_qnames = []
-
-# for k in range(5):
-#    exec(f'cat_{k} = k*2')
-
-# d = {}
-# for x in range(1, 10):
-#    d["string{0}".format(x)] = "Hello"
-
-counter1 = []
-counter2 = []
-
-p0_queries = []
-p10_queries = []
-p20_queries = []
-p30_queries = []
-p40_queries = []
-p50_queries = []
-p60_queries = []
-p70_queries = []
-p80_queries = []
-p85_queries = []
-p90_queries = []
-p95_queries = []
-packetloss_queries = [p0_queries, p10_queries, p20_queries, p30_queries, p40_queries, p50_queries, p60_queries,
-                      p70_queries, p80_queries, p85_queries, p90_queries, p95_queries]
-
-
-class Domain:
-    def __init__(self, ip_address, packetloss_rate, counter_no, query):
-        self.ip_address = ip_address
-        self.packetloss_rate = packetloss_rate
-        self.counter_no = counter_no
-        self.query = query
-
-
-domain_list = []
-domain_list.append(Domain('Resolver_Name', "pl_rate", "no", "query"))
-
-# Read all the domain names from domain_names.txt
-# and classify them according to their label structure
-file1 = open("domain_names.txt", "r")
-Lines = file1.readlines()
-for line in Lines:
-    dns_request_qnames.append(line)
-    prefix = line.split('.')[0]  # Get the most left label of the domain
-    splitted = line.split('-')
-    packetloss_rate = splitted[len(splitted) - 1]  # Last label is the packetloss rate
-    counter = splitted[len(splitted) - 2]  # Second last label is the counter
-    # First 4 labels build the IP Address
-    # Add dots to build the real IP Address
-    ip_addr = splitted[0] + "." + splitted[1] + "." + splitted[2] + "." + splitted[3]
-    # resolver_name = ""  # TODO with a function
-    print(f"Domain: {line}")
-    print(f"  packetloss_rate: {packetloss_rate}")
-    print(f"  counter: {counter}")
-    print(f"  IP Address: {ip_addr}")
-
-    # Create the object
-    domain_list.append(Domain(ip_addr, packetloss_rate, counter, line))
-    print(f"Query object created")
-
-    # print(f"  resolver_name: {resolver_name}")
-    if packetloss_rate == "pl0":
-        p0_queries.append(line.strip())
-    if packetloss_rate == "pl10":
-        p10_queries.append(line.strip())
-    if packetloss_rate == "pl20":
-        p20_queries.append(line.strip())
-    if packetloss_rate == "pl30":
-        p30_queries.append(line.strip())
-    if packetloss_rate == "pl40":
-        p40_queries.append(line.strip())
-    if packetloss_rate == "pl50":
-        p50_queries.append(line.strip())
-    if packetloss_rate == "pl60":
-        p60_queries.append(line.strip())
-    if packetloss_rate == "pl70":
-        p70_queries.append(line.strip())
-    if packetloss_rate == "pl80":
-        p80_queries.append(line.strip())
-    if packetloss_rate == "pl85":
-        p85_queries.append(line.strip())
-    if packetloss_rate == "pl90":
-        p90_queries.append(line.strip())
-    if packetloss_rate == "pl95":
-        p95_queries.append(line.strip())
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [

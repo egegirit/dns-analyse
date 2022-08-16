@@ -107,8 +107,8 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
                         print("        ", end="")
                         print(answers.rrset)
                 # time.sleep(1)  # Sleep after every query
-            print(f"    Finished sending current query to all resolver IP Addresses.")
-            print(f"    Sleeping for {sleep_time} seconds to continue with the next domain name.")
+            print(f"      Finished sending current query to all resolver IP Addresses.")
+            print(f"    Sleeping for {sleep_time} seconds to continue with the next counter.")
             time.sleep(sleep_time)  # Sleep after one domain name is sent to all resolver IP's
     print(f"    send_queries() function finished")
 

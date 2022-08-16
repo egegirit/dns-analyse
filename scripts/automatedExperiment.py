@@ -9,8 +9,8 @@ import sys
 
 # Time to wait after one domain query is sent to all resolver IP Addresses
 sleep_time = 1
-# 900 seconds = 15 minutes
-sleep_time_between_packetloss_config = 900
+# 600 seconds = 10 minutes
+sleep_time_between_packetloss_config = 600
 
 # Determines how many times the program sends the query
 execute_count = 1

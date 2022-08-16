@@ -160,6 +160,10 @@ for current_packetloss_rate in packetloss_rates:
     print("    " + packet_capture_command_3)
     process_4 = subprocess.Popen(packet_capture_command_3, shell=True, stdout=subprocess.PIPE)  
     
+    # If packet capture commands are delayed for a reason, the send query function executes before the packet capture.
+    # Added 1 second sleep to avoid this.
+    time.sleep(1) 
+    
     # Send queries to defined resolver IP addresses
     send_queries(sleep_time, execute_count, resolver_ip_addresses)
     

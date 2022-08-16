@@ -3,3 +3,17 @@ Plotting is done after the captured packets are filtered with this condition:
 
 Note: Filtering the packets captured with DNSPython library doesn't affect the result, no packets filtered.
 Filtering the packets captured with Scapy significantly reduces the captured packet count.
+
+--------------------------------------------------------------------------
+
+Authoritative name server IP Address(Also the client): 139.19.117.11
+
+To get the communication between the server and a resolver:
+(ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>)
+
+To get the client queries to a specific resolver:
+(ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>) && (dns.flags.response == 0)
+
+To get the answers from a specific resolver:
+(ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>) && (dns.flags.response == 1)
+

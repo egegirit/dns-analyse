@@ -42,6 +42,7 @@ base_zone = "packetloss.syssec-research.mmci.uni-saarland.de"
 
 # Results will be stored here
 created_domain_names = []
+created_prefixes = []
 created_ns_definitions = []
 created_a_records = []
 
@@ -66,16 +67,21 @@ def create_nameserver_definitions(ip_addresses, domain_names, counter_min, count
         # Create zonefiles.txt in append mode
     f = open("domain_names.txt", "a")
     f2 = open("NS_definitions.txt", "a")
+    f3 = open("prefixes.txt", "a")
 
     for ip_ad in resolver_ip_addresses:
         # Replace all the dots to dashes in the IP Address
         ip_addr = ip_ad.replace(".", "-")
         for counter in range(counter_min, counter_max + 1):
             for packetloss in packetloss_rates:
+                prefix = ip_addr + delimeter + str(counter) + delimeter + packetloss
                 result = ip_addr + delimeter + str(counter) + delimeter + packetloss + "." + base_zone
-                print(f"Created zone: {result}")
+                print(f"Created prefix: {prefix}")
+                print(f"Created domain name: {result}")
                 created_domain_names.append(result)
+                created_prefixes.append(prefix)
                 f.write(result + "\n")
+                f3.write(prefix + "\n")
 
                 # @	IN	NS	nameserver20.packetloss.syssec-research.mmci.uni-saarland.de.
                 result_2 = "@\tIN\tNS\t" + result + "."
@@ -116,4 +122,4 @@ ip_address = "139-19-117-11"
 ip_address_with_dots = "139.19.117.11"
 
 create_nameserver_definitions(resolver_ip_addresses, dns_request_qnames, 1, 200, "-")
-create_a_records(created_domain_names, ip_address_with_dots)
+create_a_records(created_prefixes, ip_address_with_dots)

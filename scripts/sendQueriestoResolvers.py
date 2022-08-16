@@ -5,6 +5,8 @@ import dns.reversename
 import subprocess
 import sys
 
+# Execute this script as root user
+
 # Time to wait after one domain query is sent to all resolver IP Adresses
 sleep_time = 1
 # 900 seconds = 15 minutes
@@ -162,6 +164,7 @@ for current_packetloss_rate in packetloss_rates:
     
     # If packet capture commands are delayed for a reason, the send query function executes before the packet capture.
     # Added 1 second sleep to avoid this.
+    print(f"  Sleeping 1 second to let the packet captures start") 
     time.sleep(1) 
     
     # Send queries to defined resolver IP addresses

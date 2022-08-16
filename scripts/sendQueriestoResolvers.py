@@ -64,22 +64,26 @@ interface_3 = "eth1"  # The interface of client which sends the queries
 
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
+# The name of the folder that will be created to store all the tcpdump files inside of it
+directory_name_of_logs = "capture_logs"
+
 # The function that sends the domain name queries to the defined resolver IP addresses execute_count times
 def send_queries(sleep_time, execute_count, resolver_ip_addresses):
     if sleep_time < 0:
-        print(f"  Invalid sleep time! ({sleep_time})")
+        print(f"    Invalid sleep time! {sleep_time}")
         return
     if execute_count < 0:
-        print(f"  Invalid execution count! ({execute_count})")
+        print(f"    Invalid execution count! {execute_count}")
         return
     global answers
     
-    print(f"  Executing send_queries() function")
+    print(f"    Executing send_queries() function")
     
     # Execution count must be calculated with consideration of dns_request_qnames count.
     for i in range(0, execute_count):  
+        print(f"    {execute_count}. Iteration") 
         for current_query in dns_request_qnames:
-            print(f"    Current query: {current_query}")
+            print(f"      Current query: {current_query}")
             for current_resolver_ip in resolver_ip_addresses:                
                 resolver = dns.resolver.Resolver()
                 # Set the resolver IP Address (multiple IP addresses as list possible)
@@ -88,31 +92,39 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
                 resolver.timeout = 10  
                 resolver.lifetime = 10
                 start_time = time.time()
-                print(f"    Sending DNS query to: {current_resolver_ip}")
+                print(f"      Sending DNS query to: {current_resolver_ip}")
                 # Documentation: https://dnspython.readthedocs.io/en/latest/resolver-class.html
                 try:
                     answers = resolver.resolve(current_query,'A')     
                 # answers = dns.resolver.query(dns_request_qname, 'A', raise_on_no_answer=False)  # Alternative                  
                 except:
-                    print("    DNS Exception occured!")   
+                    print("      DNS Exception occured!")   
                     answers = None
                 measured_time = time.time() - start_time
-                print(f"  DNS Response time: {measured_time}")
+                print(f"    DNS Response time: {measured_time}")
                 if answers is not None:
                     for answer in answers:
+                        print("        ", end="")
                         print(answer)
-                    print("    RRset:")
+                    print("      RRset:")
                     if answers.rrset is not None:
+                        print("        ", end="")
                         print(answers.rrset)
                 # time.sleep(1)  # Sleep after every query
-            print(f"  Finished sending current query to all resolver IP Addresses.")      
-            print(f"  Sleeping for {sleep_time} seconds to continue with the next domain name.")     
+            print(f"    Finished sending current query to all resolver IP Addresses.")      
+            print(f"    Sleeping for {sleep_time} seconds to continue with the next domain name.")     
             time.sleep(sleep_time) # Sleep after one domain name is sent to all resolver IP's
             
-    print(f"  send_queries() function finished")        
+    print(f"    send_queries() function finished")        
 
 
-# send_queries(sleep_time, execute_count, resolver_ip_addresses)
+# Create directory to store the packet capture log files
+create_folder_command = f"mkdir {directory_name_of_logs}" 
+print(f"Creating a folder named {directory_name_of_logs} with the following command:")  
+print("  " + create_folder_command)
+process_0 = subprocess.Popen(create_folder_command, shell=True, stdout=subprocess.PIPE)
+process_0.wait()
+process_0.terminate()
 
 print("\n==== Experiment starting ====\n")
 # Automation with different packetloss rates
@@ -120,53 +132,60 @@ for current_packetloss_rate in packetloss_rates:
     print(f"### Current packetloss rate: {current_packetloss_rate} ###")
 
     # If current packetloss rate is 0, dont execute packetloss filter
+    # Workaround for process_1 is not defined
+    process_1 = None
     if current_packetloss_rate != 0:
         packetloss_filter_command = f"sudo tc qdisc add dev {interface_2} root netem loss {current_packetloss_rate}%"
-        print(f"Simulating {current_packetloss_rate}% packetloss on interface {interface_2} with the following command:")
-        print(packetloss_filter_command)        
-        process_1 = subprocess.Popen(packetloss_filter_command, stdout=subprocess.PIPE)        
+        print(f"  Simulating {current_packetloss_rate}% packetloss on interface {interface_2} with the following command:")
+        print("    " + packetloss_filter_command)   
+        # Note: Without the "shell=True" option, I got a "file not found" error        
+        process_1 = subprocess.Popen(packetloss_filter_command, shell=True, stdout=subprocess.PIPE)        
         
     # Packet capture on authoritative server interface without the packetloss filter   
-    packet_capture_command_1 = f"sudo tcpdump -w tcpdump_log_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} \"src port 53\""    
-    print(f"(1) Running packet capture on {interface_1} interface with the following command:")    
-    print(packet_capture_command_1)
-    process_2 = subprocess.Popen(packet_capture_command_2, stdout=subprocess.PIPE)
+    packet_capture_command_1 = f"sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} \"src port 53\""    
+    print(f"  (1) Running packet capture on {interface_1} interface with the following command:")    
+    print("    " + packet_capture_command_1)
+    process_2 = subprocess.Popen(packet_capture_command_1, shell=True, stdout=subprocess.PIPE)
     
     # Packet capture on authoritative server interface with the packetloss filter applied
-    packet_capture_command_2 = f"sudo tcpdump -w tcpdump_log_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} \"src port 53\""    
-    print(f"(2) Running packet capture on {interface_2} interface with the following command:")    
-    print(packet_capture_command_2)
-    process_3 = subprocess.Popen(packet_capture_command_2, stdout=subprocess.PIPE)    
+    packet_capture_command_2 = f"sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} \"src port 53\""    
+    print(f"  (2) Running packet capture on {interface_2} interface with the following command:")    
+    print("    " + packet_capture_command_2)
+    process_3 = subprocess.Popen(packet_capture_command_2, shell=True, stdout=subprocess.PIPE)    
     
     # Packet capture on client interface
-    packet_capture_command_3 = f"sudo tcpdump -w tcpdump_log_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} \"src port 53\""    
-    print(f"(3) Running packet capture on {interface_3} interface with the following command:")    
-    print(packet_capture_command_3)
-    process_4 = subprocess.Popen(packet_capture_command_3, stdout=subprocess.PIPE)  
+    packet_capture_command_3 = f"sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} \"src port 53\""    
+    print(f"  (3) Running packet capture on {interface_3} interface with the following command:")    
+    print("    " + packet_capture_command_3)
+    process_4 = subprocess.Popen(packet_capture_command_3, shell=True, stdout=subprocess.PIPE)  
     
     # Send queries to defined resolver IP addresses
     send_queries(sleep_time, execute_count, resolver_ip_addresses)
     
     # End packet capture on all interfaces    
-    print(f"Disabling packetloss on {interface_2} interface with following commands:")
+    print(f"  Disabling packetloss on {interface_2} interface with following commands:")
     disable_packetloss_1 = f"sudo tc qdisc del dev {interface_2} root"
     disable_packetloss_2 = f"sudo tc -s qdisc ls dev {interface_2}"
-    print(disable_packetloss_1)
-    print(disable_packetloss_2)
-    process_5 = subprocess.Popen(disable_packetloss_1, stdout=subprocess.PIPE) 
-    process_6 = subprocess.Popen(disable_packetloss_2, stdout=subprocess.PIPE) 
+    print("    " + disable_packetloss_1)
+    print("    " + disable_packetloss_2)
+    process_5 = subprocess.Popen(disable_packetloss_1, shell=True, stdout=subprocess.PIPE) 
+    process_6 = subprocess.Popen(disable_packetloss_2, shell=True, stdout=subprocess.PIPE) 
     
     # Terminate all created processes
-    print(f"Terminating processes/stopping packet capture.")
-    process_1.terminate()  # process_1.kill() if terminate doesn't work
+    print(f"  Terminating processes/stopping packet capture.")
+    # process_1.kill() if terminate doesn't work
+    if process_1 != None:    
+        process_1.terminate()
     process_2.terminate()
     process_3.terminate()
     process_4.terminate()
     process_5.terminate()    
     process_6.terminate()
 
-    print(f"Packetloss Config Finished")
-    print(f"Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration...")
+    # Sleep for 15 mins between packetloss configurations
+    print(f"  Packetloss Config Finished")
+    print(f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration.")
+    print("  Remaining time:")
     # time.sleep(sleep_time_between_packetloss_config)
     # Output how many seconds left to sleep
     for i in range(sleep_time_between_packetloss_config,0,-1):
@@ -175,8 +194,10 @@ for current_packetloss_rate in packetloss_rates:
     
 print("\n==== Experiment ended ====\n")
 
-
-
-
-
-
+# End packet capture on all interfaces    
+compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
+print("Compressing all log files into a zip file with the following command:")
+print("  " + compress_files_command)
+process_7 = subprocess.Popen(compress_files_command, shell=True, stdout=subprocess.PIPE) 
+process_7.wait()  # Wait for the zip command to finish
+process_7.terminate()

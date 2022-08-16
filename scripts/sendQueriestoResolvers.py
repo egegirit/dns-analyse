@@ -7,33 +7,34 @@ import dns.reversename
 ### Run packet capture program before executing this script ###
 ###############################################################
 
-# Time to wait between the queries
+# Time to wait between the queries (Caching should be considered here)
 sleep_time = 5
 
 # Determines how many times the program sends the query
 execute_count = 10
 
-# Domain names to query
+# Domain names to query (TEST)
+#dns_request_qnames = [
+#    "google.com", 
+#    "amazon.com", 
+#    "securitycharms.com",
+#    "twitch.tv", 
+#    "udemy.com"
+#]
+
+# Queries to send to resolvers
 dns_request_qnames = [
-    "google.com", 
-    "amazon.com", 
-    "securitycharms.com",
-    "twitch.tv", 
-    "diziwatch.net",
-    "udemy.com"
+    "nameserver1.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver2.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver3.packetloss.syssec-research.mmci.uni-saarland.de",
+    "nameserver4.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver5.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver6.packetloss.syssec-research.mmci.uni-saarland.de",
+    "nameserver7.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver8.packetloss.syssec-research.mmci.uni-saarland.de", 
+    "nameserver9.packetloss.syssec-research.mmci.uni-saarland.de",
+    "nameserver10.packetloss.syssec-research.mmci.uni-saarland.de"
 ]
-# dns_request_qnames = [
-    # "nameserver1.intranet.lol", 
-    # "nameserver2.intranet.lol", 
-    # "nameserver3.intranet.lol",
-    # "nameserver4.intranet.lol", 
-    # "nameserver5.intranet.lol", 
-    # "nameserver6.intranet.lol",
-    # "nameserver7.intranet.lol", 
-    # "nameserver8.intranet.lol", 
-    # "nameserver9.intranet.lol",
-    # "nameserver10.intranet.lol"
-# ]
 
 # DNS Resolver IP Addresses
 resolver_ip_addresses = [
@@ -47,8 +48,8 @@ resolver_ip_addresses = [
   "216.146.36.36",    # Dyn 2  (resolver2.dyndnsinternetguide.com )
   "8.8.8.8",          # Google 1  (dns.google )
   "8.8.4.4",          # Google 2  (dns.google )
-  "64.6.64.6",        # Neustar 1  (?)
-  "156.154.70.1",     # Neustar 2  (?)
+  "64.6.64.6",        # Neustar 1  (?)  ERROR
+  "156.154.70.1",     # Neustar 2  (?)  ERROR
   "208.67.222.222",   # OpenDNS 1  (dns.opendns.com )
   "208.67.222.2",     # OpenDNS 2  (sandbox.opendns.com )
   "9.9.9.9",          # Quad9 1    (dns9.quad9.net )
@@ -65,13 +66,17 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
         print("Invalid execution count")
         return
     global answers
-    for i in range(0, execute_count):  # Execution count must be calculated with consideration of dns_request_qnames count.
+    
+    # Execution count must be calculated with consideration of dns_request_qnames count.
+    for i in range(0, execute_count):  
         for current_query in dns_request_qnames:
-            print(f"Current query: {current_query}")
+            print(f"  Current query: {current_query}")
             for current_resolver_ip in resolver_ip_addresses:                
                 resolver = dns.resolver.Resolver()
-                resolver.nameservers = [current_resolver_ip]  # Set the resolver IP Address (multiple IP addresses as list possible)
-                resolver.timeout = 10  # Set the timeout of the query
+                # Set the resolver IP Address (multiple IP addresses as list possible)
+                resolver.nameservers = [current_resolver_ip]  
+                # Set the timeout of the query
+                resolver.timeout = 10  
                 resolver.lifetime = 10
                 start_time = time.time()
                 print(f"  Sending DNS query to {current_resolver_ip}")
@@ -80,7 +85,7 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
                     answers = resolver.resolve(current_query,'A')     
                 # answers = dns.resolver.query(dns_request_qname, 'A', raise_on_no_answer=False)  # Alternative                  
                 except:
-                    print("DNS Exception occured!")   
+                    print("    DNS Exception occured!")   
                     answers = None
                 measured_time = time.time() - start_time
                 print(f"  DNS Response time: {measured_time}")
@@ -94,4 +99,25 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
             time.sleep(sleep_time) # Sleep after one domain name is sent to all resolver IP's
 
 
+print("\n### Experiment starting ###\n")
 send_queries(sleep_time, execute_count, resolver_ip_addresses)
+print("\n### Experiment ended ###\n")
+
+# TODO: Automation with different packetloss rates
+# packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+# for current_packetloss_rate in packetloss_rates:
+#     if current_packetloss_rate != 0:
+#         print(f"Simulate {current_packetloss_rate}% packetloss with the following command:")
+#         print(f"sudo tc qdisc add dev ifb0 root netem loss {current_packetloss_rate}%")
+#         input("Press ENTER after simulating packetloss")
+#     print(f"### Current packetloss rate: {current_packetloss_rate} ###")
+#     send_queries(sleep_time, execute_count, resolver_ip_addresses)
+#     print(f"Disable packetloss with following commands:")
+#     print(f"sudo tc qdisc del dev ifb0 root")
+#     print(f"sudo tc -s qdisc ls dev ifb0")
+#     input("Press ENTER after disabling packetloss")
+
+
+
+
+

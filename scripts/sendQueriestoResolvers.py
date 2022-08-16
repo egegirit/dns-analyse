@@ -2,13 +2,12 @@ import time
 from datetime import datetime
 import dns.resolver
 import dns.reversename
+import subprocess
+import sys
 
-###############################################################
-### Run packet capture program before executing this script ###
-###############################################################
-
-# Time to wait between the queries (Caching should be considered here)
-sleep_time = 5
+# Time to wait after one domain query is sent to all resolver IP Adresses
+sleep_time = 1
+sleep_time_between_packetloss_config = 900  # 900 seconds = 15 minutes
 
 # Determines how many times the program sends the query
 execute_count = 10
@@ -36,7 +35,7 @@ dns_request_qnames = [
     "nameserver10.packetloss.syssec-research.mmci.uni-saarland.de"
 ]
 
-# DNS Resolver IP Addresses
+# DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
   "94.140.14.14",     # AdGuard 1  (dns.adguard.com)
   "94.140.14.15",     # AdGuard 2  (dns-family.adguard.com )
@@ -58,19 +57,29 @@ resolver_ip_addresses = [
   "77.88.8.8"         # Yandex 2   (secondary.dns.yandex.ru )
 ]
 
+# Set the interface names for packet capture with tcpdump
+interface_1 = "eth0"  # The interface of auhtoritative server without the packetloss filter
+interface_2 = "ifb0"  # The interface of auhtoritative server with the packetloss filter applied
+interface_3 = "eth1"  # The interface of client which sends the queries
+
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+
+# The function that sends the domain name queries to the defined resolver IP addresses execute_count times
 def send_queries(sleep_time, execute_count, resolver_ip_addresses):
     if sleep_time < 0:
-        print("Invalid sleep time")
+        print(f"  Invalid sleep time! ({sleep_time})")
         return
     if execute_count < 0:
-        print("Invalid execution count")
+        print(f"  Invalid execution count! ({execute_count})")
         return
     global answers
+    
+    print(f"  Executing send_queries() function")
     
     # Execution count must be calculated with consideration of dns_request_qnames count.
     for i in range(0, execute_count):  
         for current_query in dns_request_qnames:
-            print(f"  Current query: {current_query}")
+            print(f"    Current query: {current_query}")
             for current_resolver_ip in resolver_ip_addresses:                
                 resolver = dns.resolver.Resolver()
                 # Set the resolver IP Address (multiple IP addresses as list possible)
@@ -79,7 +88,7 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
                 resolver.timeout = 10  
                 resolver.lifetime = 10
                 start_time = time.time()
-                print(f"  Sending DNS query to {current_resolver_ip}")
+                print(f"    Sending DNS query to: {current_resolver_ip}")
                 # Documentation: https://dnspython.readthedocs.io/en/latest/resolver-class.html
                 try:
                     answers = resolver.resolve(current_query,'A')     
@@ -96,29 +105,76 @@ def send_queries(sleep_time, execute_count, resolver_ip_addresses):
                     if answers.rrset is not None:
                         print(answers.rrset)
                 # time.sleep(1)  # Sleep after every query
+            print(f"  Finished sending current query to all resolver IP Addresses.")      
+            print(f"  Sleeping for {sleep_time} seconds to continue with the next domain name.")     
             time.sleep(sleep_time) # Sleep after one domain name is sent to all resolver IP's
+            
+    print(f"  send_queries() function finished")        
 
 
-print("\n### Experiment starting ###\n")
-send_queries(sleep_time, execute_count, resolver_ip_addresses)
-print("\n### Experiment ended ###\n")
+# send_queries(sleep_time, execute_count, resolver_ip_addresses)
 
-# TODO: Automation with different packetloss rates
-# packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
-# for current_packetloss_rate in packetloss_rates:
-#     if current_packetloss_rate != 0:
-#         print(f"Simulate {current_packetloss_rate}% packetloss with the following command:")
-#         print(f"sudo tc qdisc add dev ifb0 root netem loss {current_packetloss_rate}%")
-#         input("Press ENTER after simulating packetloss")
-#     print(f"Run packet capture on ifb0 interface with the following command:")
-#     print(f"sudo tcpdump -w tcpdump_log_{current_packetloss_rate}.pcap -nnn -i ifb0 "src port 53"")
-#     input("Press ENTER after running packet capture")
-#     print(f"### Current packetloss rate: {current_packetloss_rate} ###")
-#     send_queries(sleep_time, execute_count, resolver_ip_addresses)
-#     print(f"Disable packetloss with following commands:")
-#     print(f"sudo tc qdisc del dev ifb0 root")
-#     print(f"sudo tc -s qdisc ls dev ifb0")
-#     input("Press ENTER after disabling packetloss")
+print("\n==== Experiment starting ====\n")
+# Automation with different packetloss rates
+for current_packetloss_rate in packetloss_rates:
+    print(f"### Current packetloss rate: {current_packetloss_rate} ###")
+
+    # If current packetloss rate is 0, dont execute packetloss filter
+    if current_packetloss_rate != 0:
+        packetloss_filter_command = f"sudo tc qdisc add dev {interface_2} root netem loss {current_packetloss_rate}%"
+        print(f"Simulating {current_packetloss_rate}% packetloss on interface {interface_2} with the following command:")
+        print(packetloss_filter_command)        
+        process_1 = subprocess.Popen(packetloss_filter_command, stdout=subprocess.PIPE)        
+        
+    # Packet capture on authoritative server interface without the packetloss filter   
+    packet_capture_command_1 = f"sudo tcpdump -w tcpdump_log_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} \"src port 53\""    
+    print(f"(1) Running packet capture on {interface_1} interface with the following command:")    
+    print(packet_capture_command_1)
+    process_2 = subprocess.Popen(packet_capture_command_2, stdout=subprocess.PIPE)
+    
+    # Packet capture on authoritative server interface with the packetloss filter applied
+    packet_capture_command_2 = f"sudo tcpdump -w tcpdump_log_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} \"src port 53\""    
+    print(f"(2) Running packet capture on {interface_2} interface with the following command:")    
+    print(packet_capture_command_2)
+    process_3 = subprocess.Popen(packet_capture_command_2, stdout=subprocess.PIPE)    
+    
+    # Packet capture on client interface
+    packet_capture_command_3 = f"sudo tcpdump -w tcpdump_log_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} \"src port 53\""    
+    print(f"(3) Running packet capture on {interface_3} interface with the following command:")    
+    print(packet_capture_command_3)
+    process_4 = subprocess.Popen(packet_capture_command_3, stdout=subprocess.PIPE)  
+    
+    # Send queries to defined resolver IP addresses
+    send_queries(sleep_time, execute_count, resolver_ip_addresses)
+    
+    # End packet capture on all interfaces    
+    print(f"Disabling packetloss on {interface_2} interface with following commands:")
+    disable_packetloss_1 = f"sudo tc qdisc del dev {interface_2} root"
+    disable_packetloss_2 = f"sudo tc -s qdisc ls dev {interface_2}"
+    print(disable_packetloss_1)
+    print(disable_packetloss_2)
+    process_5 = subprocess.Popen(disable_packetloss_1, stdout=subprocess.PIPE) 
+    process_6 = subprocess.Popen(disable_packetloss_2, stdout=subprocess.PIPE) 
+    
+    # Terminate all created processes
+    print(f"Terminating processes/stopping packet capture.")
+    process_1.terminate()  # process_1.kill() if terminate doesn't work
+    process_2.terminate()
+    process_3.terminate()
+    process_4.terminate()
+    process_5.terminate()    
+    process_6.terminate()
+
+    print(f"Packetloss Config Finished")
+    print(f"Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration...")
+    # time.sleep(sleep_time_between_packetloss_config)
+    # Output how many seconds left to sleep
+    for i in range(sleep_time_between_packetloss_config,0,-1):
+        print(f"{i}", end="\r", flush=True)
+        time.sleep(1)    
+    
+print("\n==== Experiment ended ====\n")
+
 
 
 

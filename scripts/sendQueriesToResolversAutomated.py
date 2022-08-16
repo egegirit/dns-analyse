@@ -341,7 +341,7 @@ print("\n==== Experiment ended ====\n")
 
 # End packet capture on all interfaces    
 compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
-print("Compressing all log files into a zip file with the following command:")
+print("Compressing all log files into a logs.zip file with the following command:")
 print("  " + compress_files_command)
 process_7 = subprocess.Popen(compress_files_command, shell=True, stdout=subprocess.PIPE)
 process_7.wait()  # Wait for the zip command to finish

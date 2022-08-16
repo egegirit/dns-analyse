@@ -12,8 +12,16 @@
 	$ sudo tc qdisc add dev ifb0 root netem loss {current_packetloss_rate}% 
 	
 	# Run packet capture with tcpdump on port 53 on the ifb0 interface, 
-	# and save the logs to tcpdump_log_{current_packetloss_rate}.pcap:
-	$ sudo tcpdump -w tcpdump_log_{current_packetloss_rate}.pcap -nnn -i ifb0 "src port 53"
+	# and save the logs to tcpdump_log_{interface}_{current_packetloss_rate}.pcap:
+	$ sudo tcpdump -w tcpdump_log_{interface}_{current_packetloss_rate}.pcap -nnn -i ifb0 "src port 53"
+	
+	# Run packet capture with tcpdump on port 53 on the eth0 interface, 
+	# and save the logs to tcpdump_log_{interface}_{current_packetloss_rate}.pcap:
+	$ sudo tcpdump -w tcpdump_log_{interface}_{current_packetloss_rate}.pcap -nnn -i ifb0 "src port 53"
+	
+	# Run packet capture with tcpdump on port 53 on the client interface, 
+	# and save the logs to tcpdump_log_{interface}_{current_packetloss_rate}.pcap:
+	$ sudo tcpdump -w tcpdump_log_{interface}_{current_packetloss_rate}.pcap -nnn -i ifb0 "src port 53"
 
 	# Run the python script (sendQueriesToResolvers.py) to start sending DNS queries:
 	$ python3 ./sendQueriesToResolvers.py

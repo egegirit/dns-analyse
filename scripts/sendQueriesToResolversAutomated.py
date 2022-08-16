@@ -166,7 +166,7 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
         for c in range(1, 201):
             for current_resolver_ip in resolver_ip_addresses:
                 ip_addr_with_dashes = current_resolver_ip.replace(".", "-")
-                query_prefix = ip_addr_with_dashes + delimeter + c + delimeter + "pl" + \
+                query_prefix = ip_addr_with_dashes + delimeter + str(c) + delimeter + "pl" + \
                                str(current_packetloss_rate)
                 print(f"      Current query_prefix: {query_prefix}")
                 query = query_prefix + "." + "packetloss.syssec-research.mmci.uni-saarland.de"
@@ -326,13 +326,16 @@ for current_packetloss_rate in packetloss_rates:
 
     # Sleep for 15 mins between packetloss configurations
     print(f"  Packetloss Config Finished")
-    print(f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration.")
-    print("  Remaining time:")
-    # time.sleep(sleep_time_between_packetloss_config)
-    # Output how many seconds left to sleep
-    for i in range(sleep_time_between_packetloss_config, 0, -1):
-        print(f"{i}", end="\r", flush=True)
-        time.sleep(1)
+
+    # If we are in the last iteration, no need to wait
+    if current_packetloss_rate != 95:
+        print(f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration.")
+        print("  Remaining time:")
+        # time.sleep(sleep_time_between_packetloss_config)
+        # Output how many seconds left to sleep
+        for i in range(sleep_time_between_packetloss_config, 0, -1):
+            print(f"{i}", end="\r", flush=True)
+            time.sleep(1)
 
 print("\n==== Experiment ended ====\n")
 

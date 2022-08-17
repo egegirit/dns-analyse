@@ -24,7 +24,7 @@ resolver_ip_addresses = [
     "77.88.8.8"  # Yandex 2   (secondary.dns.yandex.ru )
 ]
 
-# Queries to send to resolvers
+# Delete?
 dns_request_qnames = [
     "nameserver1.packetloss.syssec-research.mmci.uni-saarland.de",
     "nameserver2.packetloss.syssec-research.mmci.uni-saarland.de",
@@ -60,6 +60,7 @@ def create_nameserver_definitions(ip_addresses, domain_names, counter_min, count
     if len(ip_addresses) <= 0:  # empty list is False
         print("Empty IP Address")
         sys.exit()
+    # Delete?    
     if len(domain_names) <= 0:
         print("Empty domain names")
         sys.exit()
@@ -121,5 +122,5 @@ def create_a_records(nameservers, ip_addr, delimeter="\t"):
 ip_address = "139-19-117-11"
 ip_address_with_dots = "139.19.117.11"
 
-create_nameserver_definitions(resolver_ip_addresses, dns_request_qnames, 1, 200, "-")
+create_nameserver_definitions(resolver_ip_addresses, dns_request_qnames, 1, 100, "-")
 create_a_records(created_prefixes, ip_address_with_dots)

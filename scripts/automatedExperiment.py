@@ -55,10 +55,12 @@ packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 # The name of the folder that will be created to store all the tcpdump files inside of it
 directory_name_of_logs = "capture_logs"
+counter_min = 1
+counter_max = 11
 
 
 # The function that sends the domain name queries to the defined resolver IP addresses execute_count times
-def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_packetloss_rate):
+def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_packetloss_rate, counter_min, counter_max):
     if sleep_time < 0:
         print(f"    Invalid sleep time! {sleep_time}")
         return
@@ -72,9 +74,9 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
     # Delimeter that separates the labels in the domain name
     # Example: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
     delimeter = "-"  # Execution count must be calculated with consideration of dns_request_qnames count.
-    for i in range(0, execute_count):
-        print(f"    {i+1}. Iteration")
-        for c in range(1, 201):
+    for x in range(0, execute_count):
+        print(f"    {x + 1}. Iteration")
+        for c in range(counter_min, counter_max):  # Last number is excluded
             for current_resolver_ip in resolver_ip_addresses:
                 ip_addr_with_dashes = current_resolver_ip.replace(".", "-")
                 query_prefix = ip_addr_with_dashes + delimeter + str(c) + delimeter + "pl" + \
@@ -113,56 +115,52 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
     print(f"    send_queries() function finished")
 
 
-
 # The function that sends the domain name queries to the defined resolver IP addresses execute_count times
-def send_queries(sleep_time, execute_count, resolver_ip_addresses):
-    if sleep_time < 0:
-        print(f"    Invalid sleep time! {sleep_time}")
-        return
-    if execute_count < 0:
-        print(f"    Invalid execution count! {execute_count}")
-        return
-    global answers
-
-    print(f"    Executing send_queries() function")
-
-    # Execution count must be calculated with consideration of dns_request_qnames count.
-    for i in range(0, execute_count):
-        print(f"    {execute_count}. Iteration")
-        for current_query in dns_request_qnames:
-            print(f"      Current query: {current_query}")
-            for current_resolver_ip in resolver_ip_addresses:
-                resolver = dns.resolver.Resolver()
-                # Set the resolver IP Address (multiple IP addresses as list possible)
-                resolver.nameservers = [current_resolver_ip]
-                # Set the timeout of the query
-                resolver.timeout = 10
-                resolver.lifetime = 10
-                start_time = time.time()
-                print(f"      Sending DNS query to: {current_resolver_ip}")
-                # Documentation: https://dnspython.readthedocs.io/en/latest/resolver-class.html
-                try:
-                    answers = resolver.resolve(current_query, 'A')
-                    # answers = dns.resolver.query(dns_request_qname, 'A', raise_on_no_answer=False)  # Alternative
-                except:
-                    print("      DNS Exception occured!")
-                    answers = None
-                measured_time = time.time() - start_time
-                print(f"    DNS Response time: {measured_time}")
-                if answers is not None:
-                    for answer in answers:
-                        print("        ", end="")
-                        print(answer)
-                    print("      RRset:")
-                    if answers.rrset is not None:
-                        print("        ", end="")
-                        print(answers.rrset)
-                # time.sleep(1)  # Sleep after every query
-            print(f"    Finished sending current query to all resolver IP Addresses.")
-            print(f"    Sleeping for {sleep_time} seconds to continue with the next domain name.")
-            time.sleep(sleep_time)  # Sleep after one domain name is sent to all resolver IP's
-
-    print(f"    send_queries() function finished")
+# def send_queries(sleep_time, execute_count, resolver_ip_addresses):
+#    if sleep_time < 0:
+#        print(f"    Invalid sleep time! {sleep_time}")
+#        return
+#    if execute_count < 0:
+#        print(f"    Invalid execution count! {execute_count}")
+#        return
+#    global answers
+#    print(f"    Executing send_queries() function")
+#    # Execution count must be calculated with consideration of dns_request_qnames count.
+#    for i in range(0, execute_count):
+#        print(f"    {execute_count}. Iteration")
+#        for current_query in dns_request_qnames:
+#            print(f"      Current query: {current_query}")
+#            for current_resolver_ip in resolver_ip_addresses:
+#                resolver = dns.resolver.Resolver()
+#                # Set the resolver IP Address (multiple IP addresses as list possible)
+#                resolver.nameservers = [current_resolver_ip]
+#                # Set the timeout of the query
+#                resolver.timeout = 10
+#                resolver.lifetime = 10
+#                start_time = time.time()
+#                print(f"      Sending DNS query to: {current_resolver_ip}")
+#                # Documentation: https://dnspython.readthedocs.io/en/latest/resolver-class.html
+#                try:
+#                    answers = resolver.resolve(current_query, 'A')
+#                    # answers = dns.resolver.query(dns_request_qname, 'A', raise_on_no_answer=False)  # Alternative
+#                except:
+#                    print("      DNS Exception occured!")
+#                    answers = None
+#                measured_time = time.time() - start_time
+#                print(f"    DNS Response time: {measured_time}")
+#                if answers is not None:
+#                    for answer in answers:
+#                        print("        ", end="")
+#                        print(answer)
+#                    print("      RRset:")
+#                    if answers.rrset is not None:
+#                        print("        ", end="")
+#                        print(answers.rrset)
+#                # time.sleep(1)  # Sleep after every query
+#            print(f"    Finished sending current query to all resolver IP Addresses.")
+#            print(f"    Sleeping for {sleep_time} seconds to continue with the next domain name.")
+#            time.sleep(sleep_time)  # Sleep after one domain name is sent to all resolver IP's
+#    print(f"    send_queries() function finished")
 
 
 # Create directory to store the packet capture log files
@@ -213,7 +211,7 @@ for current_packetloss_rate in packetloss_rates:
     time.sleep(1)
 
     # Send queries to defined resolver IP addresses
-    send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_packetloss_rate)
+    send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_packetloss_rate, counter_min, counter_max)
 
     # End packet capture on all interfaces    
     print(f"  Disabling packetloss on {interface_2} interface with following commands:")
@@ -227,7 +225,7 @@ for current_packetloss_rate in packetloss_rates:
     # Terminate all created processes
     print(f"  Terminating processes/stopping packet capture.")
     # process_1.kill() if terminate doesn't work
-    if process_1 != None:
+    if process_1 is not None:
         process_1.terminate()
     process_2.terminate()
     process_3.terminate()

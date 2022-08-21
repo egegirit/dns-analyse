@@ -96,10 +96,10 @@ def build_and_send_query_mp(args_list):
         try:
             answers = resolver.resolve(query, "A")
         except Exception:
-            print(f"      Exception occured! {query_prefix}")
+            print(f"      Exception occured for {query_prefix}")
             answers = None
         measured_time = time.time() - start_time
-        print(f"      Response time of {query_prefix}: {measured_time}")
+        print(f"      Response time of {query_prefix}: {measured_time}")        
         # Show the DNS response
         # if answers is not None:
         #     for answer in answers:
@@ -119,8 +119,13 @@ def build_and_send_query_mp(args_list):
 create_folder_command = f"mkdir {directory_name_of_logs}"
 print(f"Creating a folder named {directory_name_of_logs} with the following command:")
 print("  " + create_folder_command)
-subprocess.run(create_folder_command, shell=True, stdout=subprocess.PIPE, check=True)
-print(f"Folder {directory_name_of_logs} created.")
+
+try:
+    subprocess.run(create_folder_command, shell=True, stdout=subprocess.PIPE, check=True)
+    print(f"Folder {directory_name_of_logs} created.")
+except Exception:
+    print(f"Folder not created.")
+
 
 print("\n==== Experiment starting ====\n")
 # Automation with different packetloss rates
@@ -184,7 +189,7 @@ for current_packetloss_rate in packetloss_rates:
     time.sleep(1)
     
     # Default value of execute_count is 1
-    for exec_count in execute_count:
+    for exec_count in range(execute_count):
         # Send queries to defined resolver IP addresses
         print(f'  @@ Multiprocessing starting @@')
         start = time.perf_counter()

@@ -69,7 +69,7 @@ def build_and_send_query_mp(args_list):
     packetloss_rate = str(args_list[1])
     counter_min = int(args_list[2])
     counter_max = int(args_list[3])
-    sleep_between_counter = int(args_list[4])
+    sleep_between_counter = int(args_list[4])  # sleep_time variable from line 12
     # Build the query with its current counter value from the given resolver ip address
     for c in range(counter_min, counter_max):
         ip_addr_with_dashes = ip_addr.replace(".", "-")

@@ -157,6 +157,10 @@ for current_packetloss_rate in packetloss_rates:
             packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True
         )
 
+    # DF (don't fragment) bit set (IP)
+    # Example filter:
+    # 'ip[6] & 64 != 64'
+
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic

@@ -38,7 +38,7 @@ dns.flags.truncated == 1 || tcp
 
 --------------------------------------
 
-dns.qry.name matches "77-88-8-8-"
+dns.qry.name matches "94-140-14-14-"
 
 # DNS Open Resolver IP Addresses:
     94-140-14-14 :  # AdGuard 1  

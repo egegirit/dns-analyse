@@ -143,8 +143,8 @@ for current_packetloss_rate in packetloss_rates:
     # Use `run()` with `check=True` when setting and deleting packetloss
     # Otherwise process might not have finished before the next code runs
     if current_packetloss_rate != 0:
-        packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 10} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-        packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 10} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+        packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+        packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
         print(
             f"  Simulating {current_packetloss_rate}% packetloss on interface {interface_2} with the following command:"
         )

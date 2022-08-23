@@ -6,14 +6,29 @@ Filtering the packets captured with Scapy significantly reduces the captured pac
 
 --------------------------------------------------------------------------
 
-Authoritative name server IP Address(Also the client): 139.19.117.11
+Authoritative name server IP Address: 139.19.117.11
+Client IP Address: 139.19.117.1
 
-To get the communication between the server and a resolver:
+To get the communication between the authoritative server and a resolver:
 (ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>)
 
 To get the client queries to a specific resolver:
-(ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>) && (dns.flags.response == 0)
+(ip.src == 139.19.117.1 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.1 || ip.dst == <resolver-ip>) && (dns.flags.response == 0)
 
 To get the answers from a specific resolver:
-(ip.src == 139.19.117.11 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.11 || ip.dst == <resolver-ip>) && (dns.flags.response == 1)
+(ip.src == 139.19.117.1 || ip.src == <resolver-ip>) && (ip.dst == 139.19.117.1 || ip.dst == <resolver-ip>) && (dns.flags.response == 1)
 
+
+Example:
+(ip.src == 139.19.117.1 || ip.src == 94.140.14.14) && (ip.dst == 139.19.117.1 || ip.dst == 94.140.14.14)
+
+
+Get all the DNS restransmissions:
+_ws.expert
+
+
+Get all packets which has a specified query name(If the IP Address is not in out list):
+dns.qry.name matches "94-140-14-14-"
+
+All TCP Packets or tc bit is set to 1:
+dns.flags.truncated == 1 || tcp

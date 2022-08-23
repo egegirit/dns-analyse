@@ -68,6 +68,12 @@ for current_packetloss_rate in packetloss_rates:
             # Get latencies of the answer packets
             # print(data[i]['_source']['layers']['dns'])
             # To get the dns_time, the packet must have an "Answers" section
+            
+            # TEST domain name filtering
+            # if "Queries" in jsonData[i]['_source']['layers']['dns']:
+            #     if "dns.qry.name" in jsonData[i]['_source']['layers']['dns'][0]:
+            #         current_query_name = jsonData[i]['_source']['layers']['dns'][0]["dns.qry.name"]            
+            
             if 'Answers' in jsonData[i]['_source']['layers']['dns']:
                 if 'dns.time' in jsonData[i]['_source']['layers']['dns']:
                     # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG

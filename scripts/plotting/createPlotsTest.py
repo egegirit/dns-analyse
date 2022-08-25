@@ -1,9 +1,9 @@
-import json
-import sys
-
 import matplotlib.pyplot as plt
-import numpy as np
+import json
+import re
 import os
+import sys
+import numpy as np
 
 # Create the lists to store latency measurements
 packetloss_0 = []
@@ -41,35 +41,99 @@ failure_rate_data = [failure_rate_0, failure_rate_10, failure_rate_20, failure_r
 
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
+packetlossz_0 = []
+packetlossz_10 = []
+packetlossz_20 = []
+packetlossz_30 = []
+packetlossz_40 = []
+packetlossz_50 = []
+packetlossz_60 = []
+packetlossz_70 = []
+packetlossz_80 = []
+packetlossz_85 = []
+packetlossz_90 = []
+packetlossz_95 = []
 
-class DNSPacket:
-    def __init__(self, dns_idx, transport_protocol, query_name, is_answer, response_latency,
-                 response_code, truncated, opcode, ip_src, ip_dst, is_answer_response, query_ip, packetloss_rate,
-                 counter, is_query):
-        self.query_name = query_name  # domain name         
-        self.ip_src = ip_src  # ip_src inside ["_source"]["layers"]["ip"]
-        self.ip_dst = ip_dst  # ip_dst inside ["_source"]["layers"]["ip"]
-        self.transport_protocol = transport_protocol  # udp or tcp inside ["_source"]["layers"]
-        self.dns_idx = dns_idx  # dns.id inside dns
-        self.is_answer = is_answer  # QR Flag in the header, 0 = Query, 1 = Response (Answer)
-        self.is_answer_response = is_answer_response  # QR Flag in the header, 0 = Query, 1 = Response (Answer)
-        self.truncated = truncated  # dns.flags.truncated inside dns.flags_tree
-        # Following attributes are valid only if the dns packet is an answer
-        self.response_latency = response_latency  # dns.time inside dns
-        self.response_code = response_code  # RCODE = 0 -> No error, 1 -> Error: dns.flags.response inside dns.flags_tree
-        self.opcode = opcode  # dns.flags.opcode inside dns.flags_tree
-        self.query_ip = query_ip
-        self.packetloss_rate = packetloss_rate
-        self.counter = counter
-        self.is_query = is_query
+packetlossDatas = [packetlossz_0, packetlossz_10, packetlossz_20, packetlossz_30, packetlossz_40, packetlossz_50,
+                   packetlossz_60, packetlossz_70, packetlossz_80, packetlossz_85, packetlossz_90, packetlossz_95]
 
+packetlossrate_0 = []
+packetlossrate_10 = []
+packetlossrate_20 = []
+packetlossrate_30 = []
+packetlossrate_40 = []
+packetlossrate_50 = []
+packetlossrate_60 = []
+packetlossrate_70 = []
+packetlossrate_80 = []
+packetlossrate_85 = []
+packetlossrate_90 = []
+packetlossrate_95 = []
 
 dns_packets = []
+packets_with_loss_rate = [
+    packetlossrate_0,
+    packetlossrate_10,
+    packetlossrate_20,
+    packetlossrate_30,
+    packetlossrate_40,
+    packetlossrate_50,
+    packetlossrate_60,
+    packetlossrate_70,
+    packetlossrate_80,
+    packetlossrate_85,
+    packetlossrate_90,
+    packetlossrate_95]
+
+operators = {
+    "AdGuard1": "94-140-14-14",
+    "AdGuard2": "94-140-14-15",
+    "CleanBrowsing1": "185-228-168-168",
+    "CleanBrowsing2": "185-228-168-9",
+    "Cloudflare1": "1-1-1-1",
+    "Cloudflare2": "1-0-0-1",
+    "Dyn1": "216-146-35-35",
+    "Dyn2": "216-146-36-36",
+    "Google1": "8-8-8-8",
+    "Google2:": "8-8-4-4",
+    "Neustar1": "64-6-64-6",
+    "Neustar2": "156-154-70-1",
+    "OpenDNS1": "208-67-222-222",
+    "OpenDNS2": "208-67-222-2",
+    "Quad91": "9-9-9-9",
+    "Quad92": "9-9-9-11",
+    "Yandex1": "77-88-8-1",
+    "Yandex2": "77-88-8-8"
+}
+
+
+# operators[""Google1"] == "8-8-8-8"
+# operator_names = list(operators.keys())  # "AdGuard1", "AdGuard2" ...
+# operator_ip_addresses = list(operators.values())
+
+
+def get_operator_name_from_ip(ip_addr_with_dashes):
+    for operator, ip_addr in operators.items():
+        if ip_addr == ip_addr_with_dashes:
+            return operator
+    else:
+        return "Not found!"
+
+
+print(get_operator_name_from_ip("77-88-8-8"))
+
+# print(operator_names)
+# print(operator_ip_addresses)
+
+not_dns = 0
+dns_packets_count = 0
+
+plot_file_prefix = "auth2_all"
 
 index = 0
-file_prefix = "client"
-current_packetloss_rate = "0"
-# Read the JSON files and for each captured packet, create a DNSPacket object,
+file_prefix = "auth2"
+
+# Read the JSON file and for each captured packet, create a DNSPacket object,
 # set its variables according to the information read in the packet
 for current_packetloss_rate in packetloss_rates:
     filename = file_prefix + "_" + str(current_packetloss_rate) + ".json"
@@ -87,29 +151,26 @@ for current_packetloss_rate in packetloss_rates:
     print(f"  Number of packets in JSON file: {packetCount}")
 
     response_count = 0
-    test_count = 0
     # Examine all the captured packets in the JSON file
-    dns_id = ""  # DEBUG
-    duplicate = 0
+    # dns_id = ""  # DEBUG
+    # duplicate = 0
     # duplicate_bool = False
 
     test_failure_rate_count = 0
 
+    print(f"Current packetloss rate: {current_packetloss_rate}")
+
     # Examine all the packets in the JSON file
     for i in range(0, packetCount):
-        # Create a dns packet object for the current packet
-        currentPacket = DNSPacket("-", "-", "-", "0", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-")
-
         # Check if the packet is a DNS packet
         if 'dns' in jsonData[i]['_source']['layers']:
+            dns_packets_count = dns_packets_count + 1
             # Check if the DNS packet is using UDP as transport protocol
             if 'udp' in jsonData[i]['_source']['layers']:
-                currentPacket.transport_protocol = "UDP"
-
+                pass
             # Check if the DNS packet is using TCP as transport protocol
             if 'tcp' in jsonData[i]['_source']['layers']:
-                currentPacket.transport_protocol = "TCP"
-
+                pass
             # Get the query name and break it down to its components like ip address, counter, packetloss rate.
             # Query structure: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
             # Query example: 94-140-14-14-1-pl95.packetloss.syssec-research.mmci.uni-saarland.de
@@ -120,16 +181,25 @@ for current_packetloss_rate in packetloss_rates:
                 splitted2 = str(splitted_json1[1])
                 # print(f"splitted_json[1]: {splitted2}")
                 query_name = splitted2.split("'")[1]
-                currentPacket.query_name = query_name
+                # print(f"Current query name: {query_name}")
+
+                # Check if the current IP is structured right
+                query_match = re.search(".*-.*-.*-.*-.*-pl.*.packetloss.syssec-research.mmci.uni-saarland.de",
+                                        query_name)
+                if query_match is None:
+                    continue
 
                 splitted_domain = query_name.split("-")
                 ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
                                       splitted_domain[2] + "-" + splitted_domain[3]
 
-                currentPacket.query_ip = ip_addr_with_dashes
-                currentPacket.counter = splitted_domain[4]
-                currentPacket.packetloss_rate = splitted_domain[5].split(".")[0]  # [2:]
-                test = splitted_domain[5].split(".")[0]
+                op_name = get_operator_name_from_ip(ip_addr_with_dashes)
+
+                # query_ip = ip_addr_with_dashes
+                # counter = splitted_domain[4]
+                # packetloss_rate = splitted_domain[5].split(".")[0]  # [2:]
+                # test = splitted_domain[5].split(".")[0]
+
                 # print(f"query_name: {query_name}")
                 # print(f"ip_addr_with_dashes: {ip_addr_with_dashes}")
                 # print(f"counter: {splitted_domain[4]}")
@@ -146,17 +216,18 @@ for current_packetloss_rate in packetloss_rates:
             # To get the dns_time, the packet must have an "Answers" section
             if 'Answers' in jsonData[i]['_source']['layers']['dns']:
                 # Mark packet as Answer # TODO: Unnecessary bcs of dns.flags.response(is_answer_response)?
-                currentPacket.is_answer = "1"
+                # is_answer = "1"
                 # Note: Not all answers has dns.time?
                 if 'dns.time' in jsonData[i]['_source']['layers']['dns']:
                     # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
                     # Assign the dns response latency
-                    currentPacket.response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
+                    # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
 
                     dns_time = jsonData[i]['_source']['layers']['dns']['dns.time']
                     packetlossData[index].append(float(dns_time))
             else:
-                currentPacket.is_answer = "0"
+                # is_answer = "0"
+                pass
             # Get failure rate (RCODE only present when there is an Answers section in the JSON)
             # count of dns.flags.rcode != 0
             if 'dns.flags.response' in jsonData[i]['_source']['layers']['dns']['dns.flags_tree']:  # DEBUG
@@ -165,10 +236,11 @@ for current_packetloss_rate in packetloss_rates:
                 # Query = 0, Response (Answer) = 1
                 # RCode only exists if dns packet has is an answer
                 if jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "0":
-                    currentPacket.is_query = "1"
+                    # is_query = "1"
+                    pass
                 if jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
                     # Mark packet as answer
-                    currentPacket.is_answer_response = "1"
+                    # is_answer_response = "1"
                     # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
                     # if dns_id == jsonData[i]['_source']['layers']['dns']['dns.id']:  # DEBUG
                     #    duplicate = duplicate + 1  # DEBUG
@@ -179,7 +251,7 @@ for current_packetloss_rate in packetloss_rates:
                     rcode = jsonData[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
                     failure_rate_data[index].append(int(rcode))
                     # Assign packets RCODE
-                    currentPacket.response_code = rcode
+                    # response_code = rcode
                     # print(f"  rcode: {rcode}")  # DEBUG
                     # print(f"  currentPacket.response_code: {currentPacket.response_code}")  # DEBUG
                     if rcode != "0":
@@ -188,120 +260,34 @@ for current_packetloss_rate in packetloss_rates:
                     # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
             # Get the TC Bit
             if 'dns.flags.truncated' in jsonData[i]['_source']['layers']['dns']['dns.flags_tree']:
-                currentPacket.truncated = jsonData[i]['_source']['layers']['dns']['dns.flags_tree'][
-                    'dns.flags.truncated']
-        # Get the DNS ID of the current DNS packet to check if the next packet has the same ID to detect duplicates
-        dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # Detect duplicates
-        # Set the dns id to the current packet
-        currentPacket.dns_idx = jsonData[i]['_source']['layers']['dns']['dns.id']
+                # truncated = jsonData[i]['_source']['layers']['dns']['dns.flags_tree'][
+                #     'dns.flags.truncated']
+                pass
+            # Get the DNS ID of the current DNS packet to check if the next packet has the same ID to detect duplicates
+            # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # Detect duplicates
+            # Set the dns id to the current packet
+            # dns_idx = jsonData[i]['_source']['layers']['dns']['dns.id']
 
-        dns_packets.append(currentPacket)
-        packetlossData[index].append(currentPacket)
+            # Add the current dns packet to the list
+            # append(currentPacket)
+            # dns_packets_count_test = dns_packets_count_test + 1
+
+            # packetlossData[index].append(currentPacket)
+
+        else:
+            not_dns = not_dns + 1
 
     index = index + 1
 
     # This was outside the for loop
-    print(f"Packetloss rate: {current_packetloss_rate}")
-    print(f"  DNS Packet count: {len(dns_packets)}")
-    tcp_count = 0
-    udp_count = 0
-    query_count = 0
-    answer_count = 0
-    answer_count2 = 0
-    truncated_count = 0
-    failure_count = 0
-    # print(f"Listing packet attributes:")
-    for packet in dns_packets:
-        # print(f"  packet: {packet}")
-        # print(f"  packet.is_answer_response: {packet.is_answer_response}")
-        # print(f"  packet.transport_protocol: {packet.transport_protocol}")
-        # print(f"  packet.response_code: {packet.response_code}")
-        # print(f"  packet.is_answer: {packet.is_answer}")
-        # print(f"  packet.query_name: {packet.query_name}")
-        if packet.is_query == "1":
-            query_count = query_count + 1
-        if packet.is_answer_response == "1":
-            answer_count = answer_count + 1
-        # else:
-        # print("Undefined Response")
-        if packet.transport_protocol != "-":
-            if packet.transport_protocol == "UDP":
-                udp_count = udp_count + 1
-            if packet.transport_protocol == "TCP":
-                tcp_count = tcp_count + 1
-        # else:
-        # print("Undefined Protocol")
-        # 0 or - = No failure(could be a query and not an answer), Other entries = failure
-        if packet.response_code != "0" and packet.response_code != "-":
-            failure_count = failure_count + 1
-            # print("  Failure count incremented")
-        if packet.truncated != "0" and packet.truncated != "-":
-            truncated_count = truncated_count + 1
-        if packet.is_answer == "1":
-            answer_count2 = answer_count2 + 1
-    print(f"    UDP count: {udp_count}")
-    print(f"    TCP count: {tcp_count}")
-    print(f"    Query count: {query_count}")
-    print(f"    Answer count: {answer_count}")
-    print(f"    Answer count 2: {answer_count}")
-    print(f"    Truncated count: {truncated_count}")
-    print(f"    Failure count: {failure_count}")
-    # dns_packets.clear()
+    # print(f"Packetloss rate: {current_packetloss_rate}")
+    print(f"  DNS Packet count 1: {dns_packets_count}")
+    print(f"  Non-DNS Packet count: {not_dns}")
 
-#for p in packetlossData:
-#    print(p[0])
-
-packetlossData.clear()
-
-packetlossz_0 = []
-packetlossz_10 = []
-packetlossz_20 = []
-packetlossz_30 = []
-packetlossz_40 = []
-packetlossz_50 = []
-packetlossz_60 = []
-packetlossz_70 = []
-packetlossz_80 = []
-packetlossz_85 = []
-packetlossz_90 = []
-packetlossz_95 = []
-
-
-packetlossDatas = [packetlossz_0, packetlossz_10, packetlossz_20, packetlossz_30, packetlossz_40, packetlossz_50,
-                  packetlossz_60, packetlossz_70, packetlossz_80, packetlossz_85, packetlossz_90, packetlossz_95]
-
-index = 0
-for packet in dns_packets:
-    if packet.response_latency != "-":
-        print(f"packet.response_latency: {packet.response_latency}")
-        if packet.packetloss_rate == "pl0":
-            packetlossDatas[0].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl10":
-            packetlossDatas[1].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl20":
-            packetlossDatas[2].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl30":
-            packetlossDatas[3].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl40":
-            packetlossDatas[4].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl50":
-            packetlossDatas[5].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl60":
-            packetlossDatas[6].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl70":
-            packetlossDatas[7].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl80":
-            packetlossDatas[8].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl85":
-            packetlossDatas[9].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl90":
-            packetlossDatas[10].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl95":
-            packetlossDatas[11].append(float(packet.response_latency))
-    index = index + 1
-
-
-# sys.exit()
+i = 0
+for t in packetlossData:
+    print(f"{i}: {t}")
+    i += 1
 
 # Create box plot for latency-packetloss
 fig2 = plt.figure(figsize=(10, 7))
@@ -317,10 +303,10 @@ ax.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '85', '
 # TODO: Fix UserWarning: FixedFormatter should only be used together with FixedLocator
 
 # Creating plot
-bp = ax.boxplot(packetlossDatas)
+bp = ax.boxplot(packetlossData)
 
 # save plot as png
-plt.savefig('test_boxPlotLatency.png', bbox_inches='tight')
+plt.savefig((plot_file_prefix + '_boxPlotLatency.png'), bbox_inches='tight')
 # show plot
 plt.show()
 
@@ -340,59 +326,56 @@ ax.set_title('Packetloss-Latency')
 
 # Create and save Violinplot
 # bp = ax.violinplot(packetlossData)
-# bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
-#                  showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
+                   showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
 # Mean is blue
-# bp['cmeans'].set_color('b')
+bp['cmeans'].set_color('b')
 # Median is red
-# bp['cmedians'].set_color('r')
+bp['cmedians'].set_color('r')
 
 # save plot as png
-# plt.savefig('test_violinPlotLatency.png', bbox_inches='tight')
+plt.savefig((plot_file_prefix + '_violinPlotLatency.png'), bbox_inches='tight')
 # show plot
-# plt.show()
+plt.show()
 
 # Create bar plot for failure rate
 # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-# failureRateData = {'00': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
-    #                    '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
+failureRateData = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
+                   '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
 
-# failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 # The bar plot accepts a dictionary like above.
 # This for loop extracts the saved RCODE counts and converts them to a dictionary
-# index = 0
-# for current_packetloss_rate in packetloss_rates:
-    #    print(f"Data: {failure_rate_data[index]}")
-    #    fail_count = 0
-    #    for x in range(len(failure_rate_data[index])):
-    #        if failure_rate_data[index][x] != 0:
-    #            fail_count += 1
-    #    if current_packetloss_rate == 0:
-    #        failureRateData['00'] = fail_count
-    #    else:
-    #        failureRateData[str(current_packetloss_rate)] = fail_count
-    #    index = index + 1
+index = 0
+for current_packetloss_rate in packetloss_rates:
+    # print(f"index: {index}")
+    # print(f"Data: {failure_rate_data[index]}")
+    fail_count = 0
+    for x in range(len(failure_rate_data[index])):
+        if failure_rate_data[index][x] != 0:
+            fail_count += 1
+    # divide by len(failure_rate_data[index]) and multiply by 100 to get the percentage of the failure rate
+    failureRateData[str(current_packetloss_rate)] = (fail_count / len(failure_rate_data[index])) * 100
+    index = index + 1
 
+keys = list(failureRateData.keys())
+values = list(failureRateData.values())
 
-# rates = list(failureRateData.keys())
-# values = list(failureRateData.values())
+print(f"keys: {keys}")
+print(f"values: {values}")
 
-# Debug
-# print(f"Packetloss rates: {rates}")
-# print(f"Failure rate datas: {values}")
-
-# fig = plt.figure(figsize=(10, 5))
+fig = plt.figure(figsize=(10, 5))
 
 # creating the bar plot
-# plt.bar(failure_rates, values, color='maroon', width=4)
+plt.bar(failure_rates, values, color='maroon', width=4)
 
 # set labels
-# plt.xlabel("Packetloss Rate")
-# plt.ylabel("DNS Response Failure Rate")
-# plt.title("Response Failure Rate")
+plt.xlabel("Packetloss Rate")
+plt.ylabel("DNS Response Failure Rate")
+plt.title("Response Failure Rate")
 
 # save plot as png
-# plt.savefig('test_barPlotResponseFailureRate.png', bbox_inches='tight')
+plt.savefig((plot_file_prefix + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
 # shot plot
-# plt.show()
+plt.show()

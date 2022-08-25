@@ -24,8 +24,23 @@ Example:
 
 
 Get all the DNS restransmissions:
-_ws.expert
+_ws.expert   
+  OR   
+dns.retransmit_request
 
+"dns.retransmit_request_in": "1943",
+
+"dns": {
+          "dns.id": "0xb6aa",
+          "dns.id_tree": {
+            "_ws.expert": {
+              "dns.retransmit_request": "",
+              "_ws.expert.message": "DNS query retransmission. Original request in frame 1943",
+              "_ws.expert.severity": "6291456",
+              "_ws.expert.group": "150994944"
+            }
+          },
+          "dns.flags": "0x0000",
 
 Get all packets which has a specified query name(If the IP Address is not in out list):
 Filter by Ip Address:

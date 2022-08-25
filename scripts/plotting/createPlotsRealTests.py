@@ -323,6 +323,20 @@ def show_restransmission_data(retransmission_list):
         index += 1
 
 
+def show_failure_count():
+    pl_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+    index = 0
+    fail_count = 0
+    for failure_data in failure_rate_data:
+        for rcode in failure_data:
+            # print(f"RCODE: {rcode}")
+            if rcode != 0:
+                fail_count += 1
+        print(f"Packetloss rate: {pl_rates[index]}")
+        print(f"Failed packet count: {fail_count}")
+        fail_count = 0
+        index += 1
+
 def create_box_plot(file_name_prefix):
     # Create box plot for latency-packetloss
     fig2 = plt.figure(figsize=(10, 7))
@@ -435,15 +449,21 @@ for file_name in file_names:
 
     # Show answer-query count
     show_answer_query_count(answer_count_data)
-    # Clear list
-    clear_list(answer_count_data)
 
     # Show retransmission counts
     show_restransmission_data(retransmission_data)
-    # Reset the retransmission_data
-    for i in retransmission_data:
-        i = 0
 
     # Show latencies
     show_latencies(packetlossData)
+
+    show_failure_count()
+
+    # Clear lists
+    clear_list(answer_count_data)
     clear_list(packetlossData)
+    # Reset the retransmission_data
+    for i in retransmission_data:
+        i = 0
+    # Clear failure rate data:
+    for lst in failure_rate_data:
+        lst.clear()

@@ -53,7 +53,15 @@ dns.flags.truncated == 1 || tcp
 
 --------------------------------------
 
-dns.qry.name matches "94-140-14-14-"
+# Get all DNS Answer packets from Cloudflare with packetlossrate 95:
+dns.qry.name matches "1-0-0-1" && dns.qry.name matches "pl95" && dns.flags.response == 1
+
+# Get all DNS Answer packets from Cloudflare where the answer was no error:
+dns.qry.name matches "8-8-8-8" && dns.flags.response == 1&& dns.flags.rcode == 0
+
+dns.qry.name matches "8-8-4-4"
+
+WARNING: dns.qry.name matches "8-8-8-8" also shows the packets for Yandex2 with 77-88-8-8 IP Address and counter 8.
 
 # DNS Open Resolver IP Addresses:
     94-140-14-14 :  # AdGuard 1  

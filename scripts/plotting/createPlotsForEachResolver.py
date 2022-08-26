@@ -517,7 +517,7 @@ def clear_failure_rate_data():
         lst.clear()
 
 
-def create_box_plot(operator_specific_packet_list):
+def create_box_plot(file_name, operator_specific_packet_list):
     operator_name = operator_specific_packet_list[0].operator
     print(f"Creating box plot for {operator_name}")
 
@@ -566,12 +566,12 @@ def create_box_plot(operator_specific_packet_list):
     ax.boxplot(packetlossData)
 
     # save plot as png
-    plt.savefig((operator_name + '_boxPlotLatency.png'), bbox_inches='tight')
+    plt.savefig((file_name + "_" + operator_name + '_boxPlotLatency.png'), bbox_inches='tight')
     # show plot
     # plt.show()
 
 
-def create_violin_plot(operator_specific_packet_list):
+def create_violin_plot(file_name, operator_specific_packet_list):
     operator_name = operator_specific_packet_list[0].operator
     print(f"Creating violin plot for {operator_name}")
 
@@ -609,12 +609,12 @@ def create_violin_plot(operator_specific_packet_list):
     bp['cmedians'].set_color('r')
 
     # save plot as png
-    plt.savefig((operator_name + '_violinPlotLatency.png'), bbox_inches='tight')
+    plt.savefig((file_name + "_" + operator_name + '_violinPlotLatency.png'), bbox_inches='tight')
     # show plot
     # plt.show()
 
 
-def create_bar_plot(operator_specific_packet_list):
+def create_bar_plot(file_name, operator_specific_packet_list):
     operator_name = operator_specific_packet_list[0].operator
     print(f"Creating bar plot for {operator_name}")
 
@@ -698,12 +698,12 @@ def create_bar_plot(operator_specific_packet_list):
     plt.title(f"Response Failure Rate for {operator_name}")
 
     # save plot as png
-    plt.savefig((operator_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
+    plt.savefig((file_name + "_" + operator_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
     # shot plot
     # plt.show()
 
 
-file_names = ["client"]  # , "auth1", "auth2"]
+file_names = ["client", "auth1", "auth2"]
 
 for file_name in file_names:
     # Read the client logs
@@ -717,9 +717,9 @@ for file_name in file_names:
     #  create_violin_plot(list_of_operators[9])
     for operator in list_of_operators:
         # print(f"len(operator): {len(operator)}")
-        create_box_plot(operator)
-        create_bar_plot(operator)
-        create_violin_plot(operator)
+        create_box_plot(file_name, operator)
+        create_bar_plot(file_name, operator)
+        create_violin_plot(file_name, operator)
 
         # Clear lists
         clear_answers()
@@ -727,35 +727,14 @@ for file_name in file_names:
         clear_failure_rate_data()
         clear_packetloss_data()
 
-        # Test
-        # print(f"Operator: {list_of_operators[3][1].operator}")
-        # for packet in list_of_operators[3]:
-        #     print(f"packet.query_name: {packet.query_name}")
-        #     if packet.query_name == "185-228-168-168-10-pl95.packetloss.syssec-research.mmci.uni-saarland.de":
-        #         print("@@@@@@@@@ Match")
 
-    # Create plots
-    # create_box_plot(file_name)
-    # create_violin_plot(file_name)
-    # create_bar_plot(file_name)
+        # Show answer-query count
+        #  show_answer_query_count(answer_count_data)
 
-    # Show answer-query count
-#  show_answer_query_count(answer_count_data)
+        # Show retransmission counts
+        # show_restransmission_data(retransmission_data)
 
-# Show retransmission counts
-# show_restransmission_data(retransmission_data)
+        # Show latencies
+        # show_latencies(packetlossData)
 
-# Show latencies
-# show_latencies(packetlossData)
-
-# show_failure_count()
-
-# Clear lists
-# clear_list(answer_count_data)
-# clear_list(packetlossData)
-# Reset the retransmission_data
-# for i in retransmission_data:
-#     i = 0
-# Clear failure rate data:
-# for lst in failure_rate_data:
-#     lst.clear()
+        # show_failure_count()

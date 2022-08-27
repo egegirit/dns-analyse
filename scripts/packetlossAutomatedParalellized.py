@@ -195,6 +195,62 @@ def simulate_packetloss(packetloss_rate, interface_name):
         return False
 
 
+# Start 3 packet captures with tcpdump and return the processes
+# In case of an exception, the list will be empty
+def start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_1, interface_2, interface_3):
+    # DF (don't fragment) bit set (IP)
+    # Example filter:
+    # 'ip[6] & 64 != 64'
+
+    # Packet capture on authoritative server interface without the packetloss filter
+    # source port should not be 53 but random.
+    # The destination port is 53, but using that would only capture incoming, not outgoing traffic
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    print(
+        f"  (1) Running packet capture on {interface_1} interface with the following command:"
+    )
+    print("    " + packet_capture_command_1)
+    
+    # Packet capture on authoritative server interface with the packetloss filter applied
+    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth2_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    print(
+        f"  (2) Running packet capture on {interface_2} interface with the following command:"
+    )
+    print("    " + packet_capture_command_2)
+    # Packet capture on client interface
+    packet_capture_command_3 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    print(
+        f"  (3) Running packet capture on {interface_3} interface with the following command:"
+    )
+    print("    " + packet_capture_command_3)
+    
+    # Store the process objects here and return it as output
+    result_processes = []
+    
+    try:
+        process_2 = subprocess.Popen(
+            packet_capture_command_1, shell=True, stdout=subprocess.PIPE
+        )
+        process_3 = subprocess.Popen(
+            packet_capture_command_2, shell=True, stdout=subprocess.PIPE
+        )        
+        process_4 = subprocess.Popen(
+            packet_capture_command_3, shell=True, stdout=subprocess.PIPE
+        )    
+        result_processes.append(process_2)
+        result_processes.append(process_3)
+        result_processes.append(process_4)
+    except Exception:
+        print("    Packet capture failed!")
+        return result_processes  # Empty list
+
+    # If packet capture commands are delayed for a reason, the send_query function executes before the packet capture.
+    # Added 1-second sleep to avoid this.
+    print(f"  Sleeping 1 second to let the packet captures start")
+    time.sleep(1)
+    return result_processes
+
+
 # Create directory to store the packet capture log files
 create_folder_command = f"mkdir {directory_name_of_logs}"
 print(f"Creating a folder named {directory_name_of_logs} with the following command:")
@@ -218,47 +274,8 @@ for current_packetloss_rate in packetloss_rates:
             # if simulate_packetloss() returns false, there was an exception while simulating packetloss
             # continue with the next packetloss configuration
             continue
-
-    # DF (don't fragment) bit set (IP)
-    # Example filter:
-    # 'ip[6] & 64 != 64'
-
-    # Packet capture on authoritative server interface without the packetloss filter
-    # source port should not be 53 but random.
-    # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
-    print(
-        f"  (1) Running packet capture on {interface_1} interface with the following command:"
-    )
-    print("    " + packet_capture_command_1)
-    process_2 = subprocess.Popen(
-        packet_capture_command_1, shell=True, stdout=subprocess.PIPE
-    )
-
-    # Packet capture on authoritative server interface with the packetloss filter applied
-    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth2_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
-    print(
-        f"  (2) Running packet capture on {interface_2} interface with the following command:"
-    )
-    print("    " + packet_capture_command_2)
-    process_3 = subprocess.Popen(
-        packet_capture_command_2, shell=True, stdout=subprocess.PIPE
-    )
-
-    # Packet capture on client interface
-    packet_capture_command_3 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
-    print(
-        f"  (3) Running packet capture on {interface_3} interface with the following command:"
-    )
-    print("    " + packet_capture_command_3)
-    process_4 = subprocess.Popen(
-        packet_capture_command_3, shell=True, stdout=subprocess.PIPE
-    )
-
-    # If packet capture commands are delayed for a reason, the send_query function executes before the packet capture.
-    # Added 1-second sleep to avoid this.
-    print(f"  Sleeping 1 second to let the packet captures start")
-    time.sleep(1)
+            
+    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_1, interface_2, interface_3)        
 
     # Default value of execute_count is 1
     for exec_count in range(execute_count):
@@ -298,9 +315,9 @@ for current_packetloss_rate in packetloss_rates:
     # Terminate packet captures / all created processes
     print(f"  Terminating processes/stopping packet capture.")
     # Using .terminate() did not stop the packet captures
-    process_2.kill()
-    process_3.kill()
-    process_4.kill()
+    if len(capture_processes) > 0:
+        for process in capture_processes:
+            process.kill()
 
     # Sleep for 10 minutes between packetloss configurations
     print(f"  {current_packetloss_rate}% Packetloss Config Finished")

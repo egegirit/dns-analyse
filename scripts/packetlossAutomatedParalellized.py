@@ -288,14 +288,14 @@ for current_packetloss_rate in packetloss_rates:
     # Disable packetloss on the authoritative server
     if current_packetloss_rate != 0:
         # True -> No error. False -> Exception occurred while disabling packetloss.
-        if not disable_packetloss_simulation(current_packetloss_rate, interface_2):
-            # Exit the program because continuing would stack the packetloss rules.
-            # exit()
-            # Continue with next packetloss simulation because the next packetloss rule will overwrite the old one
-            # Not disabling the old packetloss rule won't be a problem.
-            continue
+        disable_packetloss_simulation(current_packetloss_rate, interface_2)
+        # Exit the program because continuing would stack the packetloss rules.
+        # exit()
+        # Continue with next packetloss simulation because the next packetloss rule will overwrite the old one
+        # Not disabling the old packetloss rule won't be a problem.
+        # continue
 
-            # Terminate packet captures / all created processes
+    # Terminate packet captures / all created processes
     print(f"  Terminating processes/stopping packet capture.")
     # Using .terminate() did not stop the packet captures
     process_2.kill()

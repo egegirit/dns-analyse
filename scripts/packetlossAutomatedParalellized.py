@@ -16,12 +16,12 @@ sleep_time_between_packetloss_config = 600
 # Determines how many times the program sends the query
 execute_count = 1
 
-# The name of the folder that will be created to store all the tcpdump files inside of it
+# The name of the folder that will be created to store all the tcpdump files inside it
 directory_name_of_logs = "capture_logs"
 
-# Minimun and maximum counter values for the domains
-counter_min = 1
-counter_max = 11
+# Minimum and maximum counter values for the domains
+counter_min = 1   # Inclusive
+counter_max = 50  # Exclusive 
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
@@ -47,10 +47,10 @@ resolver_ip_addresses = [
 
 # Set the interface names for packet capture with tcpdump
 interface_1 = (
-    "bond0"  # The interface of auhtoritative server without the packetloss filter
+    "bond0"  # The interface of authoritative server without the packetloss filter
 )
 interface_2 = (
-    "bond0"  # The interface of auhtoritative server with the packetloss filter applied
+    "bond0"  # The interface of authoritative server with the packetloss filter applied
 )
 interface_3 = "bond0"  # The interface of client which sends the queries
 
@@ -63,7 +63,7 @@ packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # Example query: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
 # Each call for this function runs at least (counter_max - counter_min) + (resolution time) seconds.
 # Input is a list of these values: (ip_addr, packetloss_rate, counter_min, counter_max, sleep_time):
-def build_and_send_query_mp(args_list):  
+def build_and_send_query_mp(args_list):
     # Read the parameters from the args_list
     ip_addr = args_list[0]
     packetloss_rate = str(args_list[1])
@@ -100,11 +100,11 @@ def build_and_send_query_mp(args_list):
         try:
             answers = resolver.resolve(query, "A")
         except Exception:
-            print(f"      Exception occured for {query_prefix}")
+            print(f"      Exception or timeout occured for {query_prefix} ")
             answers = None
         measured_time = time.time() - start_time
-        print(f"      Response time of {query_prefix}: {measured_time}")   
-        
+        print(f"      Response time of {query_prefix}: {measured_time}")
+
         # Show the DNS response
         # if answers is not None:
         #     for answer in answers:
@@ -114,11 +114,85 @@ def build_and_send_query_mp(args_list):
         #     if answers.rrset is not None:
         #         print("        ", end="")
         #         print(answers.rrset)
-        
+
         # Sleep after sending a query to the same resolver to not spam the resolver
         time.sleep(sleep_between_counter)
-    print(f"    Finished sending all {packetloss_rate}% packetloss queries for: {ip_addr}")    
-    return f"  Done sending for {query_prefix} and packetloss rate {packetloss_rate}%"      
+    print(f"    Finished sending all {packetloss_rate}% packetloss queries for: {ip_addr}")
+    return f"  Done sending for {query_prefix} and packetloss rate {packetloss_rate}%"
+
+
+# Disables packetloss simulation
+# Returns true if no exception occurred. False, if subprocess.run() created an exception.
+def disable_packetloss_simulation(packetloss_rate, interface_name):
+    print(f"  Disabling packetloss on {interface_name} interface with following commands:")
+    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    print("    " + disable_packetloss_1)
+    print("    " + disable_packetloss_2)
+    try:
+        # subprocess.run(
+        #     disable_packetloss_1, shell=True, stdout=subprocess.PIPE, check=True
+        # )
+        # subprocess.run(
+        #     disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
+        # )
+        return True
+    except Exception:
+        print(
+            f"  Exception occured while removing {current_packetloss_rate}% packetloss rule on interface {interface_name} !!"
+        )
+        return False
+
+
+# Sleep for a duration and show the remaining time on the console
+def sleep_for_seconds(sleep_time_between_packetloss_config):
+    print(
+        f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
+    )
+    print("  Remaining time:")
+    # Output how many seconds left to sleep
+    for i in range(sleep_time_between_packetloss_config, 0, -1):
+        print(f"{i}")
+        time.sleep(1)
+        # Delete the last output line of the console
+        # to show the remaining time without creating new lines
+        print("\033[A                             \033[A")
+
+
+# Compress all the packet capture logs into a logs.zip file
+def compress_log_files(directory_name_of_logs):
+    compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
+    print("Compressing all log files into a logs.zip file with the following command:")
+    print("  " + compress_files_command)
+    try:
+        subprocess.run(compress_files_command, shell=True, stdout=subprocess.PIPE, check=True)
+    except Exception:
+        print("  Exception occurred while compressing the packet capture files !!")
+
+# Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
+# Returns True when no error.
+# Use `run()` with `check=True` when setting and deleting packetloss
+# Otherwise process might not have finished before the next code runs
+def simulate_packetloss(packetloss_rate, interface_name):
+    packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    print(
+        f"  Simulating {packetloss_rate}% packetloss on interface {interface_name} with the following command:"
+    )
+    print("    " + packetloss_filter_command_1)
+    print("    " + packetloss_filter_command_2)
+    try:
+        # subprocess.run(packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True)
+        # subprocess.run(packetloss_filter_command_2, shell=True, stdout=subprocess.PIPE, check=True)
+        return True
+    except Exception:
+        print(
+            f"  Exception occurred while simulating {packetloss_rate}% packetloss on interface {interface_name} !!"
+        )
+        print(f"  Removing packetloss rule by calling disable_packetloss_simulation({packetloss_rate}, {interface_name})")
+        disable_packetloss_simulation(packetloss_rate, interface_name)
+        print(f"  Skipping {packetloss_rate}% packetloss configuration")
+        return False
 
 
 # Create directory to store the packet capture log files
@@ -132,30 +206,18 @@ try:
 except Exception:
     print(f"Folder not created.")
 
-
 print("\n==== Experiment starting ====\n")
 # Parallelized and automated query sending with different packetloss rates
 # For each packetloss rate, create subprocesses for each IP Address, and send queries to all of them at the same time.
 for current_packetloss_rate in packetloss_rates:
     print(f"### Current packetloss rate: {current_packetloss_rate} ###")
 
-    # If current packetloss rate is 0, dont execute packetloss filter
-    # Use `run()` with `check=True` when setting and deleting packetloss
-    # Otherwise process might not have finished before the next code runs
+    # If current packetloss rate is 0, no need to execute packetloss filter
     if current_packetloss_rate != 0:
-        packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-        packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-        print(
-            f"  Simulating {current_packetloss_rate}% packetloss on interface {interface_2} with the following command:"
-        )
-        print("    " + packetloss_filter_command_1)
-        print("    " + packetloss_filter_command_2)
-        subprocess.run(
-            packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True
-        )
-        subprocess.run(
-            packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True
-        )
+        if not (simulate_packetloss(current_packetloss_rate, interface_2)):
+            # if simulate_packetloss() returns false, there was an exception while simulating packetloss
+            # continue with the next packetloss configuration
+            continue
 
     # DF (don't fragment) bit set (IP)
     # Example filter:
@@ -193,11 +255,11 @@ for current_packetloss_rate in packetloss_rates:
         packet_capture_command_3, shell=True, stdout=subprocess.PIPE
     )
 
-    # If packet capture commands are delayed for a reason, the send query function executes before the packet capture.
-    # Added 1 second sleep to avoid this.
+    # If packet capture commands are delayed for a reason, the send_query function executes before the packet capture.
+    # Added 1-second sleep to avoid this.
     print(f"  Sleeping 1 second to let the packet captures start")
     time.sleep(1)
-    
+
     # Default value of execute_count is 1
     for exec_count in range(execute_count):
         # Send queries to defined resolver IP addresses
@@ -214,57 +276,40 @@ for current_packetloss_rate in packetloss_rates:
                                                                  counter_min,
                                                                  counter_max,
                                                                  sleep_time])
-                        for current_resolver_ip in resolver_ip_addresses]
+                       for current_resolver_ip in resolver_ip_addresses]
 
         finish = time.perf_counter()
         # Show the finished processes' outputs
         for f in concurrent.futures.as_completed(results):
             print(f.result())
-        print(f'  @@ Finished Multiprocessing with packetloss rate {current_packetloss_rate}% in {round(finish-start, 2)} seconds @@')
+        print(
+            f'  @@ Finished Multiprocessing with packetloss rate {current_packetloss_rate}% in {round(finish - start, 2)} seconds @@')
 
     # Disable packetloss on the authoritative server
     if current_packetloss_rate != 0:
-        print(
-            f"  Disabling packetloss on {interface_2} interface with following commands:"
-        )
-        # disable_packetloss_1 = f"sudo tc qdisc del dev {interface_2} root"
-        # disable_packetloss_2 = f"sudo tc -s qdisc ls dev {interface_2}"
-        disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 10} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-        disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {current_packetloss_rate / 10} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-        print("    " + disable_packetloss_1)
-        print("    " + disable_packetloss_2)
-        subprocess.run(
-            disable_packetloss_1, shell=True, stdout=subprocess.PIPE, check=True
-        )
-        subprocess.run(
-            disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
-        )
+        # True -> No error. False -> Exception occurred while disabling packetloss.
+        if not disable_packetloss_simulation(current_packetloss_rate, interface_2):
+            # Exit the program because continuing would stack the packetloss rules.
+            # exit()
+            # Continue with next packetloss simulation because the next packetloss rule will overwrite the old one
+            # Not disabling the old packetloss rule won't be a problem.
+            continue
 
-    # Terminate packet captures / all created processes
+            # Terminate packet captures / all created processes
     print(f"  Terminating processes/stopping packet capture.")
-    process_2.terminate()
-    process_3.terminate()
-    process_4.terminate()
+    # Using .terminate() did not stop the packet captures
+    process_2.kill()
+    process_3.kill()
+    process_4.kill()
 
-    # Sleep for 10 mins between packetloss configurations
+    # Sleep for 10 minutes between packetloss configurations
     print(f"  {current_packetloss_rate}% Packetloss Config Finished")
 
     # If we are in the last iteration, no need to wait
     if current_packetloss_rate != 95:
-        print(
-            f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
-        )
-        print("  Remaining time:")
-        # time.sleep(sleep_time_between_packetloss_config)
-        # Output how many seconds left to sleep
-        for i in range(sleep_time_between_packetloss_config, 0, -1):
-            print(f"{i}", end="\r", flush=True)
-            time.sleep(1)
+        sleep_for_seconds(sleep_time_between_packetloss_config)
 
 print("\n==== Experiment ended ====\n")
 
 # Compress all the packet capture logs into a logs.zip file
-compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
-print("Compressing all log files into a logs.zip file with the following command:")
-print("  " + compress_files_command)
-subprocess.run(compress_files_command, shell=True, stdout=subprocess.PIPE, check=True)
+compress_log_files(directory_name_of_logs)

@@ -2,6 +2,7 @@ from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResul
 from ripe.atlas.sagan import DnsResult
 from pprint import pprint
 from datetime import datetime
+import sys
 
 # Sleep for a duration and show the remaining time on the console
 def sleep_for_seconds(sleep_time):
@@ -16,6 +17,15 @@ def sleep_for_seconds(sleep_time):
         # Delete the last output line of the console
         # to show the remaining time without creating new lines
         print("\033[A                             \033[A")
+
+
+# Run the script as follows:
+# $ python3 ./packetlossExperimentRipeAtlas.py probeID .ripe-atlas<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+print(f"Number of arguments: {len(sys.argv)}")
+print(f"Argument List: {str(sys.argv))}")
+# Name of Python script: sys.argv[0]
+probe_ID = sys.argv[1]
+query_name = sys.argv[2]
 
 ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
@@ -58,8 +68,10 @@ dns = Dns(
     query_class = "IN",
     query_type = "A",
 	# Domain structure: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
-    query_argument = "ns1.packetloss.syssec-research.mmci.uni-saarland.de",  
+    query_argument = query_name  # "packetloss.syssec-research.mmci.uni-saarland.de",  
     use_macros = True,
+    # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
+    prepend_probe_id = True,
     
     # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
     use_probe_resolver = True,
@@ -112,6 +124,24 @@ atlas_request = AtlasCreateRequest(
     # The measurement will only be run once
     is_oneoff=True
 )
+
+# Probe ID as parameter
+# source2 = AtlasSource(    
+#     "type": "asn",
+#     "value": probe_ID,
+#     "requested": 1    
+# )
+
+# Create request from given probe ID
+# atlas_request = AtlasCreateRequest(
+#     start_time=datetime.utcnow(),
+#     key=ATLAS_API_KEY,
+#     measurements=[dns],
+#     sources=[source2],
+#     # Always set this to true
+#     # The measurement will only be run once
+#     is_oneoff=True
+# )
 
 # Start the measurement
 (is_success, response) = atlas_request.create()

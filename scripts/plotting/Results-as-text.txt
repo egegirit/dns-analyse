@@ -4,6 +4,9 @@ client_0.pcap:
   Query count: 997
   Answer count: 995
   Retransmission count: 0
+  Latency count: 879
+  Mean in ms: 0.06230735494880546
+  Median in ms: 0.025664
   Failed packet count(RCODE != 0): 1
   Failure rate: 0.10050251256281408
 
@@ -13,6 +16,9 @@ client_10.pcap:
   Query count: 963
   Answer count: 962
   Retransmission count: 0
+  Latency count: 858
+  Mean in ms: 0.08683832983682983
+  Median in ms: 0.0245335
   Failed packet count(RCODE != 0): 24
   Failure rate: 2.494802494802495
   
@@ -22,6 +28,9 @@ client_20.pcap:
   Query count: 910
   Answer count: 910
   Retransmission count: 0
+  Latency count: 837
+  Mean in ms: 0.10110955913978495
+  Median in ms: 0.026576
   Failed packet count(RCODE != 0): 45
   Failure rate: 4.945054945054945
   
@@ -31,6 +40,9 @@ client_30.pcap:
   Query count: 900
   Answer count: 897
   Retransmission count: 0
+  Latency count: 805
+  Mean in ms: 0.1648485701863354
+  Median in ms: 0.034344
   Failed packet count(RCODE != 0): 76
   Failure rate: 8.4726867335563
   
@@ -40,6 +52,9 @@ client_40.pcap:
   Query count: 933
   Answer count: 930
   Retransmission count: 0
+  Latency count: 781
+  Mean in ms: 0.25106790781049937
+  Median in ms: 0.045967
   Failed packet count(RCODE != 0): 98
   Failure rate: 10.53763440860215
   
@@ -49,6 +64,9 @@ client_50.pcap:
   Query count: 892
   Answer count: 888
   Retransmission count: 0
+  Latency count: 742
+  Mean in ms: 0.30537922237196763
+  Median in ms: 0.052532999999999996
   Failed packet count(RCODE != 0): 136
   Failure rate: 15.315315315315313
   
@@ -58,6 +76,9 @@ client_60.pcap:
   Query count: 931
   Answer count: 922
   Retransmission count: 0
+  Latency count: 683
+  Mean in ms: 0.5710420439238653
+  Median in ms: 0.111318
   Failed packet count(RCODE != 0): 190
   Failure rate: 20.607375271149674
   
@@ -67,6 +88,9 @@ client_70.pcap:
   Query count: 925
   Answer count: 898
   Retransmission count: 0
+  Latency count: 577
+  Mean in ms: 0.9991542270363951
+  Median in ms: 0.320804
   Failed packet count(RCODE != 0): 278
   Failure rate: 30.957683741648108
   
@@ -76,6 +100,9 @@ client_80.pcap:
   Query count: 931
   Answer count: 849
   Retransmission count: 0
+  Latency count: 462
+  Mean in ms: 1.5906507251082251
+  Median in ms: 0.40652900000000003
   Failed packet count(RCODE != 0): 339
   Failure rate: 39.92932862190813
   
@@ -85,6 +112,9 @@ client_85.pcap:
   Query count: 957
   Answer count: 855
   Retransmission count: 0
+  Latency count: 351
+  Mean in ms: 1.8248003162393163
+  Median in ms: 0.514984
   Failed packet count(RCODE != 0): 429
   Failure rate: 50.175438596491226
   
@@ -94,6 +124,9 @@ client_90.pcap:
   Query count: 917
   Answer count: 769
   Retransmission count: 0
+  Latency count: 215
+  Mean in ms: 1.6683867627906976
+  Median in ms: 0.519433
   Failed packet count(RCODE != 0): 521
   Failure rate: 67.75032509752926
   
@@ -103,6 +136,9 @@ client_95.pcap:
   Query count: 914
   Answer count: 745
   Retransmission count: 0
+  Latency count: 94
+  Mean in ms: 2.259428170212766
+  Median in ms: 1.435288
   Failed packet count(RCODE != 0): 621
   Failure rate: 83.35570469798658
   
@@ -128,6 +164,9 @@ auth1_0.pcap:
   Query count: 954
   Answer count: 944  
   Retransmission count: 0  
+  Latency count: 881
+  Mean in ms: 0.0009133121452894438
+  Median in ms: 0.000616
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -137,6 +176,9 @@ auth1_10.pcap:
   Query count: 1026
   Answer count: 903
   Retransmission count: 10
+  Latency count: 865
+  Mean in ms: 0.0012828277456647399
+  Median in ms: 0.000552
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -146,6 +188,9 @@ auth1_20.pcap:
   Query count: 1071
   Answer count: 869
   Retransmission count: 17
+  Latency count: 854
+  Mean in ms: 0.0016861908665105386
+  Median in ms: 0.000648
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -155,6 +200,9 @@ auth1_30.pcap:
   Query count: 1221
   Answer count: 845
   Retransmission count: 33
+  Latency count: 842
+  Mean in ms: 0.0033660332541567695
+  Median in ms: 0.0009255
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -164,6 +212,9 @@ auth1_40.pcap:
   Query count: 1557
   Answer count: 918
   Retransmission count: 35
+  Latency count: 879
+  Mean in ms: 0.005435180887372014
+  Median in ms: 0.000749
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -173,6 +224,9 @@ auth1_50.pcap:
   Query count: 1722
   Answer count: 908
   Retransmission count: 55
+  Latency count: 861
+  Mean in ms: 0.008973885017421603
+  Median in ms: 0.000721
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -182,6 +236,9 @@ auth1_60.pcap:
   Query count: 2208
   Answer count: 908
   Retransmission count: 68
+  Latency count: 873
+  Mean in ms: 0.01128759793814433
+  Median in ms: 0.000771
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -191,6 +248,9 @@ auth1_70.pcap:
   Query count: 2740
   Answer count: 847
   Retransmission count: 90
+  Latency count: 823
+  Mean in ms: 0.017274754556500606
+  Median in ms: 0.001049
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -200,6 +260,9 @@ auth1_80.pcap:
   Query count: 3445
   Answer count: 715
   Retransmission count: 109
+  Latency count: 711
+  Mean in ms: 0.01833429957805907
+  Median in ms: 0.000913
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -209,6 +272,9 @@ auth1_85.pcap:
   Query count: 3669
   Answer count: 564
   Retransmission count: 134
+  Latency count: 561
+  Mean in ms: 0.023055582887700536
+  Median in ms: 0.000924
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -218,6 +284,9 @@ auth1_90.pcap:
   Query count: 3696
   Answer count: 377
   Retransmission count: 145
+  Latency count: 377
+  Mean in ms: 0.029117854111405835
+  Median in ms: 0.001025
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -227,6 +296,9 @@ auth1_95.pcap:
   Query count: 3606
   Answer count: 177
   Retransmission count: 182
+  Latency count: 177
+  Mean in ms: 0.0353536384180791
+  Median in ms: 0.001124
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -252,6 +324,9 @@ auth2_0.pcap:
   Query count: 954
   Answer count: 944
   Retransmission count: 0
+  Latency count: 881
+  Mean in ms: 0.0009133121452894438
+  Median in ms: 0.000616
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -261,6 +336,9 @@ auth2_10.pcap:
   Query count: 1026
   Answer count: 903
   Retransmission count: 20
+  Latency count: 865
+  Mean in ms: 0.0012828277456647399
+  Median in ms: 0.000552
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -270,6 +348,9 @@ auth2_20.pcap:
   Query count: 1071
   Answer count: 869
   Retransmission count: 34
+  Latency count: 854
+  Mean in ms: 0.0016861908665105386
+  Median in ms: 0.000648
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -279,6 +360,9 @@ auth2_30.pcap:
   Query count: 1221
   Answer count: 845
   Retransmission count: 66
+  Latency count: 842
+  Mean in ms: 0.0033660332541567695
+  Median in ms: 0.0009255
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -288,6 +372,9 @@ auth2_40.pcap:
   Query count: 1557
   Answer count: 918
   Retransmission count: 70
+  Latency count: 879
+  Mean in ms: 0.005435180887372014
+  Median in ms: 0.000749
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -297,6 +384,9 @@ auth2_50.pcap:
   Query count: 1722
   Answer count: 908
   Retransmission count: 110
+  Latency count: 861
+  Mean in ms: 0.008973885017421603
+  Median in ms: 0.000721
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -306,6 +396,9 @@ auth2_60.pcap:
   Query count: 2208
   Answer count: 908
   Retransmission count: 136
+  Latency count: 873
+  Mean in ms: 0.01128759793814433
+  Median in ms: 0.000771
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -315,6 +408,9 @@ auth2_70.pcap:
   Query count: 2740
   Answer count: 847
   Retransmission count: 180
+  Latency count: 823
+  Mean in ms: 0.017274754556500606
+  Median in ms: 0.001049
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -324,6 +420,9 @@ auth2_80.pcap:
   Query count: 3445
   Answer count: 715
   Retransmission count: 218
+  Latency count: 711
+  Mean in ms: 0.01833429957805907
+  Median in ms: 0.000913
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -333,6 +432,9 @@ auth2_85.pcap:
   Query count: 3669
   Answer count: 564
   Retransmission count: 268
+  Latency count: 561
+  Mean in ms: 0.023055582887700536
+  Median in ms: 0.000924
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -342,6 +444,9 @@ auth2_90.pcap:
   Query count: 3716
   Answer count: 379
   Retransmission count: 291
+  Latency count: 379
+  Mean in ms: 0.02897811609498681
+  Median in ms: 0.001027
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   
@@ -351,6 +456,9 @@ auth2_95.pcap:
   Query count: 3606
   Answer count: 177
   Retransmission count: 364
+  Latency count: 177
+  Mean in ms: 0.0353536384180791
+  Median in ms: 0.001124
   Failed packet count(RCODE != 0): 0
   Failure rate: 0
   

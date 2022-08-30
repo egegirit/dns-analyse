@@ -154,6 +154,8 @@ def read_json_files(file_prefix):
 
         print(f"  Current packetloss rate: {current_packetloss_rate}")
 
+        # Debug: count the packets with dns.time
+        test_time_count = 0
         # Examine all the packets in the JSON file
         for i in range(0, packet_count):
             # Check if the packet is a DNS packet
@@ -213,13 +215,7 @@ def read_json_files(file_prefix):
                     # Mark packet as Answer # TODO: Unnecessary bcs of dns.flags.response(is_answer_response)?
                     # is_answer = "1"
                     # Note: Not all answers has dns.time?
-                    if 'dns.time' in json_data[i]['_source']['layers']['dns']:
-                        # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
-                        # Assign the dns response latency
-                        # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
-
-                        dns_time = json_data[i]['_source']['layers']['dns']['dns.time']
-                        packetlossData[index].append(float(dns_time))
+                    pass
                 else:
                     # is_answer = "0"
                     pass
@@ -238,7 +234,7 @@ def read_json_files(file_prefix):
                     if json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
                         # Count the message as response (answer to query)
                         answer_count_data[index].append("1")
-
+                        test_time_count += 1
                         # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
                         # if dns_id == jsonData[i]['_source']['layers']['dns']['dns.id']:  # DEBUG
                         #    duplicate = duplicate + 1  # DEBUG
@@ -256,6 +252,13 @@ def read_json_files(file_prefix):
                         #     test_failure_rate_count = test_failure_rate_count + 1
                         #     print(f"  test_failure_rate_count: {test_failure_rate_count}")  # DEBUG
                         # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
+                        if 'dns.time' in json_data[i]['_source']['layers']['dns']:
+                            # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
+                            # Assign the dns response latency
+                            # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
+
+                            dns_time = json_data[i]['_source']['layers']['dns']['dns.time']
+                            packetlossData[index].append(float(dns_time))
                 # Get the TC Bit
                 # if 'dns.flags.truncated' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:
                 # truncated = jsonData[i]['_source']['layers']['dns']['dns.flags_tree'][
@@ -276,7 +279,7 @@ def read_json_files(file_prefix):
                     retransmission_data[index] += 1
             # else:
             #     not_dns = not_dns + 1
-
+        print(f"  dns.time count: {test_time_count}")
         index = index + 1
 
         # This was outside the for loop

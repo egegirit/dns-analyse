@@ -1,6 +1,8 @@
 import subprocess
 import concurrent.futures
 import time
+import os
+import signal
 
 import dns.resolver
 import dns.reversename
@@ -212,11 +214,12 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     print("    " + packet_capture_command_1)
     
     # Packet capture on authoritative server interface with the packetloss filter applied
-    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth2_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
-    print(
-        f"  (2) Running packet capture on {interface_2} interface with the following command:"
-    )
-    print("    " + packet_capture_command_2)
+    # packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth2_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    # print(
+    #     f"  (2) Running packet capture on {interface_2} interface with the following command:"
+    # )
+    # print("    " + packet_capture_command_2)
+    
     # Packet capture on client interface
     packet_capture_command_3 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
@@ -231,14 +234,14 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
         process_2 = subprocess.Popen(
             packet_capture_command_1, shell=True, stdout=subprocess.PIPE
         )
-        process_3 = subprocess.Popen(
-            packet_capture_command_2, shell=True, stdout=subprocess.PIPE
-        )        
+        # process_3 = subprocess.Popen(
+        #     packet_capture_command_2, shell=True, stdout=subprocess.PIPE
+        # )        
         process_4 = subprocess.Popen(
             packet_capture_command_3, shell=True, stdout=subprocess.PIPE
         )    
         result_processes.append(process_2)
-        result_processes.append(process_3)
+        # result_processes.append(process_3)
         result_processes.append(process_4)
     except Exception:
         print("    Packet capture failed!")
@@ -314,10 +317,16 @@ for current_packetloss_rate in packetloss_rates:
 
     # Terminate packet captures / all created processes
     print(f"  Terminating processes/stopping packet capture.")
-    # Using .terminate() did not stop the packet captures
+    # Using .terminate() did not stop the packet captures    
     if len(capture_processes) > 0:
         for process in capture_processes:
-            process.kill()
+            try:
+                # Send the signal to all the process groups
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM) 
+            except Exception:
+                print(f"    Exception while terminating tcpdump") 
+        print(f"    Sleeping for 1 seconds for tcpdumps to terminate")    
+        sleep_for_seconds(1) 
 
     # Sleep for 10 minutes between packetloss configurations
     print(f"  {current_packetloss_rate}% Packetloss Config Finished")

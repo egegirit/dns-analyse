@@ -60,7 +60,7 @@ dns.time
 dns.qry.name matches "1-0-0-1" && dns.qry.name matches "pl95" && dns.flags.response == 1
 
 # Get all DNS Answer packets from Cloudflare where the answer was no error:
-dns.qry.name matches "9-9-9-11" && dns.flags.response == 1 && dns.flags.rcode == 0
+dns.qry.name matches "156-154-70-1" && dns.flags.response == 1 && dns.flags.rcode == 0
 
 dns.qry.name matches "8-8-4-4"
 

@@ -20,14 +20,20 @@ def sleep_for_seconds(sleep_time):
 
 
 # Run the script as follows:
-# $ python3 ./packetlossExperimentRipeAtlas.py probeID .ripe-atlas<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+# $ python3 ./packetlossExperimentRipeAtlas.py Autonomus_system_ID counter_value
+if len(sys.argv) < 3:
+    print(f"Wrong argument count!")
+    print(f"Usage: ./script.py as_ID counter_value")
+    sys.exit()
+
 print(f"Number of arguments: {len(sys.argv)}")
 print(f"Argument List: {str(sys.argv))}")
 # Name of Python script: sys.argv[0]
-probe_ID = sys.argv[1]
-query_name = sys.argv[2]
+as_ID = sys.argv[1]  # Autonomus system ID
+counter = sys.argv[2]
+query_name = ".ripe-atlas-" + counter + ".packetloss.syssec-research.mmci.uni-saarland.de"
 
-ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
+ATLAS_API_KEY = ""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
 # https://atlas.ripe.net/docs/api/v2/reference/#!/measurements/Type
 #
@@ -54,7 +60,7 @@ ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 # [dns] ttl (boolean): Report the IP time-to-live field (hop limit for IPv6) of DNS reply packets received (only for UDP),
 
 dns = Dns(
-    key=ATLAS_API_KEY,
+    key = ATLAS_API_KEY,
     description = "Ege Girit Packetloss Experiment",
     protocol = "UDP",
     af = "4",
@@ -128,7 +134,7 @@ atlas_request = AtlasCreateRequest(
 # Probe ID as parameter
 # source2 = AtlasSource(    
 #     "type": "asn",
-#     "value": probe_ID,
+#     "value": as_ID,
 #     "requested": 1    
 # )
 
@@ -161,7 +167,7 @@ is_success
 
 # Print results
 for result in results:
-    print(DnsResult.get(result))
+    print(DnsResult.get(result))    
 
 # %%
 m = DnsResult.get(results[0])
@@ -172,4 +178,4 @@ m.measurement_id
 # %%
 m.build_responses()
 
-# %%
+# TODO: save results/reports in a file

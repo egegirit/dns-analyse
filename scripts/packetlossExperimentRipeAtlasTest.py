@@ -44,10 +44,10 @@ def sleep_for_seconds(sleep_time):
         print("\033[A                             \033[A")
 
 # Create a source from probe_id and send a query with domain_name as query name
-def send_query_from_probe(probe_id, domain_name):
+def send_query_from_probe(probe_id, domain_name, counter):
     dns = Dns(
         key=ATLAS_API_KEY,
-        description = "Ege Girit Packetloss Experiment",
+        description = f"Ege Girit Packetloss Experiment {counter}",
         protocol = "UDP",
         af = "4",
         
@@ -59,8 +59,8 @@ def send_query_from_probe(probe_id, domain_name):
         # Configure the DNS query
         query_class = "IN",
         query_type = "A",
-        # Domain structure: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
-        query_argument = domain_name  # "packetloss.syssec-research.mmci.uni-saarland.de",  
+        # Domain structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+        query_argument = domain_name  
         use_macros = True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
         prepend_probe_id = True,
@@ -126,16 +126,9 @@ def send_query_from_probe(probe_id, domain_name):
 
     # %%
     m.build_responses()
-
     
+    # TODO: Save results/reports in a file
 
-# Run the script as follows:
-# $ python3 ./packetlossExperimentRipeAtlas.py probeID .ripe-atlas<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-print(f"Number of arguments: {len(sys.argv)}")
-print(f"Argument List: {str(sys.argv))}")
-# Name of Python script: sys.argv[0]
-probe_ID = sys.argv[1]
-query_name = sys.argv[2]
 
 ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
@@ -155,17 +148,17 @@ probe_count = len(values)
 print(f"probe_count: {probe_count}")
 
 # Store the extracted probe id's
-probe_ids = []
+as_ids = []
 
 # Extract the probe ID's from the selected probes in dictionary format
 for index in range(probe_count):
-    probe_ids.append(values[index]['value'])
+    as_ids.append(values[index]['value'])
     print(f"values: {values[index]['value']}")
 
 # For each probe id, send a query from the probe and build the query with a counter value
 # Counter value must be equal or greater than probe count
 counter = 0    
-for id in probe_ids:
+for id in as_ids:
     # Multithreading?
     with concurrent.futures.ProcessPoolExecutor() as executor:
             # Using list comprehention to build the results list
@@ -178,7 +171,7 @@ for id in probe_ids:
                                                                  sleep_time])
                         for current_resolver_ip in resolver_ip_addresses]
                 query_name = ".ripe-atlas" + counter + ".packetloss.syssec-research.mmci.uni-saarland.de"
-                send_query_from_probe(id, query_name)
+                send_query_from_probe(id, query_name, counter)
                 counter += 1        
         
     # Show the finished processes' outputs

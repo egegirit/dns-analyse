@@ -88,7 +88,7 @@ operators = {
     "Dyn1": "216-146-35-35",
     "Dyn2": "216-146-36-36",
     "Google1": "8-8-8-8",
-    "Google2:": "8-8-4-4",
+    "Google2": "8-8-4-4",
     "Neustar1": "64-6-64-6",
     "Neustar2": "156-154-70-1",
     "OpenDNS1": "208-67-222-222",
@@ -261,14 +261,6 @@ def read_json_files(file_prefix):
                     # is_answer = "1"
                     currentPacket.is_answer = "1"
                     # Note: Not all answers has dns.time?
-                    if 'dns.time' in json_data[i]['_source']['layers']['dns']:
-                        # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
-                        # Assign the dns response latency
-                        # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
-
-                        dns_time = json_data[i]['_source']['layers']['dns']['dns.time']
-                        # packetlossData[index].append(float(dns_time))
-                        currentPacket.response_latency = dns_time
                 else:
                     # is_answer = "0"
                     currentPacket.is_answer = "0"
@@ -307,6 +299,14 @@ def read_json_files(file_prefix):
                         #     test_failure_rate_count = test_failure_rate_count + 1
                         #     print(f"  test_failure_rate_count: {test_failure_rate_count}")  # DEBUG
                         # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
+                        if 'dns.time' in json_data[i]['_source']['layers']['dns']:
+                            # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
+                            # Assign the dns response latency
+                            # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
+
+                            dns_time = json_data[i]['_source']['layers']['dns']['dns.time']
+                            # packetlossData[index].append(float(dns_time))
+                            currentPacket.response_latency = dns_time
                 # Get the TC Bit
                 if 'dns.flags.truncated' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:
                     truncated = json_data[i]['_source']['layers']['dns']['dns.flags_tree'][
@@ -409,7 +409,7 @@ def classify_packets_by_operators():
                 list_of_operators[7].append(packet)
             if packet.operator == "Google1":
                 list_of_operators[8].append(packet)
-            if packet.operator == "Google2:":
+            if packet.operator == "Google2":
                 list_of_operators[9].append(packet)
             if packet.operator == "Neustar1":
                 list_of_operators[10].append(packet)
@@ -518,7 +518,10 @@ def clear_failure_rate_data():
 
 
 def create_box_plot(file_name, operator_specific_packet_list):
-    operator_name = operator_specific_packet_list[0].operator
+    operator_name = "UNKNOWN"
+    if operator_specific_packet_list[0].operator is not None:
+        operator_name = operator_specific_packet_list[0].operator
+
     print(f"Creating box plot for {operator_name}")
 
     global packetlossData
@@ -572,7 +575,10 @@ def create_box_plot(file_name, operator_specific_packet_list):
 
 
 def create_violin_plot(file_name, operator_specific_packet_list):
-    operator_name = operator_specific_packet_list[0].operator
+    operator_name = "UNKNOWN"
+    if operator_specific_packet_list[0].operator is not None:
+        operator_name = operator_specific_packet_list[0].operator
+
     print(f"Creating violin plot for {operator_name}")
 
     # Create violin plot
@@ -615,7 +621,10 @@ def create_violin_plot(file_name, operator_specific_packet_list):
 
 
 def create_bar_plot(file_name, operator_specific_packet_list):
-    operator_name = operator_specific_packet_list[0].operator
+    operator_name = "UNKNOWN"
+    if operator_specific_packet_list[0].operator is not None:
+        operator_name = operator_specific_packet_list[0].operator
+
     print(f"Creating bar plot for {operator_name}")
 
     global failure_rate_data

@@ -132,12 +132,12 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
     print("    " + disable_packetloss_1)
     print("    " + disable_packetloss_2)
     try:
-        # subprocess.run(
-        #     disable_packetloss_1, shell=True, stdout=subprocess.PIPE, check=True
-        # )
-        # subprocess.run(
-        #     disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
-        # )
+        subprocess.run(
+            disable_packetloss_1, shell=True, stdout=subprocess.PIPE, check=True
+        )
+        subprocess.run(
+            disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
+        )
         return True
     except Exception:
         print(
@@ -147,10 +147,7 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
 
 
 # Sleep for a duration and show the remaining time on the console
-def sleep_for_seconds(sleep_time_between_packetloss_config):
-    print(
-        f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
-    )
+def sleep_for_seconds(sleep_time_between_packetloss_config):    
     print("  Remaining time:")
     # Output how many seconds left to sleep
     for i in range(sleep_time_between_packetloss_config, 0, -1):
@@ -184,8 +181,8 @@ def simulate_packetloss(packetloss_rate, interface_name):
     print("    " + packetloss_filter_command_1)
     print("    " + packetloss_filter_command_2)
     try:
-        # subprocess.run(packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True)
-        # subprocess.run(packetloss_filter_command_2, shell=True, stdout=subprocess.PIPE, check=True)
+        subprocess.run(packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True)
+        subprocess.run(packetloss_filter_command_2, shell=True, stdout=subprocess.PIPE, check=True)
         return True
     except Exception:
         print(
@@ -197,7 +194,7 @@ def simulate_packetloss(packetloss_rate, interface_name):
         return False
 
 
-# Start 3 packet captures with tcpdump and return the processes
+# Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
 def start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_1, interface_2, interface_3):
     # DF (don't fragment) bit set (IP)
@@ -223,7 +220,7 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     # Packet capture on client interface
     packet_capture_command_3 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
-        f"  (3) Running packet capture on {interface_3} interface with the following command:"
+        f"  (2) Running packet capture on {interface_3} interface with the following command:"
     )
     print("    " + packet_capture_command_3)
     
@@ -232,13 +229,13 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     
     try:
         process_2 = subprocess.Popen(
-            packet_capture_command_1, shell=True, stdout=subprocess.PIPE
+            packet_capture_command_1, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
         )
         # process_3 = subprocess.Popen(
-        #     packet_capture_command_2, shell=True, stdout=subprocess.PIPE
+        #     packet_capture_command_2, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
         # )        
         process_4 = subprocess.Popen(
-            packet_capture_command_3, shell=True, stdout=subprocess.PIPE
+            packet_capture_command_3, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
         )    
         result_processes.append(process_2)
         # result_processes.append(process_3)
@@ -333,6 +330,9 @@ for current_packetloss_rate in packetloss_rates:
 
     # If we are in the last iteration, no need to wait
     if current_packetloss_rate != 95:
+        print(
+            f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
+        )
         sleep_for_seconds(sleep_time_between_packetloss_config)
 
 print("\n==== Experiment ended ====\n")

@@ -28,6 +28,8 @@ _ws.expert
   OR   
 dns.retransmit_request
 
+# dns.retransmit_request && dns && dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de"
+
 "dns.retransmit_request_in": "1943",
 
 "dns": {
@@ -60,9 +62,14 @@ dns.time
 dns.qry.name matches "1-0-0-1" && dns.qry.name matches "pl95" && dns.flags.response == 1
 
 # Get all DNS Answer packets from Cloudflare where the answer was no error:
-dns.qry.name matches "156-154-70-1" && dns.flags.response == 1 && dns.flags.rcode == 0
+dns.qry.name matches "77-88-8-1-" && dns.flags.response == 1 && dns.flags.rcode == 0
 
-dns.qry.name matches "8-8-4-4"
+# Resolver, packetloss, response, no error:
+dns.qry.name matches "216-146-35-35-" && dns.qry.name matches "pl95" && dns.flags.response == 1 && dns.flags.rcode == 0
+
+(dns.qry.name matches "77-88-8-1-" || dns.qry.name matches "77-88-8-8-") && dns.qry.name matches "pl80" && dns.time
+
+dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 WARNING: dns.qry.name matches "8-8-8-8" also shows the packets for Yandex2 with 77-88-8-8 IP Address and counter 8.
 

@@ -291,6 +291,7 @@ def read_json_files(file_prefix):
                         rcode = json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
                         failure_rate_data[index].append(int(rcode))
                         currentPacket.response_code = rcode
+
                         # Assign packets RCODE
                         # response_code = rcode
                         # print(f"  rcode: {rcode}")  # DEBUG
@@ -516,8 +517,8 @@ def clear_failure_rate_data():
     for lst in failure_rate_data:
         lst.clear()
 
-
-def create_box_plot(file_name, operator_specific_packet_list):
+# packetlossData is filled here
+def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0].operator is not None:
         operator_name = operator_specific_packet_list[0].operator
@@ -526,30 +527,32 @@ def create_box_plot(file_name, operator_specific_packet_list):
 
     global packetlossData
     for packet in operator_specific_packet_list:
-        if packet.packetloss_rate == "pl0" and packet.response_latency != "-":
-            packetlossData[0].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl10" and packet.response_latency != "-":
-            packetlossData[1].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl20" and packet.response_latency != "-":
-            packetlossData[2].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl30" and packet.response_latency != "-":
-            packetlossData[3].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl40" and packet.response_latency != "-":
-            packetlossData[4].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl50" and packet.response_latency != "-":
-            packetlossData[5].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl60" and packet.response_latency != "-":
-            packetlossData[6].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl70" and packet.response_latency != "-":
-            packetlossData[7].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl80" and packet.response_latency != "-":
-            packetlossData[8].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl85" and packet.response_latency != "-":
-            packetlossData[9].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl90" and packet.response_latency != "-":
-            packetlossData[10].append(float(packet.response_latency))
-        if packet.packetloss_rate == "pl95" and packet.response_latency != "-":
-            packetlossData[11].append(float(packet.response_latency))
+        # Filter/Ignore the rcodes not defined in the list
+        if packet.response_code in rcodes:
+            if packet.packetloss_rate == "pl0" and packet.response_latency != "-":
+                packetlossData[0].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl10" and packet.response_latency != "-":
+                packetlossData[1].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl20" and packet.response_latency != "-":
+                packetlossData[2].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl30" and packet.response_latency != "-":
+                packetlossData[3].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl40" and packet.response_latency != "-":
+                packetlossData[4].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl50" and packet.response_latency != "-":
+                packetlossData[5].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl60" and packet.response_latency != "-":
+                packetlossData[6].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl70" and packet.response_latency != "-":
+                packetlossData[7].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl80" and packet.response_latency != "-":
+                packetlossData[8].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl85" and packet.response_latency != "-":
+                packetlossData[9].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl90" and packet.response_latency != "-":
+                packetlossData[10].append(float(packet.response_latency))
+            if packet.packetloss_rate == "pl95" and packet.response_latency != "-":
+                packetlossData[11].append(float(packet.response_latency))
 
     # Create box plot for latency-packetloss
     fig2 = plt.figure(figsize=(10, 7))
@@ -568,13 +571,15 @@ def create_box_plot(file_name, operator_specific_packet_list):
     # bp = ax.boxplot(packetlossData)
     ax.boxplot(packetlossData)
 
+    plt.ylim(bottom=bottom_limit, top=upper_limit)
+
     # save plot as png
     plt.savefig((file_name + "_" + operator_name + '_boxPlotLatency.png'), bbox_inches='tight')
     # show plot
     # plt.show()
 
 
-def create_violin_plot(file_name, operator_specific_packet_list):
+def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0].operator is not None:
         operator_name = operator_specific_packet_list[0].operator
@@ -613,6 +618,7 @@ def create_violin_plot(file_name, operator_specific_packet_list):
     bp['cmeans'].set_color('b')
     # Median is red
     bp['cmedians'].set_color('r')
+    plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # save plot as png
     plt.savefig((file_name + "_" + operator_name + '_violinPlotLatency.png'), bbox_inches='tight')
@@ -620,7 +626,7 @@ def create_violin_plot(file_name, operator_specific_packet_list):
     # plt.show()
 
 
-def create_bar_plot(file_name, operator_specific_packet_list):
+def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0].operator is not None:
         operator_name = operator_specific_packet_list[0].operator
@@ -705,6 +711,7 @@ def create_bar_plot(file_name, operator_specific_packet_list):
     plt.xlabel("Packetloss Rate")
     plt.ylabel("DNS Response Failure Rate")
     plt.title(f"Response Failure Rate for {operator_name}")
+    plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # save plot as png
     plt.savefig((file_name + "_" + operator_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
@@ -713,6 +720,14 @@ def create_bar_plot(file_name, operator_specific_packet_list):
 
 
 file_names = ["client", "auth1", "auth2"]
+# rcodes cant be an empty list
+# rcodes = ["0"]
+# rcodes = ["2"]
+rcodes = ["2"]
+
+# Define limits of the plots
+bottom_limit = 0
+upper_limit = 30
 
 for file_name in file_names:
     # Read the client logs
@@ -720,15 +735,21 @@ for file_name in file_names:
 
     classify_packets_by_operators()
 
-    # TODO: Google2 won't be created?
-    #  create_box_plot(list_of_operators[9])
-    #  create_bar_plot(list_of_operators[9])
-    #  create_violin_plot(list_of_operators[9])
+    # Add the filtering options to the file name of the plots
+    filter_names_on_filename = ""
+    # If rcode is applied, add the filter to the file name
+    if len(rcodes) > 0:
+        filter_names_on_filename += "_rcodeFilter-"
+        for rcode in rcodes:
+            filter_names_on_filename += (rcode + "-")
+
+    file_name += filter_names_on_filename
+
     for operator in list_of_operators:
         # print(f"len(operator): {len(operator)}")
-        create_box_plot(file_name, operator)
-        create_bar_plot(file_name, operator)
-        create_violin_plot(file_name, operator)
+        create_box_plot(file_name, operator, rcodes, bottom_limit, upper_limit)
+        create_bar_plot(file_name, operator, bottom_limit, 100)
+        create_violin_plot(file_name, operator, bottom_limit, upper_limit)
 
         # Clear lists
         clear_answers()

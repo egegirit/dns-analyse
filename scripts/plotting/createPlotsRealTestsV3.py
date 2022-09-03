@@ -1,3 +1,5 @@
+import sys
+
 import matplotlib.pyplot as plt
 import json
 import re
@@ -594,38 +596,51 @@ def find_total_query_count():
 
 # Warning: Slow run time
 def find_all_packets_with_query_name(query_name):
+
+    # print(f"    Returning all packets with query name: {query_name}")
     # Check the packetloss rate of the query name
     list_to_search = []
     global all_packets_pl
     if "pl0" in query_name:
         list_to_search = all_packets_pl[0]
-    if "pl10" in query_name:
+    elif "pl10" in query_name:
         list_to_search = all_packets_pl[1]
-    if "pl20" in query_name:
+    elif "pl20" in query_name:
         list_to_search = all_packets_pl[2]
-    if "pl30" in query_name:
+    elif "pl30" in query_name:
         list_to_search = all_packets_pl[3]
-    if "pl40" in query_name:
+    elif "pl40" in query_name:
         list_to_search = all_packets_pl[4]
-    if "pl50" in query_name:
+    elif "pl50" in query_name:
         list_to_search = all_packets_pl[5]
-    if "pl60" in query_name:
+    elif "pl60" in query_name:
         list_to_search = all_packets_pl[6]
-    if "pl70" in query_name:
+    elif "pl70" in query_name:
         list_to_search = all_packets_pl[7]
-    if "pl80" in query_name:
+    elif "pl80" in query_name:
         list_to_search = all_packets_pl[8]
-    if "pl85" in query_name:
+    elif "pl85" in query_name:
         list_to_search = all_packets_pl[9]
-    if "pl90" in query_name:
+    elif "pl90" in query_name:
         list_to_search = all_packets_pl[10]
-    if "pl95" in query_name:
+    elif "pl95" in query_name:
         list_to_search = all_packets_pl[11]
 
     packets_with_query_name = []
     for packet in list_to_search:
         if extract_query_name_from_packet(packet) == query_name:
             packets_with_query_name.append(packet)
+
+    # DEBUG
+    # for pac in list_to_search:
+    #     print(f"    list_to_search packet: {extract_query_name_from_packet(pac)}")
+
+    # DEBUG
+    # for pac in packets_with_query_name:
+    #     print(f"    Found packet with query: {extract_query_name_from_packet(pac)}")
+
+    # sys.exit()
+
     return packets_with_query_name
 
 
@@ -635,9 +650,11 @@ def extract_query_name_from_packet(packet):
         json_string = str(packet['_source']['layers']['dns']['Queries'])
         splitted_json1 = json_string.split("'dns.qry.name': ")
         splitted2 = str(splitted_json1[1])
-        return splitted2.split("'")[1]
+        query_name = splitted2.split("'")[1]
+        # print(f"Extracted query name: {query_name}")
+        return query_name
     else:
-        return "Not a dns packet"
+        return None
 
 
 # Used to find the original (first) query among the duplicate queries
@@ -652,7 +669,9 @@ def find_lowest_relative_frame_time_of_packets(packet_list):
 def find_the_response_packets(packet_list):
     responses = []
     for packet in packet_list:
-        if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+        response = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response']
+        # print(f"Response: {response}")
+        if response == "1":
             responses.append(packet)
     return responses
 
@@ -709,10 +728,11 @@ def calculate_latency_of_packet(current_packet):
         # If already calculated, skip
         query_name_of_packet = extract_query_name_from_packet(current_packet)
 
-        if query_name_of_packet in calculated_latency_queries:
-            # print(f"    !! You already calculated latency for: {query_name_of_packet}")
-            # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
-            return None
+        if query_name_of_packet is not None:
+            if query_name_of_packet in calculated_latency_queries:
+                # print(f"    !! You already calculated latency for: {query_name_of_packet}")
+                # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
+                return None
 
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
@@ -737,13 +757,10 @@ def calculate_latency_of_packet(current_packet):
             # Get only all the query packets of the packets with the same query name
             queries = find_the_query_packets(packets)
 
-            # (Old)
-            # Get the first query that was sent (Did not work?)
-            # lowest_frame_query = find_lowest_relative_frame_time_of_packets(queries)
-
+            # Find the first query
             lowest_frame_no_of_queries = find_lowest_frame_no(queries)
             query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
-            # get the relative frame time of packet
+            # get the relative frame time of first query
             rel_fr_time_of_first_query = get_frame_time_relative_of_packet(query_packet_with_lowest_frame_no)
 
             last_term = rel_fr_time_of_first_query
@@ -772,12 +789,6 @@ def calculate_latency_of_packet(current_packet):
 
             # Latency is the difference between the relative frame times of the answer and the first query
             latency = first_term - last_term
-
-            # Calculate the number of unanswered duplicate queries to count the unanswered queries as failure later
-            unanswered_count = len(queries) - len(responses)
-            # There was no answer, count this as failure
-            if len(responses) == 0:
-                pass
 
             # NOTE: If there was not a single answer to any of the (duplicate) queries,
             # then increment the failure count by one.
@@ -813,12 +824,13 @@ def calculate_latency_of_packet(current_packet):
 def calculate_failure_rate_of_packet(current_packet, packetloss_index):
     # DEBUG
     # print(f"len(failure_rate_data): {len(failure_rate_data)}")
-    # (f"failure_rate_data: {failure_rate_data}")
+    # print(f"failure_rate_data: {failure_rate_data}")
 
     # If already calculated, skip
     query_name_of_packet = extract_query_name_from_packet(current_packet)
-    if query_name_of_packet in calculated_failure_queries:
-        return
+    if query_name_of_packet is not None:
+        if query_name_of_packet in calculated_failure_queries:
+            return
 
     rcode_is_error = False
 
@@ -836,18 +848,29 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index):
     # Check if that packet is not answered
     packets = find_all_packets_with_query_name(query_name_of_packet)
 
+    # DEBUG
+    # for pac in packets:
+    #     print(f"Query name: {extract_query_name_from_packet(pac)}")
+
     responses = find_the_response_packets(packets)
     responses_count = len(responses)
+    # DEBUG
+    # for resp in responses:
+    #     print(f"Query name of responses: {extract_query_name_from_packet(resp)}")
 
     queries = find_the_query_packets(packets)
     queries_count = len(queries)
+
+    # DEBUG
+    # for q in queries:
+    #     print(f"Query name of queries:{extract_query_name_from_packet(q)}")
 
     # the query had an answer packet to it, that must be handled before?
 
     # There was no response at all to the query, count as failure
     if responses_count == 0:
         failure_rate_data[packetloss_index] += 1
-        # print(f"Incremented bcs no answer")
+        # print(f"Incremented bcs no answer to {query_name_of_packet}")
         calculated_failure_queries.append(query_name_of_packet)
     # If this is the only answer, which has an error code, count as fail
     # But what if multiple error responses and not only one: Count as one
@@ -1014,9 +1037,13 @@ for file_name in file_names:
     initialize_packet_lists(file_name, filtered_resolvers, rcodes)
     loop_all_packets_add_latencies()
 
-    # print("Showing failures")
+    # print("Showing failures:")
     # for lst in failure_rate_data:
     #     print(f"List: {lst}")
+
+    # print("latencyData:")
+    # for lst in latencyData:
+     #    print(f"List: {lst}")
 
     # Add the filtering options to the file name of the plots
     filter_names_on_filename = ""

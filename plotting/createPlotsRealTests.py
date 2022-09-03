@@ -517,7 +517,7 @@ def create_box_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=False
     # save plot as png
     plt.savefig((file_name_prefix + '_boxPlotLatency.png'), bbox_inches='tight')
     # show plot
-    plt.show()
+    # plt.show()
     print(f" Created box plot: {file_name_prefix}")
 
 
@@ -556,7 +556,7 @@ def create_violin_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=Fa
     # save plot as png
     plt.savefig((file_name_prefix + '_violinPlotLatency.png'), bbox_inches='tight')
     # show plot
-    plt.show()
+    # plt.show()
     print(f" Created violin plot: {file_name_prefix}")
 
 
@@ -612,7 +612,7 @@ def create_bar_plot_old(file_name_prefix, bottom_limit, upper_limit):
     # save plot as png
     plt.savefig((file_name_prefix + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
     # shot plot
-    plt.show()
+    # plt.show()
     print(f" Created bar plot: {file_name_prefix}")
 
 
@@ -628,8 +628,8 @@ def create_bar_plot(file_name, bottom_limit, upper_limit):
     failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
     # DEBUG
-    for packet in failure_rate_data:
-        print(f"packet in failure_rate_data: {packet}")
+    # for packet in failure_rate_data:
+    #     print(f"packet in failure_rate_data: {packet}")
     #     for pac in packet:
     #         print(f"pac.response_code: {pac}")
 
@@ -649,7 +649,7 @@ def create_bar_plot(file_name, bottom_limit, upper_limit):
             # Divide by 900 because we send 900 queries from client pro packetloss config (18 Resolver * 50 counter),
             # when you filter by an IP, you need to adjust the query_count_per_pl_rate like so:
             query_count_per_pl_rate = 900 - (len(filtered_resolvers) * 50)
-            print(f"query_count_per_pl_rate: {query_count_per_pl_rate}")
+            # print(f"query_count_per_pl_rate: {query_count_per_pl_rate}")
             failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / query_count_per_pl_rate) * 100
         else:
             failure_rate_data_dict[str(current_packetloss_rate)] = 0
@@ -676,7 +676,7 @@ def create_bar_plot(file_name, bottom_limit, upper_limit):
     # save plot as png
     plt.savefig((file_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
     # shot plot
-    plt.show()
+    # plt.show()
     print(f" Created bar plot: {file_name}")
 
 
@@ -1227,14 +1227,14 @@ file_names = ["client", "auth1"]  # , "auth2"]
 bottom_limit_client = 0
 # If rcode_filter is True, recommended upper_limit_client value is
 # 11 for client when rcode is "0", for rcode != "0", do 30
-upper_limit_client = 50
+upper_limit_client = 70
 bottom_limit_auth = 0
-upper_limit_auth = 50  # If rcode_filter is True, recommended value is 11 for client
-rcodes = ["0"]  # Examine all the packets only with given rcodes, if empty -> no filtering
+upper_limit_auth = 70  # If rcode_filter is True, recommended value is 11 for client
+rcodes = ["2"]  # Examine all the packets only with given rcodes, if empty -> no filtering
 # rcodes = ["0"]  # All packets with no error
 # rcodes = ["2", "5"]  # All packets with ServFail or Refused
 # rcodes = []  # To see all the packets
-filtered_resolvers = ["77-88-8-1", "77-88-8-8"]  # Filter these IP from the results. If empty -> no filtering
+filtered_resolvers = []  # Filter these IP from the results. If empty -> no filtering
 # "77-88-8-1", "77-88-8-8" Yandex 1 and Yandex 2
 
 log_scale_y_axis = False
@@ -1261,7 +1261,7 @@ for file_name in file_names:
     # Since the client and authoritative plots are very different,
     # set different limits for each
     bottom_limit = 0
-    upper_limit = 50
+    upper_limit = 70
     if file_name != "client":
         bottom_limit = bottom_limit_auth
         upper_limit = upper_limit_auth

@@ -72,7 +72,7 @@ dns.qry.name matches "216-146-35-35-" && dns.qry.name matches "pl95" && dns.flag
 
 (dns.qry.name matches "77-88-8-1-" || dns.qry.name matches "77-88-8-8-") && dns.qry.name matches "pl80" && dns.time
 
-dns.qry.name matches "64-6-64-6" && dns.qry.name matches "pl80" && dns.flags.response == 1 && dns.flags.rcode == 0
+dns.qry.name matches "216-146-35-35" && dns.qry.name matches "pl60" && dns.flags.response == 1 && dns.flags.rcode == 0
 
 dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de"
 
@@ -108,8 +108,10 @@ Unanswered counters for pl80:
 41
 Count: 6
 Query count for pl80: 50
-
 (6/50)*100 = 12%
 
-
-
+auth1 dyn1 bar plot rcode filter 2:
+pl60: no errors
+unanswered counters: 12,14,17,23,26,30,31,34,36 
+Count: 9
+(9/50)*100 = 18%

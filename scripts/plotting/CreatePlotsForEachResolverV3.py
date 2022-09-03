@@ -668,12 +668,7 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
     op_index = get_index_of_operator(operator_name)
     list_of_operators[op_index]  # All packets of the operator
 
-    # filter all response packets bcs only they have rcodes?
-    # TODO: WRONG!! use list_of_operators[op_index] bcs calculate_failure_rate_of_packet() also checks unanswered queries
-    all_responses_of_operator = find_the_response_packets(list_of_operators[op_index])
-    # print(f"len(all_responses_of_operator): {len(all_responses_of_operator)}")
-
-    # TODO: Failure rate for client is the count of rcode != 0 + unanswered packets
+    # Failure rate for client is the count of rcode != 0 + unanswered packets
     # Failure count for authoritative is the count of unanswered packets because
     # in auth1 there is no packet with dns.flags.rcode != 0
 
@@ -775,7 +770,10 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
         # print(f"Fail count: {fail_count}")
         if fail_count != 0:
             # divide by 180 bcs every resolver sends 50 queries for a pl rate, multiply by 100 to get the percentage of the failure rate
-            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / 50) * 100
+            # TODO: change 50 by the query count of the resolver
+            all_queryname_of_resolver = len(find_the_query_packets(operator_specific_packet_list))
+            print(f"all_queryname_of_resolver: {all_queryname_of_resolver}")
+            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / all_queryname_of_resolver) * 100
         else:
             failure_rate_data_dict[str(current_packetloss_rate)] = 0
         index = index + 1
@@ -1316,7 +1314,7 @@ file_names = ["client", "auth1"]  # , "auth2"]
 # rcodes cant be an empty list
 # rcodes = ["0"]
 # rcodes = ["2"]
-rcodes = ["0"]
+rcodes = ["2"]
 # Define limits of the plots
 bottom_limit = 0
 upper_limit = 30

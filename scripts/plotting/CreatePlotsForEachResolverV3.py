@@ -76,6 +76,48 @@ retransmission_data = [retransmission_0, retransmission_10, retransmission_20, r
                        retransmission_50, retransmission_60, retransmission_70, retransmission_80, retransmission_85,
                        retransmission_90, retransmission_95]
 
+# Store all packets by their packetloss rates
+packet_pl0 = []
+packet_pl10 = []
+packet_pl20 = []
+packet_pl30 = []
+packet_pl40 = []
+packet_pl50 = []
+packet_pl60 = []
+packet_pl70 = []
+packet_pl80 = []
+packet_pl85 = []
+packet_pl90 = []
+packet_pl95 = []
+all_packets_pl = [packet_pl0, packet_pl10, packet_pl20, packet_pl30, packet_pl40, packet_pl50,
+                  packet_pl60, packet_pl70, packet_pl80, packet_pl85, packet_pl90, packet_pl95
+                  ]
+
+# All the packets in all of the JSON files
+all_packets = []
+
+# Store all the latencies by their packetloss rates
+latency_0 = []
+latency_10 = []
+latency_20 = []
+latency_30 = []
+latency_40 = []
+latency_50 = []
+latency_60 = []
+latency_70 = []
+latency_80 = []
+latency_85 = []
+latency_90 = []
+latency_95 = []
+
+latencyData = [latency_0, latency_10, latency_20, latency_30, latency_40, latency_50,
+               latency_60, latency_70, latency_80, latency_85, latency_90, latency_95]
+
+# If you already calculated the latency for a query name and there were multiple duplicate queries and
+# maybe duplicate answers for that exact query name, you should only calculate the latency once,
+# to avoid calculating it multiple times, store the query names you calculated here to mark them
+calculated_queries = []
+
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 operators = {
@@ -104,18 +146,67 @@ operators = {
 # operator_names = list(operators.keys())  # "AdGuard1", "AdGuard2" ...
 # operator_ip_addresses = list(operators.values())
 
-
-def get_operator_name_from_ip(ip_addr_with_dashes):
-    for operator, ip_addr in operators.items():
-        if ip_addr == ip_addr_with_dashes:
-            return operator
-    else:
-        return "Not found!"
-
-
 # print(get_operator_name_from_ip("77-88-8-8"))
 # print(operator_names)
 # print(operator_ip_addresses)
+
+dns_packets_in_pl = []
+pl0 = []
+pl10 = []
+pl20 = []
+pl30 = []
+pl40 = []
+pl50 = []
+pl60 = []
+pl70 = []
+pl80 = []
+pl85 = []
+pl90 = []
+pl95 = []
+all_packetloss_packets = [pl0, pl10, pl20, pl30, pl40, pl50, pl60, pl70,
+                          pl80, pl85, pl90, pl95]
+
+
+adguard1 = []
+adguard2 = []
+cleanBrowsing1 = []
+cleanBrowsing2 = []
+cloudflare1 = []
+cloudflare2 = []
+dyn1 = []
+dyn2 = []
+google1 = []
+google2 = []
+neustar1 = []
+neustar2 = []
+openDNS1 = []
+openDNS2 = []
+quad91 = []
+quad92 = []
+yandex1 = []
+yandex2 = []
+
+list_of_operators = [
+    adguard1,
+    adguard2,
+    cleanBrowsing1,
+    cleanBrowsing2,
+    cloudflare1,
+    cloudflare2,
+    dyn1,
+    dyn2,
+    google1,
+    google2,
+    neustar1,
+    neustar2,
+    openDNS1,
+    openDNS2,
+    quad91,
+    quad92,
+    yandex1,
+    yandex2,
+]
+
 
 class DNSPacket:
     def __init__(self, dns_idx, transport_protocol, query_name, is_answer, response_latency,
@@ -141,21 +232,12 @@ class DNSPacket:
         self.retransmission = retransmission  # "1" or "0"
 
 
-dns_packets_in_pl = []
-pl0 = []
-pl10 = []
-pl20 = []
-pl30 = []
-pl40 = []
-pl50 = []
-pl60 = []
-pl70 = []
-pl80 = []
-pl85 = []
-pl90 = []
-pl95 = []
-all_packetloss_packets = [pl0, pl10, pl20, pl30, pl40, pl50, pl60, pl70,
-                          pl80, pl85, pl90, pl95]
+def get_operator_name_from_ip(ip_addr_with_dashes):
+    for operator, ip_addr in operators.items():
+        if ip_addr == ip_addr_with_dashes:
+            return operator
+    else:
+        return "Not found!"
 
 
 def read_json_files(file_prefix):
@@ -209,7 +291,6 @@ def read_json_files(file_prefix):
                 # Get the query name and break it down to its components like ip address, counter, packetloss rate.
                 # Query structure: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
                 # Query example: 94-140-14-14-1-pl95.packetloss.syssec-research.mmci.uni-saarland.de
-                # Note: every dns packet has "Queries" attribute
                 if "Queries" in json_data[i]['_source']['layers']['dns']:
                     # print(f"Not none: {jsonData[i]['_source']['layers']['dns']['Queries']}")
                     json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
@@ -345,47 +426,6 @@ def read_json_files(file_prefix):
         # not_dns = 0
 
 
-adguard1 = []
-adguard2 = []
-cleanBrowsing1 = []
-cleanBrowsing2 = []
-cloudflare1 = []
-cloudflare2 = []
-dyn1 = []
-dyn2 = []
-google1 = []
-google2 = []
-neustar1 = []
-neustar2 = []
-openDNS1 = []
-openDNS2 = []
-quad91 = []
-quad92 = []
-yandex1 = []
-yandex2 = []
-
-list_of_operators = [
-    adguard1,
-    adguard2,
-    cleanBrowsing1,
-    cleanBrowsing2,
-    cloudflare1,
-    cloudflare2,
-    dyn1,
-    dyn2,
-    google1,
-    google2,
-    neustar1,
-    neustar2,
-    openDNS1,
-    openDNS2,
-    quad91,
-    quad92,
-    yandex1,
-    yandex2,
-]
-
-
 def classify_packets_by_operators():
     print("Classifying packets by operator name")
     global list_of_operators
@@ -518,42 +558,14 @@ def clear_failure_rate_data():
     for lst in failure_rate_data:
         lst.clear()
 
+
 # packetlossData is filled here
 def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
-    if operator_specific_packet_list[0].operator is not None:
-        operator_name = operator_specific_packet_list[0].operator
+    if operator_specific_packet_list[0] is not None:
+        operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
 
     print(f"Creating box plot for {operator_name}")
-
-    global packetlossData
-    for packet in operator_specific_packet_list:
-        # Filter/Ignore the rcodes not defined in the list
-        if packet.response_code in rcodes:
-            if packet.packetloss_rate == "pl0" and packet.response_latency != "-":
-                packetlossData[0].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl10" and packet.response_latency != "-":
-                packetlossData[1].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl20" and packet.response_latency != "-":
-                packetlossData[2].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl30" and packet.response_latency != "-":
-                packetlossData[3].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl40" and packet.response_latency != "-":
-                packetlossData[4].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl50" and packet.response_latency != "-":
-                packetlossData[5].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl60" and packet.response_latency != "-":
-                packetlossData[6].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl70" and packet.response_latency != "-":
-                packetlossData[7].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl80" and packet.response_latency != "-":
-                packetlossData[8].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl85" and packet.response_latency != "-":
-                packetlossData[9].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl90" and packet.response_latency != "-":
-                packetlossData[10].append(float(packet.response_latency))
-            if packet.packetloss_rate == "pl95" and packet.response_latency != "-":
-                packetlossData[11].append(float(packet.response_latency))
 
     # Create box plot for latency-packetloss
     fig2 = plt.figure(figsize=(10, 7))
@@ -570,7 +582,8 @@ def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_lim
 
     # Creating plot
     # bp = ax.boxplot(packetlossData)
-    ax.boxplot(packetlossData)
+    # ax.boxplot(packetlossData)  # Old
+    ax.boxplot(latencyData)
 
     plt.ylim(bottom=bottom_limit, top=upper_limit)
 
@@ -582,8 +595,8 @@ def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_lim
 
 def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
-    if operator_specific_packet_list[0].operator is not None:
-        operator_name = operator_specific_packet_list[0].operator
+    if operator_specific_packet_list[0] is not None:
+        operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
 
     print(f"Creating violin plot for {operator_name}")
 
@@ -601,19 +614,18 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
     ax.set_xlabel('Packetloss in percantage')
     ax.set_title(f'Packetloss-Latency for {operator_name}')
 
-    global packetlossData
-    print(f"Debug violin plot packetlossData:")
-    # If a list is empty (because all the packets were dropped and
-    # there were no packets with latency), plotting gives an error
-    # Spot the empty lists, add a dummy value
-    for packet in packetlossData:
+    global latencyData
+    for packet in latencyData:
         print(f"  packet: {packet}")
         if len(packet) == 0:
             packet.append(float(-0.1))
 
     # Create and save Violinplot
     # bp = ax.violinplot(packetlossData)
-    bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
+    # bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
+    #                   showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    bp = ax.violinplot(dataset=latencyData, showmeans=True, showmedians=True,
                        showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
     # Mean is blue
     bp['cmeans'].set_color('b')
@@ -629,8 +641,8 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
 
 def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
-    if operator_specific_packet_list[0].operator is not None:
-        operator_name = operator_specific_packet_list[0].operator
+    if operator_specific_packet_list[0] is not None:
+        operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
 
     print(f"Creating bar plot for {operator_name}")
 
@@ -639,6 +651,7 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
     for lst in failure_rate_data:
         lst.clear()
 
+    # Rewrite
     for packet in operator_specific_packet_list:
         if packet.packetloss_rate == "pl0":
             failure_rate_data[0].append(packet.response_code)
@@ -720,21 +733,403 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
     # plt.show()
 
 
-file_names = ["client", "auth1", "auth2"]
+# Find and return the packet with the specified frame number
+def get_packet_by_frame_no(frame_no):
+    for packet in all_packets:
+        if packet.frame_no == frame_no:
+            return packet
+    # If the frame number doesn't exist, return None
+    return None
+
+
+# Get the relative frame time of packet.
+# The time since the first packet is sent.
+def get_frame_time_relative_of_packet(packet):
+    return float(packet['_source']['layers']["frame"]["frame.time_relative"])
+
+
+def find_all_packets_with_query_name(query_name):
+    # Check the packetloss rate of the query name
+    list_to_search = []
+    global all_packets_pl
+    if "pl0" in query_name:
+        list_to_search = all_packets_pl[0]
+    if "pl10" in query_name:
+        list_to_search = all_packets_pl[1]
+    if "pl20" in query_name:
+        list_to_search = all_packets_pl[2]
+    if "pl30" in query_name:
+        list_to_search = all_packets_pl[3]
+    if "pl40" in query_name:
+        list_to_search = all_packets_pl[4]
+    if "pl50" in query_name:
+        list_to_search = all_packets_pl[5]
+    if "pl60" in query_name:
+        list_to_search = all_packets_pl[6]
+    if "pl70" in query_name:
+        list_to_search = all_packets_pl[7]
+    if "pl80" in query_name:
+        list_to_search = all_packets_pl[8]
+    if "pl85" in query_name:
+        list_to_search = all_packets_pl[9]
+    if "pl90" in query_name:
+        list_to_search = all_packets_pl[10]
+    if "pl95" in query_name:
+        list_to_search = all_packets_pl[11]
+
+    packets_with_query_name = []
+    for packet in list_to_search:
+        if extract_query_name_from_packet(packet) == query_name:
+            packets_with_query_name.append(packet)
+    return packets_with_query_name
+
+
+def extract_query_name_from_packet(packet):
+    if 'dns' in packet['_source']['layers']:
+        # Every dns packet has "Queries" attribute, which contains the query name
+        json_string = str(packet['_source']['layers']['dns']['Queries'])
+        splitted_json1 = json_string.split("'dns.qry.name': ")
+        splitted2 = str(splitted_json1[1])
+        return splitted2.split("'")[1]
+    else:
+        return "Not a dns packet"
+
+
+# Used to find the original (first) query among the duplicate queries
+def find_lowest_relative_frame_time_of_packets(packet_list):
+    frame_time_list = []
+    for packet in packet_list:
+        frame_time_list.append(float(get_frame_time_relative_of_packet(packet)))
+    return min(frame_time_list)
+
+
+# Out of all the packets, return only the responses
+def find_the_response_packets(packet_list):
+    responses = []
+    for packet in packet_list:
+        if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+            responses.append(packet)
+    return responses
+
+
+# No need?
+def find_the_first_response_from_packets(packet_list):
+    first_response_packet = None
+    return first_response_packet
+
+
+# Out of all the packets, return only the queries
+def find_the_query_packets(packet_list):
+    queries = []
+    for packet in packet_list:
+        if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "0":
+            queries.append(packet)
+    return queries
+
+
+# No need?
+def find_the_first_query_from_packets(packet_list):
+    first_query_packet = None
+    return first_query_packet
+
+
+# Find and return the packet with the specified frame number
+def get_packet_by_frame_no_from_list(frame_no, packet_list):
+    for packet in packet_list:
+        if packet["_source"]["layers"]["frame"]["frame.number"] == frame_no:
+            return packet
+    # If the frame number doesn't exist, return None
+    return None
+
+
+def find_lowest_frame_no(packet_list):
+    frame_numbers = []
+    for packet in packet_list:
+        number = packet["_source"]["layers"]["frame"]["frame.number"]
+        frame_numbers.append(number)
+    return min(frame_numbers)
+
+
+# Latency (between first query and answer) algorithm 2
+# if packet has dns.time, get the packets query name, if there are more than 2 (query + answer) queries with that query name,
+# than you have duplicates, find the first query (using frame relative time of all of the queries),
+# calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
+# TODO: how to check if a query calculation is already done for a duplicate query?
+def calculate_latency_of_packet(current_packet):
+    # Get the dns.time if it exists
+    if 'dns.time' in current_packet['_source']['layers']['dns']:
+        # print(f"dns.time exists")
+        dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
+        latency = dns_time
+
+        query_name_of_packet = extract_query_name_from_packet(current_packet)
+        # If already calculated, skip
+        if query_name_of_packet in calculated_queries:
+            # print(f"    !! You already calculated latency for: {query_name_of_packet}")
+            # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
+            return None
+
+        packets = find_all_packets_with_query_name(query_name_of_packet)
+
+        # EDGE CASE: there were duplicate queries, but some of them actually are answered and some of them are not
+        # How to handle: calculate the time between the first query, and the first answer.
+        # Because the first answer is valid, all other answers are not needed
+        responses = find_the_response_packets(packets)
+
+        first_term = 0
+        last_term = 0
+
+        # TODO: check if the packet is an answer to check if the len(packets) > 1 ?
+        # If there are more than two packets with the same query name, there are duplicates (2 = query + answer)
+        if len(packets) > 2:
+
+            # Get only all the query packets of the packets with the same query name
+            queries = find_the_query_packets(packets)
+
+            # (Old)
+            # Get the first query that was sent (Did not work?)
+            # lowest_frame_query = find_lowest_relative_frame_time_of_packets(queries)
+
+            lowest_frame_no_of_queries = find_lowest_frame_no(queries)
+            query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
+            # get the relative frame time of packet
+            rel_fr_time_of_first_query = get_frame_time_relative_of_packet(query_packet_with_lowest_frame_no)
+
+            last_term = rel_fr_time_of_first_query
+
+            # If there are multiple answers to the same query, find the first answer (lower latency as a result)
+            if len(responses) > 1:
+                # print(f"  @@ Found multiple same answers for: {query_name_of_packet}")
+                # f.write(f"  @@ Found multiple same answers for: {query_name_of_packet}\n")
+
+                lowest_frame_no_of_responses = find_lowest_frame_no(responses)
+                response_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_responses,
+                                                                                        responses)
+                # get the relative frame time of packet
+                rel_fr_time_of_first_response = get_frame_time_relative_of_packet(response_packet_with_lowest_frame_no)
+
+                first_term = rel_fr_time_of_first_response
+
+                # (Old)
+                # frame_time_of_first_response = find_lowest_relative_frame_time_of_packets(responses)
+                # first_term = frame_time_of_first_response
+            # If there was only one answer to multiple queries, the current packet is this only answer
+            elif len(responses) == 1:
+                # print(f"  Only one answer but multiple queries for: {query_name_of_packet}")
+                # f.write(f"  Only one answer but multiple queries for: {query_name_of_packet}\n")
+                first_term = get_frame_time_relative_of_packet(current_packet)
+
+            # Latency is the difference between the relative frame times of the answer and the first query
+            latency = first_term - last_term
+
+            # Calculate the number of duplicate queries to count the unanswered queries as failure later
+            unanswered_count = len(queries) - len(responses)
+
+            # NOTE: If there was not a single answer to any of the (duplicate) queries,
+            # then increment the failure count by one.
+            # If you increment the failure count everytime when a duplicate query doesn't get answered,
+            # this would result in a different plot
+
+            # print(f"  Found duplicate query for: {query_name_of_packet}")
+            # print(f"  Count of all duplicate queries: {len(packets)}")
+            # print(f"  Count of failures for that query name(unanswered query): {unanswered_count}")
+            # print(f"  Latency of duplicate: {latency}")
+
+            # f.write(f"  Found duplicate query for: {query_name_of_packet}\n")
+            # f.write(f"  Count of all duplicate queries: {len(packets)}\n")
+            # f.write(f"  Count of failures for that query name(unanswered query): {unanswered_count}\n")
+            # f.write(f"  Latency of duplicate: {latency}\n")
+            # Mark the query name as calculated to avoid calculating the duplicates multiple times
+            calculated_queries.append(query_name_of_packet)
+            return latency
+        else:
+            # print(f"Lantecy: {latency}")
+            return latency
+    # Adding the latency to the array is done outside of this function
+    # Append only if result is not none:
+    # latency = calculate_latency_of_packet(current_packet, i)
+    # if latency != None:
+    #    latencyData[i].append(latency)
+    return None
+
+
+# Read the JSON files and store all the dns packets
+# into the global lists
+# Make it modular to get only certain packets?
+def initialize_packet_lists(file_prefix):
+    index = 0
+    # Read the JSON file and for each captured packet and
+    # store the packets in a list
+    for current_packetloss_rate in packetloss_rates:
+        filename = file_prefix + "_" + str(current_packetloss_rate) + ".json"
+        print(f"Reading {filename}")
+        # f.write(f"Reading {filename}\n")
+        if not os.path.exists("./" + filename):
+            print(f"File not found: {filename}")
+            exit()
+        # Read the measured latencies from json file
+        file = open(filename)
+        json_data = json.load(file)
+        packet_count = len(json_data)
+        print(f"  Number of packets in JSON file: {packet_count}")
+        # f.write(f"  Number of packets in JSON file: {packet_count}\n")
+        # print(f"  Current packetloss rate: {current_packetloss_rate}")
+
+        # Examine all the packets in the JSON file
+        for i in range(0, packet_count):
+            if 'dns' in json_data[i]['_source']['layers']:
+
+                # Check if the dns packet is generated by our experiment
+                json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
+                splitted_json1 = json_string.split("'dns.qry.name': ")
+                splitted2 = str(splitted_json1[1])
+                # print(f"splitted_json[1]: {splitted2}")
+                query_name = splitted2.split("'")[1]
+                # print(f"Current query name: {query_name}")
+
+                # Check if the current IP is structured right
+                query_match = re.search(".*-.*-.*-.*-.*-pl.*.packetloss.syssec-research.mmci.uni-saarland.de",
+                                        query_name)
+                if query_match is None:
+                    continue
+
+                global all_packets_pl
+                global all_packets
+                all_packets_pl[index].append(json_data[i])
+                all_packets.append(json_data[i])
+
+                # Find the resolver name by examining the query name
+                # and store the packet into its operator packet list
+                splitted_domain = query_name.split("-")
+                ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
+                                      splitted_domain[2] + "-" + splitted_domain[3]
+
+                op_name = get_operator_name_from_ip(ip_addr_with_dashes)
+
+                if op_name == "AdGuard1":
+                    list_of_operators[0].append(json_data[i])
+                if op_name == "AdGuard2":
+                    list_of_operators[1].append(json_data[i])
+                if op_name == "CleanBrowsing1":
+                    list_of_operators[2].append(json_data[i])
+                if op_name == "CleanBrowsing2":
+                    list_of_operators[3].append(json_data[i])
+                if op_name == "Cloudflare1":
+                    list_of_operators[4].append(json_data[i])
+                if op_name == "Cloudflare2":
+                    list_of_operators[5].append(json_data[i])
+                if op_name == "Dyn1":
+                    list_of_operators[6].append(json_data[i])
+                if op_name == "Dyn2":
+                    list_of_operators[7].append(json_data[i])
+                if op_name == "Google1":
+                    list_of_operators[8].append(json_data[i])
+                if op_name == "Google2":
+                    list_of_operators[9].append(json_data[i])
+                if op_name == "Neustar1":
+                    list_of_operators[10].append(json_data[i])
+                if op_name == "Neustar2":
+                    list_of_operators[11].append(json_data[i])
+                if op_name == "OpenDNS1":
+                    list_of_operators[12].append(json_data[i])
+                if op_name == "OpenDNS2":
+                    list_of_operators[13].append(json_data[i])
+                if op_name == "Quad91":
+                    list_of_operators[14].append(json_data[i])
+                if op_name == "Quad92":
+                    list_of_operators[15].append(json_data[i])
+                if op_name == "Yandex1":
+                    list_of_operators[16].append(json_data[i])
+                if op_name == "Yandex2":
+                    list_of_operators[17].append(json_data[i])
+
+        index = index + 1
+
+
+def loop_all_packets_add_latencies():
+    print("Looping all packets to add latencies")
+    # f.write("Looping all packets to add latencies\n")
+    # global all_packets
+
+    # for packet in all_packets:
+    #     pass
+
+    global all_packets_pl
+
+    index = 0
+    for packets_with_pl in all_packets_pl:
+        print(f"  @@ Packetloss rate: {index}")
+        # f.write(f"  @@ Packetloss rate: {index}\n")
+        for current_packet in packets_with_pl:
+            latency = calculate_latency_of_packet(current_packet)
+            if latency is not None:
+                latencyData[index].append(latency)
+        index += 1
+
+
+def show_all_latencies():
+    print("Showing all latencies")
+    global latencyData
+
+    index = 0
+    for pl_rate in latencyData:
+        print(f"{index}. Latencies: {pl_rate}")
+        # for latency in pl_rate:
+        #     print
+        index += 1
+
+
+# Clear all the global lists for the next JSON file
+def clear_lists():
+    global latencyData
+    global all_packets_pl
+    global all_packets
+
+    for packet_list in all_packets_pl:
+        packet_list.clear()
+
+    for packet_list in latencyData:
+        packet_list.clear()
+
+    all_packets.clear()
+
+
+def find_operator_name_of_json_packet(packet):
+    json_string = str(packet['_source']['layers']['dns']['Queries'])
+    splitted_json1 = json_string.split("'dns.qry.name': ")
+    splitted2 = str(splitted_json1[1])
+
+    query_name = splitted2.split("'")[1]
+
+    splitted_domain = query_name.split("-")
+    ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
+                          splitted_domain[2] + "-" + splitted_domain[3]
+
+    return get_operator_name_from_ip(ip_addr_with_dashes)
+
+
+file_names = ["client", "auth1"]  # , "auth2"]
 # rcodes cant be an empty list
 # rcodes = ["0"]
 # rcodes = ["2"]
-rcodes = ["2"]
-
+rcodes = ["0"]
 # Define limits of the plots
 bottom_limit = 0
-upper_limit = 30
+upper_limit = 50
 
 for file_name in file_names:
+
+    initialize_packet_lists(file_name)
+    loop_all_packets_add_latencies()
+
+    for operator in list_of_operators:
+        print(f"len(operator): {len(operator)}")
+
+    # show_all_latencies()
+
     # Read the client logs
     read_json_files(file_name)
-
-    classify_packets_by_operators()
+    # classify_packets_by_operators()
 
     # Add the filtering options to the file name of the plots
     filter_names_on_filename = ""
@@ -749,7 +1144,7 @@ for file_name in file_names:
     for operator in list_of_operators:
         # print(f"len(operator): {len(operator)}")
         create_box_plot(file_name, operator, rcodes, bottom_limit, upper_limit)
-        create_bar_plot(file_name, operator, bottom_limit, 100)
+        # create_bar_plot(file_name, operator, bottom_limit, 100)
         create_violin_plot(file_name, operator, bottom_limit, upper_limit)
 
         # Clear lists
@@ -757,7 +1152,6 @@ for file_name in file_names:
         clear_retransmission_data()
         clear_failure_rate_data()
         clear_packetloss_data()
-
 
         # Show answer-query count
         #  show_answer_query_count(answer_count_data)
@@ -769,3 +1163,4 @@ for file_name in file_names:
         # show_latencies(packetlossData)
 
         # show_failure_count()
+    clear_lists()

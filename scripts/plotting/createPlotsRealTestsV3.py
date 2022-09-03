@@ -1083,7 +1083,7 @@ for file_name in file_names:
     if log_scale_y_axis:
         filter_names_on_filename += "_LogScaledY-"
 
-    filter_names_on_filename += "Lim(" + bottom_limit + "," + upper_limit + ")_"
+    filter_names_on_filename += "Lim(" + str(bottom_limit) + "," + str(upper_limit) + ")_"
 
     file_name += filter_names_on_filename
 

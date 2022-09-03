@@ -454,7 +454,7 @@ def add_dummy_value_to_empty_list():
             packet.append(float(-0.5))
 
 
-def create_box_plot(file_name_prefix, bottom_limit, upper_limit):
+def create_box_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=False):
     # Create box plot for latency-packetloss
     fig2 = plt.figure(figsize=(10, 7))
 
@@ -472,6 +472,10 @@ def create_box_plot(file_name_prefix, bottom_limit, upper_limit):
 
     add_dummy_value_to_empty_list()
 
+    if log_scale:
+        ax.set_yscale('log', base=2)
+    # else: ax.set_yscale('linear')
+
     # Creating plot
     # bp = ax.boxplot(packetlossData)
     ax.boxplot(latencyData)
@@ -486,7 +490,7 @@ def create_box_plot(file_name_prefix, bottom_limit, upper_limit):
     plt.show()
 
 
-def create_violin_plot(file_name_prefix, bottom_limit, upper_limit):
+def create_violin_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=False):
     # Create violin plot
     fig2 = plt.figure(figsize=(10, 7))
 
@@ -503,6 +507,9 @@ def create_violin_plot(file_name_prefix, bottom_limit, upper_limit):
     ax.set_title(f"Response Failure Rate for {user}")
 
     add_dummy_value_to_empty_list()
+
+    if log_scale:
+        ax.set_yscale('log', base=2)
 
     # Create and save Violinplot
     # bp = ax.violinplot(packetlossData)
@@ -1023,12 +1030,14 @@ bottom_limit_client = 0
 upper_limit_client = 50
 bottom_limit_auth = 0
 upper_limit_auth = 50  # If rcode_filter is True, recommended value is 11 for client
-rcodes = ["0"]  # Examine all the packets only with given rcodes, if empty -> no filtering
+rcodes = ["0", "2"]  # Examine all the packets only with given rcodes, if empty -> no filtering
 # rcodes = ["0"]  # All packets with no error
 # rcodes = ["2", "5"]  # All packets with ServFail or Refused
 # rcodes = []  # To see all the packets
 filtered_resolvers = ["77-88-8-1", "77-88-8-8"]  # Filter these IP from the results. If empty -> no filtering
 # "77-88-8-1", "77-88-8-8" Yandex 1 and Yandex 2
+
+log_scale_y_axis = False
 
 for file_name in file_names:
 
@@ -1071,11 +1080,16 @@ for file_name in file_names:
         for ip in filtered_resolvers:
             filter_names_on_filename += (get_operator_name_from_ip(ip) + "-")
 
+    if log_scale_y_axis:
+        filter_names_on_filename += "_LogScaledY-"
+
+    filter_names_on_filename += "Lim(" + bottom_limit + "," + upper_limit + ")_"
+
     file_name += filter_names_on_filename
 
     # Create plots
-    create_box_plot(file_name, bottom_limit, upper_limit)
-    create_violin_plot(file_name, bottom_limit, upper_limit)
+    create_box_plot(file_name, bottom_limit, upper_limit, log_scale_y_axis)
+    create_violin_plot(file_name, bottom_limit, upper_limit, log_scale_y_axis)
     create_bar_plot(file_name, bottom_limit, 100)
 
     # Show answer-query count

@@ -118,6 +118,10 @@ latencyData = [latency_0, latency_10, latency_20, latency_30, latency_40, latenc
 # to avoid calculating it multiple times, store the query names you calculated here to mark them
 calculated_queries = []
 
+calculated_latency_queries = []
+
+calculated_failure_queries = []
+
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 operators = {
@@ -560,7 +564,7 @@ def clear_failure_rate_data():
 
 
 # packetlossData is filled here
-def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_limit, upper_limit):
+def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_limit, upper_limit, log_scale=False):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0] is not None:
         operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
@@ -580,6 +584,10 @@ def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_lim
     ax.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '85', '90', '95'])
     # TODO: Fix UserWarning: FixedFormatter should only be used together with FixedLocator
 
+    if log_scale:
+        ax.set_yscale('log', base=2)
+    # else: ax.set_yscale('linear')
+
     # Creating plot
     # bp = ax.boxplot(packetlossData)
     # ax.boxplot(packetlossData)  # Old
@@ -591,9 +599,10 @@ def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_lim
     plt.savefig((file_name + "_" + operator_name + '_boxPlotLatency.png'), bbox_inches='tight')
     # show plot
     # plt.show()
+    print(f" Created box plot: {file_name}")
 
 
-def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
+def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit, log_scale=False):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0] is not None:
         operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
@@ -616,7 +625,7 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
 
     global latencyData
     for packet in latencyData:
-        print(f"  packet: {packet}")
+        # print(f"  packet: {packet}")
         if len(packet) == 0:
             packet.append(float(-0.1))
 
@@ -624,6 +633,9 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
     # bp = ax.violinplot(packetlossData)
     # bp = ax.violinplot(dataset=packetlossData, showmeans=True, showmedians=True,
     #                   showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    if log_scale:
+        ax.set_yscale('log', base=2)
 
     bp = ax.violinplot(dataset=latencyData, showmeans=True, showmedians=True,
                        showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
@@ -637,7 +649,7 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
     plt.savefig((file_name + "_" + operator_name + '_violinPlotLatency.png'), bbox_inches='tight')
     # show plot
     # plt.show()
-
+    print(f" Created violin plot: {file_name}")
 
 def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
@@ -647,36 +659,94 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
     print(f"Creating bar plot for {operator_name}")
 
     global failure_rate_data
-
+    # Clear failure rate counts of the global list
+    # Because we will fill it here after filtering all the packets by packetloss rate
     for lst in failure_rate_data:
         lst.clear()
 
-    # Rewrite
-    for packet in operator_specific_packet_list:
-        if packet.packetloss_rate == "pl0":
-            failure_rate_data[0].append(packet.response_code)
-        if packet.packetloss_rate == "pl10":
-            failure_rate_data[1].append(packet.response_code)
-        if packet.packetloss_rate == "pl20":
-            failure_rate_data[2].append(packet.response_code)
-        if packet.packetloss_rate == "pl30":
-            failure_rate_data[3].append(packet.response_code)
-        if packet.packetloss_rate == "pl40":
-            failure_rate_data[4].append(packet.response_code)
-        if packet.packetloss_rate == "pl50":
-            failure_rate_data[5].append(packet.response_code)
-        if packet.packetloss_rate == "pl60":
-            failure_rate_data[6].append(packet.response_code)
-        if packet.packetloss_rate == "pl70":
-            failure_rate_data[7].append(packet.response_code)
-        if packet.packetloss_rate == "pl80":
-            failure_rate_data[8].append(packet.response_code)
-        if packet.packetloss_rate == "pl85":
-            failure_rate_data[9].append(packet.response_code)
-        if packet.packetloss_rate == "pl90":
-            failure_rate_data[10].append(packet.response_code)
-        if packet.packetloss_rate == "pl95":
-            failure_rate_data[11].append(packet.response_code)
+    # Get the index of the operator to access the list with all operator packets
+    op_index = get_index_of_operator(operator_name)
+    list_of_operators[op_index]  # All packets of the operator
+
+    # filter all response packets bcs only they have rcodes?
+    # TODO: WRONG!! use list_of_operators[op_index] bcs calculate_failure_rate_of_packet() also checks unanswered queries
+    all_responses_of_operator = find_the_response_packets(list_of_operators[op_index])
+    # print(f"len(all_responses_of_operator): {len(all_responses_of_operator)}")
+
+    # TODO: Failure rate for client is the count of rcode != 0 + unanswered packets
+    # Failure count for authoritative is the count of unanswered packets because
+    # in auth1 there is no packet with dns.flags.rcode != 0
+
+    if "client" in file_name:
+        # Separate packets by  their packetloss rates
+        for packet in list_of_operators[op_index]:  # OLD: all_responses_of_operator:
+            # print(f"  get_packetloss_rate_of_packet(packet): {get_packetloss_rate_of_packet(packet)}")
+            if get_packetloss_rate_of_packet(packet) == "pl0":
+                # TODO: replace with calculate_failure_rate_of_packet(packet, 0)
+                calculate_failure_rate_of_packet(packet, 0)
+                # TODO: and make the calculate_failure_rate_of_packet() function also append the rcode 0 to failure_rate_data[]
+                #failure_rate_data[0].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl10":
+                calculate_failure_rate_of_packet(packet, 1)
+                #failure_rate_data[1].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl20":
+                calculate_failure_rate_of_packet(packet, 2)
+                #failure_rate_data[2].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl30":
+                calculate_failure_rate_of_packet(packet, 3)
+                #failure_rate_data[3].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl40":
+                calculate_failure_rate_of_packet(packet, 4)
+                #failure_rate_data[4].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl50":
+                calculate_failure_rate_of_packet(packet, 5)
+                #failure_rate_data[5].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl60":
+                calculate_failure_rate_of_packet(packet, 6)
+                #failure_rate_data[6].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl70":
+                calculate_failure_rate_of_packet(packet, 7)
+                #failure_rate_data[7].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl80":
+                calculate_failure_rate_of_packet(packet, 8)
+                #failure_rate_data[8].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl85":
+                calculate_failure_rate_of_packet(packet, 9)
+                #failure_rate_data[9].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl90":
+                calculate_failure_rate_of_packet(packet, 10)
+                #failure_rate_data[10].append(get_response_code_of_packet(packet))
+            if get_packetloss_rate_of_packet(packet) == "pl95":
+                calculate_failure_rate_of_packet(packet, 11)
+                #failure_rate_data[11].append(get_response_code_of_packet(packet))
+    elif "auth" in file_name:
+        # Separate packets by  their packetloss rates
+        for packet in list_of_operators[op_index]:
+            # print(f"  get_packetloss_rate_of_packet(packet): {get_packetloss_rate_of_packet(packet)}")
+            if get_packetloss_rate_of_packet(packet) == "pl0":
+                calculate_failure_rate_of_packet(packet, 0)
+            if get_packetloss_rate_of_packet(packet) == "pl10":
+                calculate_failure_rate_of_packet(packet, 1)
+            if get_packetloss_rate_of_packet(packet) == "pl20":
+                calculate_failure_rate_of_packet(packet, 2)
+            if get_packetloss_rate_of_packet(packet) == "pl30":
+                calculate_failure_rate_of_packet(packet, 3)
+            if get_packetloss_rate_of_packet(packet) == "pl40":
+                calculate_failure_rate_of_packet(packet, 4)
+            if get_packetloss_rate_of_packet(packet) == "pl50":
+                calculate_failure_rate_of_packet(packet, 5)
+            if get_packetloss_rate_of_packet(packet) == "pl60":
+                calculate_failure_rate_of_packet(packet, 6)
+            if get_packetloss_rate_of_packet(packet) == "pl70":
+                calculate_failure_rate_of_packet(packet, 7)
+            if get_packetloss_rate_of_packet(packet) == "pl80":
+                calculate_failure_rate_of_packet(packet, 8)
+            if get_packetloss_rate_of_packet(packet) == "pl85":
+                calculate_failure_rate_of_packet(packet, 9)
+            if get_packetloss_rate_of_packet(packet) == "pl90":
+                calculate_failure_rate_of_packet(packet, 10)
+            if get_packetloss_rate_of_packet(packet) == "pl95":
+                calculate_failure_rate_of_packet(packet, 11)
 
     # Create bar plot for failure rate
     # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
@@ -687,7 +757,7 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
 
     # DEBUG
     # for packet in failure_rate_data:
-    #     print(f"packet: {packet}")
+    #     print(f"packet in failure_rate_data: {packet}")
     #     for pac in packet:
     #         print(f"pac.response_code: {pac}")
 
@@ -698,13 +768,14 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
         # print(f"index: {index}")
         # print(f"Data: {failure_rate_data[index]}")
         fail_count = 0
+        # Loop all the rcodes of the current packetloss rate
         for x in range(len(failure_rate_data[index])):
-            if failure_rate_data[index][x] != "0" and failure_rate_data[index][x] != "-":
+            if failure_rate_data[index][x] != "0" and failure_rate_data[index][x] is not None:
                 fail_count += 1
         # print(f"Fail count: {fail_count}")
         if fail_count != 0:
-            # divide by len(failure_rate_data[index]) and multiply by 100 to get the percentage of the failure rate
-            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / len(failure_rate_data[index])) * 100
+            # divide by 180 bcs every resolver sends 50 queries for a pl rate, multiply by 100 to get the percentage of the failure rate
+            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / 50) * 100
         else:
             failure_rate_data_dict[str(current_packetloss_rate)] = 0
         index = index + 1
@@ -731,7 +802,7 @@ def create_bar_plot(file_name, operator_specific_packet_list, bottom_limit, uppe
     plt.savefig((file_name + "_" + operator_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
     # shot plot
     # plt.show()
-
+    print(f" Created bar plot: {file_name}")
 
 # Find and return the packet with the specified frame number
 def get_packet_by_frame_no(frame_no):
@@ -792,7 +863,33 @@ def extract_query_name_from_packet(packet):
         splitted2 = str(splitted_json1[1])
         return splitted2.split("'")[1]
     else:
-        return "Not a dns packet"
+        return None
+
+
+# Get the packetloss string of the json packet
+def get_packetloss_rate_of_packet(packet):
+    query_name = extract_query_name_from_packet(packet)
+    if query_name is not None:
+        query_ab_pl_rate = query_name.split("-")[5]
+        pl_rate = query_ab_pl_rate.split(".")[0]
+        return pl_rate   # <ipnr>-<ipnr>-<ipnr>-<ipnr>-<counter>-pl*.
+    else:
+        return None
+
+# Return the index of the operator list to access all the packets of an operator
+def get_index_of_operator(operator_name):
+
+    # DEBUG
+    # print(f"get_index_of_operator({operator_name})")
+    op_name_list = list(operators.keys())
+    # print(f"operators.keys(): {op_name_list}")
+
+    if operator_name in op_name_list:
+        result = op_name_list.index(operator_name)
+    else:
+        result = -1
+    # print(f"Index: {result }")
+    return result
 
 
 # Used to find the original (first) query among the duplicate queries
@@ -811,6 +908,14 @@ def find_the_response_packets(packet_list):
             responses.append(packet)
     return responses
 
+
+# Get response code of JSON
+def get_response_code_of_packet(packet):
+    if 'dns.flags.rcode' in packet['_source']['layers']['dns']['dns.flags_tree']:
+        current_rcode = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+        return current_rcode
+    else:
+        return None
 
 # No need?
 def find_the_first_response_from_packets(packet_list):
@@ -864,10 +969,11 @@ def calculate_latency_of_packet(current_packet):
 
         query_name_of_packet = extract_query_name_from_packet(current_packet)
         # If already calculated, skip
-        if query_name_of_packet in calculated_queries:
-            # print(f"    !! You already calculated latency for: {query_name_of_packet}")
-            # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
-            return None
+        if query_name_of_packet is not None:
+            if query_name_of_packet in calculated_queries:
+                # print(f"    !! You already calculated latency for: {query_name_of_packet}")
+                # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
+                return None
 
         packets = find_all_packets_with_query_name(query_name_of_packet)
 
@@ -885,10 +991,6 @@ def calculate_latency_of_packet(current_packet):
 
             # Get only all the query packets of the packets with the same query name
             queries = find_the_query_packets(packets)
-
-            # (Old)
-            # Get the first query that was sent (Did not work?)
-            # lowest_frame_query = find_lowest_relative_frame_time_of_packets(queries)
 
             lowest_frame_no_of_queries = find_lowest_frame_no(queries)
             query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
@@ -922,9 +1024,6 @@ def calculate_latency_of_packet(current_packet):
             # Latency is the difference between the relative frame times of the answer and the first query
             latency = first_term - last_term
 
-            # Calculate the number of duplicate queries to count the unanswered queries as failure later
-            unanswered_count = len(queries) - len(responses)
-
             # NOTE: If there was not a single answer to any of the (duplicate) queries,
             # then increment the failure count by one.
             # If you increment the failure count everytime when a duplicate query doesn't get answered,
@@ -953,9 +1052,110 @@ def calculate_latency_of_packet(current_packet):
     return None
 
 
+# Failure rate of client: Count of rcode != 0 for each query name + unanswered unique query count
+# TODO: make sure duplicate valid responses wont make the failure rate lower -> count the valid answer just once for the query
+# Count as fail if no answer with RCODE != 0
+def calculate_failure_rate_of_packet(current_packet, packetloss_index):
+    # DEBUG
+    # print(f"len(failure_rate_data): {len(failure_rate_data)}")
+    # print(f"failure_rate_data: {failure_rate_data}")
+
+    # If already calculated, skip
+    query_name_of_packet = extract_query_name_from_packet(current_packet)
+
+    # DEBUG
+    # debug = False
+    # if "64-6-64-6" in query_name_of_packet and "pl80" in query_name_of_packet:
+    #     debug = True
+    #     print(f"  NEUSTAR1 Match: {query_name_of_packet}")
+
+    if query_name_of_packet is not None:
+        if query_name_of_packet in calculated_failure_queries:
+            # if debug:
+            #     print(f"  Already calculated: {query_name_of_packet}")
+            return
+
+    rcode_is_error = False
+
+    current_rcode = "-"
+    # If the packet is a response with no error, dont examine it, count as success
+    if 'dns.flags.rcode' in current_packet['_source']['layers']['dns']['dns.flags_tree']:
+        current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+        if current_rcode == "0":
+            calculated_failure_queries.append(query_name_of_packet)
+            # Testing append 0
+            failure_rate_data[packetloss_index].append("0")
+            # if debug:
+            #     print(f"  RCODE was 0; appended 0: {query_name_of_packet}")
+            # TODO: What if multiple answers and multiple error codes + no error codes? -> Client success -> no error
+            return
+        # If there is a response with error, count as failure
+        else:  # current_rcode != "0"
+            # TODO: Debug, auth1 shouldnt get to here but it executes this
+            # if debug:
+            #     print(f"    RCODE was not 0; set rcode_is_error to True: {query_name_of_packet}")
+            #     print(f"    -> RCODE was {current_rcode} for {query_name_of_packet}")
+            rcode_is_error = True
+            # If this is the only answer, which has an error code, count as fail (below)
+    # The packet is a query
+    # Check if that packet is not answered
+    packets = find_all_packets_with_query_name(query_name_of_packet)
+
+    # DEBUG
+    # for pac in packets:
+    #     print(f"Query name: {extract_query_name_from_packet(pac)}")
+
+    responses = find_the_response_packets(packets)
+    responses_count = len(responses)
+    # DEBUG
+    # for resp in responses:
+    #     print(f"Query name of responses: {extract_query_name_from_packet(resp)}")
+
+    queries = find_the_query_packets(packets)
+    queries_count = len(queries)
+
+    # DEBUG
+    # for q in queries:
+    #     print(f"Query name of queries:{extract_query_name_from_packet(q)}")
+
+    # the query had an answer packet to it, that must be handled before?
+
+    # if debug:
+    #     print(f"    Response count for {query_name_of_packet} is {responses_count}")
+    #     print(f"    Query count for {query_name_of_packet} is {queries_count}")
+
+    # There was no response at all to the query, count as failure
+    if responses_count == 0:
+        # OLD: instead of appending an error code to the list, the list element is an integer that counts the errors
+        # failure_rate_data[packetloss_index] += 1
+
+        # New: List of RCODES, an unanswered query results in appending a new error code
+        failure_rate_data[packetloss_index].append("2")
+
+        # print(f"Incremented bcs no answer to {query_name_of_packet}")
+        calculated_failure_queries.append(query_name_of_packet)
+        # if debug:
+        #     print(f"  Append 2 bcs not a single response found for: {query_name_of_packet}")
+    # If this is the only answer, which has an error code, count as fail
+    # But what if multiple error responses and not only one: Count as one
+    elif rcode_is_error and responses_count >= 1:
+        # failure_rate_data[packetloss_index] += 1  # OLD
+        failure_rate_data[packetloss_index].append("2")
+
+        # print(f"Incremented bcs only answer with error")
+        calculated_failure_queries.append(query_name_of_packet)
+        # if debug:
+        #     print(f"  Append 2; rcode was error, response count >= 1: {query_name_of_packet}")
+        #     print(f"      RCODE: {current_rcode} for {query_name_of_packet} (2)")
+    else:
+        # print(f"   Unknown branch for {query_name_of_packet}, rcode: {current_rcode}, response count: {
+        # responses_count}, rcode_error = {rcode_is_error}")
+        return
+
+
 # Read the JSON files and store all the dns packets
-# into the global lists
-# Make it modular to get only certain packets?
+# into these global lists:
+# all_packets_pl, all_packets, list_of_operators
 def initialize_packet_lists(file_prefix):
     index = 0
     # Read the JSON file and for each captured packet and
@@ -1058,7 +1258,7 @@ def loop_all_packets_add_latencies():
 
     index = 0
     for packets_with_pl in all_packets_pl:
-        print(f"  @@ Packetloss rate: {index}")
+        print(f"  @@ Packetloss rate index: {index}")
         # f.write(f"  @@ Packetloss rate: {index}\n")
         for current_packet in packets_with_pl:
             latency = calculate_latency_of_packet(current_packet)
@@ -1081,12 +1281,16 @@ def show_all_latencies():
 
 # Clear all the global lists for the next JSON file
 def clear_lists():
+    global list_of_operators
     global latencyData
     global all_packets_pl
     global all_packets
 
     for packet_list in all_packets_pl:
         packet_list.clear()
+
+    for packet in list_of_operators:
+        packet.clear()
 
     for packet_list in latencyData:
         packet_list.clear()
@@ -1115,15 +1319,22 @@ file_names = ["client", "auth1"]  # , "auth2"]
 rcodes = ["0"]
 # Define limits of the plots
 bottom_limit = 0
-upper_limit = 50
+upper_limit = 30
+
+log_scale_y_axis = False
 
 for file_name in file_names:
 
+    print(f"Creating plots for {file_name}")
+
+    # Read the JSON files and store all the dns packets
+    # into these global lists:
+    # all_packets_pl, all_packets, list_of_operators
     initialize_packet_lists(file_name)
     loop_all_packets_add_latencies()
 
-    for operator in list_of_operators:
-        print(f"len(operator): {len(operator)}")
+    # for operator in list_of_operators:
+    #     print(f"len(operator): {len(operator)}")
 
     # show_all_latencies()
 
@@ -1138,20 +1349,28 @@ for file_name in file_names:
         filter_names_on_filename += "_rcodeFilter-"
         for rcode in rcodes:
             filter_names_on_filename += (rcode + "-")
-
+    if log_scale_y_axis:
+        filter_names_on_filename += "_LogScaledY-"
+    filter_names_on_filename += "Lim(" + str(bottom_limit) + "," + str(upper_limit) + ")_"
     file_name += filter_names_on_filename
 
     for operator in list_of_operators:
         # print(f"len(operator): {len(operator)}")
-        create_box_plot(file_name, operator, rcodes, bottom_limit, upper_limit)
-        # create_bar_plot(file_name, operator, bottom_limit, 100)
-        create_violin_plot(file_name, operator, bottom_limit, upper_limit)
+        create_box_plot(file_name, operator, rcodes, bottom_limit, upper_limit, log_scale_y_axis)
+        create_bar_plot(file_name, operator, bottom_limit, 100)
+        create_violin_plot(file_name, operator, bottom_limit, upper_limit, log_scale_y_axis)
 
         # Clear lists
         clear_answers()
         clear_retransmission_data()
         clear_failure_rate_data()
         clear_packetloss_data()
+
+        calculated_queries.clear()
+
+        calculated_latency_queries.clear()
+
+        calculated_failure_queries.clear()
 
         # Show answer-query count
         #  show_answer_query_count(answer_count_data)

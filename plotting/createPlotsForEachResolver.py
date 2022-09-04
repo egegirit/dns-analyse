@@ -1004,6 +1004,12 @@ def find_the_response_packets(packet_list, file_name):
             if not dst_ip_match(packet, client_only_dest_ips):
                 continue
 
+        # New
+        # For auth, get only reponses that is really sent from our auth server -> filter by auth IP as source IP
+        if file_name == "auth":
+            if not src_ip_match(packet, auth_only_dest_ips):
+                continue
+
         # New condition to filter NS record answers of anycast
         # and get only responses with A records
         if "Answers" in packet['_source']['layers']['dns']:
@@ -1094,6 +1100,7 @@ def dst_ip_match(packet, ip_list):
 def calculate_latency_of_packet(current_packet, file_name):
 
     # Filter the source and destination Addresses for client
+    # No need to filter for client, all responses of auth capture has auth IP as source IP
     if file_name == "client":
         src_match = src_ip_match(current_packet, client_only_source_ips)
         dst_match = dst_ip_match(current_packet, client_only_dest_ips)
@@ -1439,19 +1446,36 @@ def loop_operator_packets_add_latencies(operator_packets, file_name):
 # Set the global list of retransmission data
 def calculate_retransmission_of_query(current_packet, packetloss_index, file_name):
 
-    # Filter the source and destination Addresses for client
+    # For client, get all the queries with source IP of client
     if file_name == "client":
         src_match = src_ip_match(current_packet, client_only_source_ips)
-        dst_match = dst_ip_match(current_packet, client_only_dest_ips)
-        if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
+        # No need to filter for destination for client since each resolver has different IP
+        # dst_match = dst_ip_match(current_packet, client_only_dest_ips)
+        if not src_match:  # and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
+            return
+
+    # For auth, get all the queries, that has a destination IP of our auth server
+    if file_name == "auth":
+        # No need to filter for source for auth since each resolver has different IP
+        # src_match = src_ip_match(current_packet, client_only_source_ips)
+        dst_match = dst_ip_match(current_packet, auth_only_dest_ips)
+        if not dst_match:  # and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
             return
 
     # If already calculated, skip
     query_name_of_packet = extract_query_name_from_packet(current_packet)
+
+    debug = False
+    # DEBUG for Adguard 2
+    if "94-140-14-15" in query_name_of_packet:
+        if "pl85" in query_name_of_packet or "pl40" in query_name_of_packet:
+            debug = True
+            print(f"Adguard2 match: {query_name_of_packet}")
+
     if query_name_of_packet is not None:
         if query_name_of_packet in calculated_retransmission_queries:
-            # if debug:
-            # print(f"  Already calculated (skipping): {query_name_of_packet}")
+            if debug:
+                print(f"  Already calculated (skipping): {query_name_of_packet}")
             # f.write(f"  Already calculated (skipping): {query_name_of_packet}\n")
             return
 
@@ -1486,11 +1510,12 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
 
     # When more than one query with same query name, they count as duplicate
     if queries_count > 1:
-        # print(f"  {file_name}: Multiple ({queries_count}) queries for: {query_name_of_packet}\n  Response count of it: {responses_count}\n  Packetloss index of it: {packetloss_index}")
-        # for query in queries:
-        #    print(f"    Found query names: {extract_query_name_from_packet(query)}")
-        # for resp in responses:
-        #     print(f"    Found response names: {extract_query_name_from_packet(resp)}")
+        if debug:
+            print(f"  {file_name}: Multiple ({queries_count}) queries for: {query_name_of_packet}\n  Response count of it: {responses_count}\n  Packetloss index of it: {packetloss_index}")
+            for query in queries:
+                print(f"    Found query names: {extract_query_name_from_packet(query)}")
+            for resp in responses:
+                print(f"    Found response names: {extract_query_name_from_packet(resp)}")
 
         # f.write(f"  Multiple ({queries_count}) queries for: {query_name_of_packet}\n  Response count of it: {responses_count}\n  Packetloss index of it: {packetloss_index}\n")
         # Mark the query name as handled to not count other packets with query name again
@@ -1612,11 +1637,13 @@ def prepare_for_next_iteration():
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
 
+auth_only_dest_ips = ["139.19.117.11"]
+
 file_names = ["client", "auth1"]  # , "auth2"]
 # rcodes cant be an empty list
 # rcodes = ["0"]
 # rcodes = ["2"]
-rcodes = ["0", "2"]
+rcodes = ["0"]
 # Define limits of the plots
 bottom_limit = 0
 upper_limit = 30

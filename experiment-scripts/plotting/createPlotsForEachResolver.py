@@ -774,6 +774,31 @@ def create_bar_plot_failure(file_name, operator_specific_packet_list, bottom_lim
     #     for pac in packet:
     #         print(f"pac.response_code: {pac}")
 
+    # Write the failure count on the plot
+    fail_1 = []
+    fail_2 = []
+    fail_3 = []
+    fail_4 = []
+    fail_5 = []
+    fail_6 = []
+    fail_7 = []
+    fail_8 = []
+    fail_9 = []
+    fail_10 = []
+    fail_11 = []
+    fail_12 = []
+    failure_counts = [fail_1, fail_2,
+                      fail_3,
+                      fail_4,
+                      fail_5,
+                      fail_6,
+                      fail_7,
+                      fail_8,
+                      fail_9,
+                      fail_10,
+                      fail_11,
+                      fail_12]
+
     # The bar plot accepts a dictionary like above.
     # This for loop extracts the saved RCODE counts and converts them to a dictionary
     index = 0
@@ -791,8 +816,14 @@ def create_bar_plot_failure(file_name, operator_specific_packet_list, bottom_lim
             # TODO: change 50 by the query count of the resolver
             all_queryname_of_resolver = len(find_the_query_packets(operator_specific_packet_list, file_name))
             # print(f"all_queryname_of_resolver: {all_queryname_of_resolver}")
+
+            failure_counts[index] = fail_count
+
             failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / all_queryname_of_resolver) * 100
         else:
+
+            failure_counts[index] = 0
+
             failure_rate_data_dict[str(current_packetloss_rate)] = 0
         index = index + 1
 
@@ -812,7 +843,7 @@ def create_bar_plot_failure(file_name, operator_specific_packet_list, bottom_lim
     data_count_string = ""
     for i in range(len(latencyData)):
         data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
+            failure_counts[i]) + "\n"
     text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
     text.set_alpha(0.5)
 
@@ -1130,7 +1161,6 @@ def dst_ip_match(packet, ip_list):
 
 # Latency (between first query and answer) algorithm 2
 # "Zeit bis zur ersten Antwort (unabhängig von RCODE)"
-# TODO: "Zeit bis zur ersten NOERROR Antwort"
 # if packet has dns.time, get the packets query name, if there are more than 2 (query + answer) queries with that query name,
 # than you have duplicates, find the first query (using frame relative time of all of the queries),
 # calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
@@ -1142,19 +1172,27 @@ def calculate_latency_of_packet(current_packet, file_name):
         if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
             return None
 
+    debug = False
+
     # Get the dns.time if it exists, packets with dns.time are Responses with either No error or Servfail
     # Note: the packet has to have "Answers" section because an NS record has also dns.time,
     # but we want A record for resolution. But NS records can be filtered in the beginning now.
-    if 'dns.time' in current_packet['_source']['layers'][
-          'dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
+    if 'dns.time' in current_packet['_source']['layers']['dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
 
         query_name_of_packet = extract_query_name_from_packet(current_packet)
+
+        # if "185-228-168-168" in query_name_of_packet:
+        #     if "pl95" in query_name_of_packet:
+        #         print(f"  Match for cleanbrowsing 95 {file_name}")
+        #         debug = True
+
         # If already calculated, skip
         if query_name_of_packet is not None:
             if query_name_of_packet in calculated_queries:
-                # print(f"    !! You already calculated latency for: {query_name_of_packet}")
+                if debug:
+                    print(f"    !! You already calculated latency for: {query_name_of_packet}")
                 # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
                 return None
 
@@ -1171,9 +1209,13 @@ def calculate_latency_of_packet(current_packet, file_name):
 
         # If there are more than two packets with the same query name, there are duplicates (2 = query + answer)
         if len(packets) > 2:
-
+            if debug:
+                print(f"  {len(packets)} packets in total for: {query_name_of_packet}")
             # Get only all the query packets of the packets with the same query name
             queries = find_the_query_packets(packets, file_name)
+
+            if debug:
+                print(f"  {len(queries)} queries in total for: {query_name_of_packet}")
 
             # Find the first ever query that was sent for this query name
             lowest_frame_no_of_queries = find_lowest_frame_no(queries)
@@ -1186,7 +1228,8 @@ def calculate_latency_of_packet(current_packet, file_name):
             # If there are multiple answers to the same query, find the first answer, but no separation between RCODES
             # (lower latency as a result)
             if len(responses) > 1:
-                # print(f"  @@ Found multiple same answers for: {query_name_of_packet}")
+                if debug:
+                    print(f"  @@ Found multiple {len(responses)} answers for: {query_name_of_packet}")
                 # f.write(f"  @@ Found multiple same answers for: {query_name_of_packet}\n")
 
                 # TODO: "Zeit bis zur ersten NOERROR Antwort"
@@ -1199,7 +1242,8 @@ def calculate_latency_of_packet(current_packet, file_name):
                 # If there are any response packets with RCODE = 0 (No error)
                 # Calculate the time between this packet and the first query
                 if len(responses_with_rcode_0) > 0:
-                    # print(f" More than 1 responses, more than 1 no error: {query_name_of_packet}")
+                    if debug:
+                        print(f" {len(responses_with_rcode_0)} responses with no error for: {query_name_of_packet}")
                     lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
                     response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
                         lowest_frame_no_of_responses_with_0,
@@ -1211,6 +1255,8 @@ def calculate_latency_of_packet(current_packet, file_name):
                     first_term = rel_fr_time_of_first_response
                 # There were not a single answer packet with no error (all was ServFail)
                 else:
+                    if debug:
+                        print(f" Every answer was error for: {query_name_of_packet}")
                     lowest_frame_no_of_responses = find_lowest_frame_no(responses)
                     response_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_responses,
                                                                                             responses)
@@ -1227,12 +1273,17 @@ def calculate_latency_of_packet(current_packet, file_name):
                     # first_term = frame_time_of_first_response
             # If there was only one answer to multiple queries, the current packet is this only answer
             elif len(responses) == 1:
-                # print(f"  Only one answer but multiple queries for: {query_name_of_packet}")
+                if debug:
+                    print(f"  Only one answer but multiple queries for: {query_name_of_packet}")
                 # f.write(f"  Only one answer but multiple queries for: {query_name_of_packet}\n")
                 first_term = get_frame_time_relative_of_packet(current_packet)
 
             # Latency is the difference between the relative frame times of the answer and the first query
             latency = first_term - last_term
+
+            if debug:
+                print(f"  Latency of {query_name_of_packet}: {latency}")
+                print(f"    Latency calculation: {first_term} - {last_term}")
 
             # NOTE: If there was not a single answer to any of the (duplicate) queries,
             # then increment the failure count by one.
@@ -1251,21 +1302,39 @@ def calculate_latency_of_packet(current_packet, file_name):
             # Mark the query name as calculated to avoid calculating the duplicates multiple times
             calculated_queries.append(query_name_of_packet)
             return latency
-        # There was only 2 packets, query and its answer, return the dns.time directly
+        # There was only 2 packets, can be query and its answer, return the dns.time directly, or both of them are queries
         elif len(packets) == 2:
-            # print(f" Just one query and one answer: {query_name_of_packet}")
-            # print(f"Lantecy: {latency}")
-            return latency
+            # both of them are queries
+            if len(responses) == 0:
+                calculated_queries.append(query_name_of_packet)
+
+                if debug:
+                    print(f"    2 Queries and no answers found for: {query_name_of_packet}")
+                    print(f"      (No latency calculation) {latency}")
+
+                return None
+            elif len(responses) == 1:
+                calculated_queries.append(query_name_of_packet)
+                if debug:
+                    print(f"    Just one query and one answer(packet len 2): {query_name_of_packet}")
+                    print(f"    Its Lantecy (dns_time): {dns_time}")
+                    # print(f"      Latency calculation: {first_term} - {last_term}")
+                return dns_time
+
         # Else, there was only one packet, which is (must be) the query,
         # cant calculate the latency of only one packet, return none
         else:
-            # print(f"   Only one single packet(must be query?): {query_name_of_packet}")
+            calculated_queries.append(query_name_of_packet)
+            if debug:
+                print(f"   Only one single packet(must be query?): {query_name_of_packet}")
             return None
     # Adding the latency to the array is done outside of this function
     # Append only if result is not none:
     # latency = calculate_latency_of_packet(current_packet, i)
     # if latency != None:
     #    latencyData[i].append(latency)
+    if debug:
+        print(f"         No dns.time for {extract_query_name_from_packet(current_packet)}")
     return None
 
 
@@ -1704,6 +1773,12 @@ def prepare_for_next_iteration():
     all_packets.clear()
 
 
+# Get RCODE of a single JSON packet
+def get_rcode_of_packet(packet):
+    if 'dns.flags.rcode' in packet['_source']['layers']['dns']['dns.flags_tree']:
+        return packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+
+
 # Write text onto plots using this coordinates
 x_axis_for_text = 1
 y_axis_for_text = 1
@@ -1717,7 +1792,7 @@ file_names = ["client", "auth1"]  # , "auth2"]
 # rcodes cant be an empty list
 # rcodes = ["0"]
 # rcodes = ["2"]
-rcodes = ["2"]
+rcodes = ["0", "2"]
 # Define limits of the plots
 bottom_limit = 0
 upper_limit = 50

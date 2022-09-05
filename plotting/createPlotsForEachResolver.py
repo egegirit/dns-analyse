@@ -593,6 +593,15 @@ def create_box_plot(file_name, operator_specific_packet_list, rcodes, bottom_lim
     # ax.boxplot(packetlossData)  # Old
     ax.boxplot(latencyData)
 
+    # Add the data counts onto plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
+    # Make it transparent
+    text.set_alpha(.4)
+    # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+
     plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # save plot as png
@@ -639,6 +648,16 @@ def create_violin_plot(file_name, operator_specific_packet_list, bottom_limit, u
 
     bp = ax.violinplot(dataset=latencyData, showmeans=True, showmedians=True,
                        showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    # Add the data counts onto plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
+    # Make it transparent
+    text.set_alpha(.5)
+    # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+
     # Mean is blue
     bp['cmeans'].set_color('b')
     # Median is red
@@ -789,6 +808,14 @@ def create_bar_plot_failure(file_name, operator_specific_packet_list, bottom_lim
     # creating the bar plot
     plt.bar(failure_rates, values, color='maroon', width=4)
 
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    text.set_alpha(0.5)
+
     # set labels
     plt.xlabel("Packetloss Rate")
     plt.ylabel("DNS Response Failure Rate")
@@ -851,6 +878,14 @@ def create_bar_plot_retransmission(file_name, bottom_limit, upper_limit, operato
 
     # creating the bar plot
     plt.bar(failure_rates, values, color='blue', width=4)
+
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    text.set_alpha(0.5)
 
     # set labels
     plt.xlabel("Packetloss Rate")
@@ -1349,7 +1384,7 @@ def initialize_packet_lists(file_prefix, opt_filter=False):
                 if opt_filter:
                     if "Additional records" in json_data[i]['_source']['layers']['dns']:
                         if list(dict(json_data[i]['_source']['layers']['dns']["Additional records"]).values())[0][
-                            'dns.resp.type'] == "41":
+                              'dns.resp.type'] == "41":
                             # print(" OPT PACKET")
                             continue
 
@@ -1467,10 +1502,10 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
 
     debug = False
     # DEBUG for Adguard 2
-    if "94-140-14-15" in query_name_of_packet:
-        if "pl85" in query_name_of_packet or "pl40" in query_name_of_packet:
-            debug = True
-            print(f"Adguard2 match: {query_name_of_packet}")
+    # if "94-140-14-15" in query_name_of_packet:
+    #     if "pl85" in query_name_of_packet or "pl40" in query_name_of_packet:
+    #         debug = True
+    #         print(f"Adguard2 match: {query_name_of_packet}")
 
     if query_name_of_packet is not None:
         if query_name_of_packet in calculated_retransmission_queries:
@@ -1634,6 +1669,10 @@ def prepare_for_next_iteration():
     all_packets.clear()
 
 
+# Write text onto plots using this coordinates
+x_axis_for_text = 1
+y_axis_for_text = 1
+
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
 
@@ -1643,10 +1682,10 @@ file_names = ["client", "auth1"]  # , "auth2"]
 # rcodes cant be an empty list
 # rcodes = ["0"]
 # rcodes = ["2"]
-rcodes = ["0"]
+rcodes = ["2"]
 # Define limits of the plots
 bottom_limit = 0
-upper_limit = 30
+upper_limit = 50
 
 log_scale_y_axis = False
 opt_filter = False

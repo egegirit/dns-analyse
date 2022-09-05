@@ -502,8 +502,14 @@ def create_box_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=False
     # bp = ax.boxplot(packetlossData)
     ax.boxplot(latencyData)
 
-    # TODO: include the count of packets in the graph
-    # len(packetlossData[i])
+    # Add the data counts onto plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
+    # Make it transparent
+    text.set_alpha(.4)
+    # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
 
     plt.ylim(bottom=bottom_limit, top=upper_limit)
     # save plot as png
@@ -540,6 +546,16 @@ def create_violin_plot(file_name_prefix, bottom_limit, upper_limit, log_scale=Fa
     # bp = ax.violinplot(packetlossData)
     bp = ax.violinplot(dataset=latencyData, showmeans=True, showmedians=True,
                        showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    # Add the data counts onto plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
+    # Make it transparent
+    text.set_alpha(.5)
+    # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+
     # Mean is blue
     bp['cmeans'].set_color('b')
     # Median is red
@@ -659,6 +675,14 @@ def create_bar_plot_failure(file_name, bottom_limit, upper_limit):
     # creating the bar plot
     plt.bar(failure_rates, values, color='maroon', width=4)
 
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    text.set_alpha(0.5)
+
     # set labels
     plt.xlabel("Packetloss Rate")
     plt.ylabel("DNS Response Failure Rate")
@@ -714,6 +738,14 @@ def create_bar_plot_retransmission(file_name, bottom_limit, upper_limit, use_lim
 
     # creating the bar plot
     plt.bar(failure_rates, values, color='blue', width=4)
+
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(latencyData)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    text.set_alpha(0.5)
 
     # set labels
     plt.xlabel("Packetloss Rate")
@@ -891,11 +923,12 @@ def find_lowest_frame_no(packet_list):
 
 
 # Latency (between first query and answer) algorithm 2
+# "Zeit bis zur ersten Antwort (unabhängig von RCODE)"
+# TODO: "Zeit bis zur ersten NOERROR Antwort"
 # if packet has dns.time, get the packets query name, if there are more than 2 (query + answer) queries with that query name,
 # than you have duplicates, find the first query (using frame relative time of all of the queries),
 # calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
 def calculate_latency_of_packet(current_packet, file_name):
-
     # Filter the source and destination Addresses for client
     if file_name == "client":
         src_match = src_ip_match(current_packet, client_only_source_ips)
@@ -906,7 +939,8 @@ def calculate_latency_of_packet(current_packet, file_name):
     # Get the dns.time if it exists
     # Note: the packet has to have "Answers" section because an NS record has also dns.time,
     # but we want A record for resolution. But NS records can be filtered in the beginning now.
-    if 'dns.time' in current_packet['_source']['layers']['dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
+    if 'dns.time' in current_packet['_source']['layers'][
+        'dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
 
@@ -928,13 +962,13 @@ def calculate_latency_of_packet(current_packet, file_name):
         first_term = 0
         last_term = 0
 
-        # TODO: check if the packet is an answer to check if the len(packets) > 1 ?
         # If there are more than two packets with the same query name, there are duplicates (2 = query + answer)
         if len(packets) > 2:
 
             # Get only all the query packets of the packets with the same query name
             queries = find_the_query_packets(packets, file_name)
 
+            # Find the first ever query that was sent for this query name
             lowest_frame_no_of_queries = find_lowest_frame_no(queries)
             query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
             # get the relative frame time of packet
@@ -942,7 +976,8 @@ def calculate_latency_of_packet(current_packet, file_name):
 
             last_term = rel_fr_time_of_first_query
 
-            # If there are multiple answers to the same query, find the first answer (lower latency as a result)
+            # If there are multiple answers to the same query, find the first answer, but no separation between RCODES
+            # (lower latency as a result)
             if len(responses) > 1:
                 # print(f"  @@ Found multiple same answers for: {query_name_of_packet}")
                 # f.write(f"  @@ Found multiple same answers for: {query_name_of_packet}\n")
@@ -954,6 +989,11 @@ def calculate_latency_of_packet(current_packet, file_name):
                 rel_fr_time_of_first_response = get_frame_time_relative_of_packet(response_packet_with_lowest_frame_no)
 
                 first_term = rel_fr_time_of_first_response
+
+                # TODO: "Zeit bis zur ersten NOERROR Antwort"
+                # Among all the response packets, get the first response packet with a NOERROR
+                # Note that there might not exist such a packet, in that case, mark the query as calculated
+                # and dont calculate its latency
 
                 # (Old)
                 # frame_time_of_first_response = find_lowest_relative_frame_time_of_packets(responses)
@@ -1174,7 +1214,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
 
 # Set the global list of retransmission data
 def calculate_retransmission_of_query(current_packet, packetloss_index, file_name):
-
     # Filter the source and destination Addresses for client
     if file_name == "client":
         src_match = src_ip_match(current_packet, client_only_source_ips)
@@ -1317,7 +1356,7 @@ def initialize_packet_lists(file_prefix, filter_ip_list, rcodes, opt_filter=Fals
                 if opt_filter:
                     if "Additional records" in json_data[i]['_source']['layers']['dns']:
                         if list(dict(json_data[i]['_source']['layers']['dns']["Additional records"]).values())[0][
-                            'dns.resp.type'] == "41":
+                              'dns.resp.type'] == "41":
                             # print(" OPT PACKET")
                             continue
 
@@ -1469,7 +1508,7 @@ bottom_limit_client = 0
 upper_limit_client = 50
 bottom_limit_auth = 0
 upper_limit_auth = 50  # If rcode_filter is True, recommended value is 11 for client
-rcodes = ["0", "2"]  # Examine all the packets only with given rcodes, if empty -> no filtering
+rcodes = ["0"]  # Examine all the packets only with given rcodes, if empty -> no filtering
 # rcodes = ["0"]  # All packets with no error
 # rcodes = ["2", "5"]  # All packets with ServFail or Refused
 # rcodes = []  # To see all the packets
@@ -1481,6 +1520,11 @@ client_only_dest_ips = ["139.19.117.1"]
 
 log_scale_y_axis = False
 opt_filter = False
+
+# Write text onto plots using this coordinates
+x_axis_for_text = 1
+y_axis_for_text = 1
+# fontsize = 11
 
 for file_name in file_names:
 

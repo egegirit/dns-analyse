@@ -5,6 +5,21 @@ from datetime import datetime
 import sys
 import concurrent.futures
 
+ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
+
+# Atlas API specification from the probe selection website https://ihr.iijlab.net/ihr/en-us/metis/selection
+probe_dict = { "probes": 
+                [
+                    {
+                        "type": "asn",
+                        "value": 24521,
+                        "requested": 1
+                    }, # ...
+                ] }
+                
+# Store the extracted probe id's in a list
+as_ids = []                
+
 # https://atlas.ripe.net/docs/api/v2/reference/#!/measurements/Type
 #
 # [dns] udp_payload_size (integer): Set the EDNS0 option for UDP payload size to this value, between 512 and 4096.Defaults to 512),
@@ -32,7 +47,7 @@ import concurrent.futures
 # Sleep for a duration and show the remaining time on the console
 def sleep_for_seconds(sleep_time):
     print(
-        f"  Sleeping for {sleep_time} seconds."
+        f"  Sleeping for {sleep_time} seconds to let the probes upload their results."
     )
     print("  Remaining time:")
     # Output how many seconds left to sleep
@@ -42,9 +57,25 @@ def sleep_for_seconds(sleep_time):
         # Delete the last output line of the console
         # to show the remaining time without creating new lines
         print("\033[A                             \033[A")
+        
 
-# Create a source from probe_id and send a query with domain_name as query name
-def send_query_from_probe(probe_id, domain_name, counter):
+# Builds the query name string that the probe will send to the resolver 
+# from the given counter value
+# Query structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+def build_query_name_from_counter(counter):
+    if counter is not None and len(str(counter)) > 0:
+        return ".ripe-atlas-" + str(counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+        
+
+# Create a source from asn_id and send a query with domain_name as query name
+def send_query_from_probe(asn_id, counter):
+
+    print(f"  Building query name from current counter value: {counter}")  
+    # Build the query name from the counter value
+    query_name = build_query_name_from_counter(counter)  
+    print(f"    Built query name: {query_name}") 
+
+    print(f"  Creating DNS Query") 
     dns = Dns(
         key=ATLAS_API_KEY,
         description = f"Ege Girit Packetloss Experiment {counter}",
@@ -59,8 +90,8 @@ def send_query_from_probe(probe_id, domain_name, counter):
         # Configure the DNS query
         query_class = "IN",
         query_type = "A",
-        # Domain structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-        query_argument = domain_name  
+        # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+        query_argument = query_name 
         use_macros = True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
         prepend_probe_id = True,
@@ -80,24 +111,27 @@ def send_query_from_probe(probe_id, domain_name, counter):
         udp_payload_size = 1200,
     )
     
+    print(f"  Creating source from given asn_ID: {asn_id}")
     # Probe ID as parameter
-    source2 = AtlasSource(    
+    source1 = AtlasSource(    
         "type": "asn",
-        "value": probe_ID,
+        "value": asn_ID,
         "requested": 1    
     )
 
+    print(f"  Creating request from source")
     # Create request from given probe ID
     atlas_request = AtlasCreateRequest(
         start_time=datetime.utcnow(),
         key=ATLAS_API_KEY,
         measurements=[dns],
-        sources=[source2],
+        sources=[source1],
         # Always set this to true
         # The measurement will only be run once
         is_oneoff=True
     )
     
+    print(f"  Starting measurement")
     # Start the measurement
     (is_success, response) = atlas_request.create()
     is_success, response
@@ -110,10 +144,12 @@ def send_query_from_probe(probe_id, domain_name, counter):
     # Wait for the probes to upload their results before asking for the results
     sleep_for_seconds(300)
 
+    print(f"  Creating results")
     # Create results
     is_success, results = AtlasResultsRequest(**kwargs).create()
     is_success
 
+    print(f"  Results:")
     # Print results
     for result in results:
         print(DnsResult.get(result))
@@ -127,54 +163,65 @@ def send_query_from_probe(probe_id, domain_name, counter):
     # %%
     m.build_responses()
     
-    # TODO: Save results/reports in a file
+    # TODO: Save results/reports in a file?
 
 
-ATLAS_API_KEY=""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
+# Extract the asn values from the global probe_dict variable 
+# and store them in the global list as_ids
+def extract_asn_values(as_ids):
+    print("Reading the asn values")  
 
-# Atlas API specification from the probe selection website
-probe_dict = { "probes": 
-                [
-                    {
-                        "type": "asn",
-                        "value": 24521,
-                        "requested": 1
-                    }, # ...
-                ] }
+    global as_ids
 
-# Get the the probe count
-values = list(probe_dict.values())[0]
-probe_count = len(values)
-print(f"probe_count: {probe_count}")
-
-# Store the extracted probe id's
-as_ids = []
-
-# Extract the probe ID's from the selected probes in dictionary format
-for index in range(probe_count):
-    as_ids.append(values[index]['value'])
-    print(f"values: {values[index]['value']}")
-
-# For each probe id, send a query from the probe and build the query with a counter value
-# Counter value must be equal or greater than probe count
-counter = 0    
-for id in as_ids:
-    # Multithreading?
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-            # Using list comprehention to build the results list
-            # submit() schedules the callable to be executed and returns a 
-            # future object representing the execution of the callable.
-            results = [executor.submit(build_and_send_query_mp, [current_resolver_ip,
-                                                                 current_packetloss_rate,
-                                                                 counter_min,
-                                                                 counter_max,
-                                                                 sleep_time])
-                        for current_resolver_ip in resolver_ip_addresses]
-                query_name = ".ripe-atlas" + counter + ".packetloss.syssec-research.mmci.uni-saarland.de"
-                send_query_from_probe(id, query_name, counter)
-                counter += 1        
+    # Get the the probe count
+    values = list(probe_dict.values())[0]
+    probe_count = len(values)
+    
+    # Exit program if no probes found
+    if probe_count <= 0:
+        print(f"No probes found: {probe_count}")
+        sys.exit()
         
-    # Show the finished processes' outputs
-    for f in concurrent.futures.as_completed(results):
-        print(f.result())    
+    print(f"Probe count: {probe_count}")
+
+    # Extract the asn values from the given probes
+    for index in range(probe_count):
+        as_ids.append(values[index]['value'])
+        print(f"Values: {values[index]['value']}")        
+        
+
+print(" == Experiment starting ==")
+
+# Extracts the asn values in as_ids list
+extract_asn_values()
+
+# For each asn ID in as_ids, send a query from that probe and build the query with a counter value.
+# Counter value must be equal or greater than probe count.
+# Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
+counter = 0
+for id in as_ids:
+    # Example query: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de                                   
+    send_query_from_probe(id, counter)
+    counter += 1
+
+print(" == Experiment ended ==")     
+
+
+
+# Multithreading code?
+
+# All the counter values
+# counters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,]
+# for id in as_ids:
+#     # Multithreading to reduce runtime?
+#     with concurrent.futures.ProcessPoolExecutor() as executor:
+#             # Using list comprehention to build the results list
+#             # submit() schedules the callable to be executed and returns a 
+#             # future object representing the execution of the callable.
+#             # TODO: How to pass multiple arguments to the function using submit?
+#             results = [executor.submit(send_query_from_probe, [id, counter]) for counter in counters]
+#       
+#     # Show the finished processes' outputs
+#     for f in concurrent.futures.as_completed(results):
+#         print(f.result())     
     

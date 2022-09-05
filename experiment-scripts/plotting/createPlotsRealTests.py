@@ -936,11 +936,11 @@ def calculate_latency_of_packet(current_packet, file_name):
         if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
             return None
 
-    # Get the dns.time if it exists
+    # Get the dns.time if it exists, packets with dns.time are Responses with either No error or Servfail
     # Note: the packet has to have "Answers" section because an NS record has also dns.time,
     # but we want A record for resolution. But NS records can be filtered in the beginning now.
     if 'dns.time' in current_packet['_source']['layers'][
-        'dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
+          'dns']:  # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
 
@@ -959,6 +959,7 @@ def calculate_latency_of_packet(current_packet, file_name):
         # Because the first answer is valid, all other answers are not needed
         responses = find_the_response_packets(packets, file_name)
 
+        # latency = first_term(answer packet) - last_term(query packet)
         first_term = 0
         last_term = 0
 
@@ -982,22 +983,43 @@ def calculate_latency_of_packet(current_packet, file_name):
                 # print(f"  @@ Found multiple same answers for: {query_name_of_packet}")
                 # f.write(f"  @@ Found multiple same answers for: {query_name_of_packet}\n")
 
-                lowest_frame_no_of_responses = find_lowest_frame_no(responses)
-                response_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_responses,
-                                                                                        responses)
-                # get the relative frame time of packet
-                rel_fr_time_of_first_response = get_frame_time_relative_of_packet(response_packet_with_lowest_frame_no)
-
-                first_term = rel_fr_time_of_first_response
-
                 # TODO: "Zeit bis zur ersten NOERROR Antwort"
-                # Among all the response packets, get the first response packet with a NOERROR
-                # Note that there might not exist such a packet, in that case, mark the query as calculated
-                # and dont calculate its latency
+                # examine all the responses's RCODES, get the ones with RCODE = 0, get the first of them.
+                responses_with_rcode_0 = []
+                for response in responses:
+                    if get_rcode_of_packet(response) == "0":
+                        responses_with_rcode_0.append(response)
 
-                # (Old)
-                # frame_time_of_first_response = find_lowest_relative_frame_time_of_packets(responses)
-                # first_term = frame_time_of_first_response
+                # If there are any response packets with RCODE = 0 (No error)
+                # Calculate the time between this packet and the first query
+                if len(responses_with_rcode_0) > 0:
+                    # print(f" More than 1 responses, more than 1 no error: {query_name_of_packet}")
+                    lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
+                    response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
+                        lowest_frame_no_of_responses_with_0,
+                        responses)
+                    # get the relative frame time of packet
+                    rel_fr_time_of_first_response = get_frame_time_relative_of_packet(
+                        response_packet_0_with_lowest_frame_no)
+
+                    first_term = rel_fr_time_of_first_response
+                # There were not a single answer packet with no error (all was ServFail)
+                # Calculate the time between the first query and first error answer
+                else:
+                    lowest_frame_no_of_responses = find_lowest_frame_no(responses)
+                    response_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_responses,
+                                                                                            responses)
+                    # get the relative frame time of packet
+                    rel_fr_time_of_first_response = get_frame_time_relative_of_packet(response_packet_with_lowest_frame_no)
+
+                    first_term = rel_fr_time_of_first_response
+                    # Among all the response packets, get the first response packet with a NOERROR
+                    # Note that there might not exist such a packet, in that case, mark the query as calculated
+                    # and dont calculate its latency
+
+                    # (Old)
+                    # frame_time_of_first_response = find_lowest_relative_frame_time_of_packets(responses)
+                    # first_term = frame_time_of_first_response
             # If there was only one answer to multiple queries, the current packet is this only answer
             elif len(responses) == 1:
                 # print(f"  Only one answer but multiple queries for: {query_name_of_packet}")
@@ -1024,9 +1046,16 @@ def calculate_latency_of_packet(current_packet, file_name):
             # Mark the query name as calculated to avoid calculating the duplicates multiple times
             calculated_queries.append(query_name_of_packet)
             return latency
-        else:
+        # There was only 2 packets, query and its answer, return the dns.time directly
+        elif len(packets) == 2:
+            # print(f" Just one query and one answer: {query_name_of_packet}")
             # print(f"Lantecy: {latency}")
             return latency
+        # Else, there was only one packet, which is (must be) the query,
+        # cant calculate the latency of only one packet, return none
+        else:
+            # print(f"   Only one single packet(must be query?): {query_name_of_packet}")
+            return None
     # Adding the latency to the array is done outside of this function
     # Append only if result is not none:
     # latency = calculate_latency_of_packet(current_packet, i)
@@ -1498,6 +1527,12 @@ def prepare_for_next_iteration():
     all_packets.clear()
 
 
+# Get RCODE of a single JSON packet
+def get_rcode_of_packet(packet):
+    if 'dns.flags.rcode' in packet['_source']['layers']['dns']['dns.flags_tree']:
+        return packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+
+
 # File prefixes of JSON files
 file_names = ["client", "auth1"]  # , "auth2"]
 
@@ -1508,7 +1543,7 @@ bottom_limit_client = 0
 upper_limit_client = 50
 bottom_limit_auth = 0
 upper_limit_auth = 50  # If rcode_filter is True, recommended value is 11 for client
-rcodes = ["0"]  # Examine all the packets only with given rcodes, if empty -> no filtering
+rcodes = ["0", "2"]  # Examine all the packets only with given rcodes, if empty -> no filtering
 # rcodes = ["0"]  # All packets with no error
 # rcodes = ["2", "5"]  # All packets with ServFail or Refused
 # rcodes = []  # To see all the packets

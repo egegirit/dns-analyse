@@ -72,7 +72,7 @@ dns.qry.name matches "216-146-35-35-" && dns.qry.name matches "pl95" && dns.flag
 
 (dns.qry.name matches "77-88-8-1-" || dns.qry.name matches "77-88-8-8-") && dns.qry.name matches "pl80" && dns.time
 
-dns.qry.name matches "94-140-14-15" && dns.qry.name matches "pl95" && dns.flags.response == 1 && dns.flags.rcode == 0
+dns.qry.name matches "8-8-8-8" && dns.qry.name matches "pl85" && dns.flags.response == 1 && dns.flags.rcode == 0
 
 dns.qry.name matches "216-146-36-36-47-pl30.packetloss.syssec-research.mmci.uni-saarland.de" && dns.qry.name matches "pl85"
 
@@ -123,3 +123,7 @@ Multiple queries for counter:
 
 Unanswered query counter:
 1,3,8,12,18,23,31,37
+
+
+old pcap, resolver specific, auth1, norcode, dyn1 violin plot,
+why +50 latency on pl70?

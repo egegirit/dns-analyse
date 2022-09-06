@@ -91,7 +91,7 @@ def send_query_from_probe(asn_id, counter):
         query_class = "IN",
         query_type = "A",
         # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-        query_argument = query_name 
+        query_argument = query_name,
         use_macros = True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
         prepend_probe_id = True,

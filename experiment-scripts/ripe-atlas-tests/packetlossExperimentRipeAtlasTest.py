@@ -65,7 +65,7 @@ def sleep_for_seconds(sleep_time):
 def build_query_name_from_counter(counter):
     if counter is not None and len(str(counter)) > 0:
         return ".ripe-atlas-" + str(counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
-        
+
 
 # Create a source from asn_id and send a query with domain_name as query name
 def send_query_from_probe(asn_id, counter):
@@ -117,7 +117,7 @@ def send_query_from_probe(asn_id, counter):
         "type": "asn",
         "value": asn_ID,
         "requested": 1    
-    )
+        )
 
     print(f"  Creating request from source")
     # Create request from given probe ID
@@ -144,6 +144,8 @@ def send_query_from_probe(asn_id, counter):
     # Wait for the probes to upload their results before asking for the results
     sleep_for_seconds(300)
 
+    # No needed on authoritative Server
+    # Results can be downloaded later using measurement ID's
     print(f"  Creating results")
     # Create results
     is_success, results = AtlasResultsRequest(**kwargs).create()
@@ -168,7 +170,7 @@ def send_query_from_probe(asn_id, counter):
 
 # Extract the asn values from the global probe_dict variable 
 # and store them in the global list as_ids
-def extract_asn_values(as_ids):
+def extract_asn_values():
     print("Reading the asn values")  
 
     global as_ids

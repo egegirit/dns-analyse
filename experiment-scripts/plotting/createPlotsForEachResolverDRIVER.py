@@ -814,12 +814,24 @@ def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_
         if fail_count != 0:
             # divide by 180 bcs every resolver sends 50 queries for a pl rate, multiply by 100 to get the percentage of the failure rate
             # TODO: change 50 by the query count of the resolver
-            all_queryname_of_resolver = len(find_the_query_packets(operator_specific_packet_list, file_name))
+            # Wrong, this is all the packetloss configs queries
+            # Divide by 12?
+            # all_queryname_of_resolver = len(find_the_query_packets(operator_specific_packet_list, file_name))
+
+            queries_of_pl_rate_of_resolver = []
+            all_queries_of_resolver = find_the_query_packets(operator_specific_packet_list, file_name)
+            current_pl = "pl" + str(packetloss_rates[index])
+            for packet in all_queries_of_resolver:
+                query_name = extract_query_name_from_packet(packet)
+                if current_pl in query_name:
+                    queries_of_pl_rate_of_resolver.append(packet)
+
+            divide_by = len(queries_of_pl_rate_of_resolver)
             # print(f"all_queryname_of_resolver: {all_queryname_of_resolver}")
 
             failure_counts[index] = fail_count
 
-            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / all_queryname_of_resolver) * 100
+            failure_rate_data_dict[str(current_packetloss_rate)] = (fail_count / divide_by) * 100
         else:
 
             failure_counts[index] = 0
@@ -1370,26 +1382,22 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
     rcode_is_error = False
 
     current_rcode = "-"
-    # If the packet is a response with no error, dont examine it, count as success
+    # If the packet is a response with no error, dont examine that query name again, count as success
     if 'dns.flags.rcode' in current_packet['_source']['layers']['dns']['dns.flags_tree']:
         current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
         if current_rcode == "0":
             calculated_failure_queries.append(query_name_of_packet)
-            # Testing append 0
             failure_rate_data[packetloss_index].append("0")
             # if debug:
             #     print(f"  RCODE was 0; appended 0: {query_name_of_packet}")
             # TODO: What if multiple answers and multiple error codes + no error codes? -> Client success -> no error
             return
-        # If there is a response with error, count as failure
+        # If it is a response with error, count as failure
+        # TODO: But check if the query name has no error responses
         else:  # current_rcode != "0"
-            # TODO: Debug, auth1 shouldnt get to here but it executes this
-            # if debug:
-            #     print(f"    RCODE was not 0; set rcode_is_error to True: {query_name_of_packet}")
-            #     print(f"    -> RCODE was {current_rcode} for {query_name_of_packet}")
             rcode_is_error = True
             # If this is the only answer, which has an error code, count as fail (below)
-    # The packet is a query
+    # The packet can be a query or a ServFail answer
     # Check if that packet is not answered
     packets = find_all_packets_with_query_name(query_name_of_packet)
 
@@ -1430,9 +1438,19 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
         #     print(f"  Append 2 bcs not a single response found for: {query_name_of_packet}")
     # If this is the only answer, which has an error code, count as fail
     # But what if multiple error responses and not only one: Count as one
-    elif rcode_is_error and responses_count >= 1:
-        # failure_rate_data[packetloss_index] += 1  # OLD
-        failure_rate_data[packetloss_index].append("2")
+    elif responses_count >= 1:  # and rcode_is_error:
+        # examine all the responses's RCODES, get the ones with RCODE = 0, get the first of them.
+        responses_with_rcode_0 = []
+        for response in responses:
+            if get_rcode_of_packet(response) == "0":
+                responses_with_rcode_0.append(response)
+
+        # If there are successes among the responses, count the query as success
+        if len(responses_with_rcode_0) > 0:
+            failure_rate_data[packetloss_index].append("0")
+        # No success among responses -> failure
+        else:
+            failure_rate_data[packetloss_index].append("2")
 
         # print(f"Incremented bcs only answer with error")
         calculated_failure_queries.append(query_name_of_packet)
@@ -1780,9 +1798,10 @@ def get_rcode_of_packet(packet):
 
 def run_with_filters():
     # Define all possible RCODE Filters
-    rcodes1 = ["0"]
-    rcodes2 = ["2"]
-    rcodes3 = ["0", "2"]
+    rcodes1 = ["0", "2"]
+    rcodes2 = ["0"]
+    rcodes3 = ["2"]
+
     all_possible_rcodes = [rcodes1, rcodes2, rcodes3]
 
     # Define limits of the plots

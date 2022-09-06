@@ -1237,7 +1237,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
         current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
         if current_rcode == "0":
             calculated_failure_queries.append(query_name_of_packet)
-            # Testing append 0
             failure_rate_data[packetloss_index].append("0")
             # if debug:
             #     print(f"  RCODE was 0; appended 0: {query_name_of_packet}")
@@ -1245,7 +1244,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
             return
         # If there is a response with error, count as failure
         else:  # current_rcode != "0"
-            # TODO: Debug, auth1 shouldnt get to here but it executes this
             # if debug:
             #     print(f"    RCODE was not 0; set rcode_is_error to True: {query_name_of_packet}")
             #     print(f"    -> RCODE was {current_rcode} for {query_name_of_packet}")
@@ -1292,9 +1290,19 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
         #     print(f"  Append 2 bcs not a single response found for: {query_name_of_packet}")
     # If this is the only answer, which has an error code, count as fail
     # But what if multiple error responses and not only one: Count as one
-    elif rcode_is_error and responses_count >= 1:
-        # failure_rate_data[packetloss_index] += 1  # OLD
-        failure_rate_data[packetloss_index].append("2")
+    elif responses_count >= 1:  # and rcode_is_error
+        # examine all the responses's RCODES, get the ones with RCODE = 0, get the first of them.
+        responses_with_rcode_0 = []
+        for response in responses:
+            if get_rcode_of_packet(response) == "0":
+                responses_with_rcode_0.append(response)
+
+        # If there are successes among the responses, count the query as success
+        if len(responses_with_rcode_0) > 0:
+            failure_rate_data[packetloss_index].append("0")
+        # No success among responses -> failure
+        else:
+            failure_rate_data[packetloss_index].append("2")
 
         # print(f"Incremented bcs only answer with error")
         calculated_failure_queries.append(query_name_of_packet)

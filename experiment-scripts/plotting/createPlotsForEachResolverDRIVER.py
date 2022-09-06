@@ -213,222 +213,12 @@ list_of_operators = [
 ]
 
 
-class DNSPacket:
-    def __init__(self, dns_idx, transport_protocol, query_name, is_answer, response_latency,
-                 response_code, truncated, opcode, ip_src, ip_dst, is_answer_response, query_ip, packetloss_rate,
-                 counter, is_query, operator, retransmission):
-        self.query_name = query_name  # domain name
-        self.ip_src = ip_src  # ip_src inside ["_source"]["layers"]["ip"]
-        self.ip_dst = ip_dst  # ip_dst inside ["_source"]["layers"]["ip"]
-        self.transport_protocol = transport_protocol  # udp or tcp inside ["_source"]["layers"]
-        self.dns_idx = dns_idx  # dns.id inside dns
-        self.is_answer = is_answer  # QR Flag in the header, 0 = Query, 1 = Response (Answer)
-        self.is_answer_response = is_answer_response  # QR Flag in the header, 0 = Query, 1 = Response (Answer)
-        self.truncated = truncated  # dns.flags.truncated inside dns.flags_tree
-        # Following attributes are valid only if the dns packet is an answer
-        self.response_latency = response_latency  # dns.time inside dns
-        self.response_code = response_code  # RCODE = 0 -> No error, 1 -> Error: dns.flags.response inside dns.flags_tree
-        self.opcode = opcode  # dns.flags.opcode inside dns.flags_tree
-        self.query_ip = query_ip  # ip with dashes
-        self.packetloss_rate = packetloss_rate
-        self.counter = counter
-        self.is_query = is_query
-        self.operator = operator  # "Google1" etc
-        self.retransmission = retransmission  # "1" or "0"
-
-
 def get_operator_name_from_ip(ip_addr_with_dashes):
     for operator, ip_addr in operators.items():
         if ip_addr == ip_addr_with_dashes:
             return operator
     else:
         return "Not found!"
-
-
-def read_json_files(file_prefix):
-    # not_dns = 0
-    # dns_packets_count = 0
-
-    index = 0
-    # Read the JSON file and for each captured packet, create a DNSPacket object,
-    # set its variables according to the information read in the packet
-    for current_packetloss_rate in packetloss_rates:
-        filename = file_prefix + "_" + str(current_packetloss_rate) + ".json"
-        print(f"Reading {filename}")
-        if not os.path.exists("./" + filename):
-            print(f"File not found: {filename}")
-            exit()
-        # Read the measured latencies from json file
-        file = open(filename)
-        json_data = json.load(file)
-        # print(f"Number of packets in the file: {len(data)}")  # Number of packets captured and saved in the file
-        # print(data[0])  # Contents of the first packet in JSON format
-        # print(data[1]['_source']['layers']['dns']['dns.time'])  # "0.044423000"
-        packet_count = len(json_data)
-        print(f"  Number of packets in JSON file: {packet_count}")
-
-        # response_count = 0
-        # Examine all the captured packets in the JSON file
-        # dns_id = ""  # DEBUG
-        # duplicate = 0
-        # duplicate_bool = False
-
-        # test_failure_rate_count = 0
-
-        print(f"  Current packetloss rate: {current_packetloss_rate}")
-
-        # Examine all the packets in the JSON file
-        for i in range(0, packet_count):
-            # Check if the packet is a DNS packet
-            if 'dns' in json_data[i]['_source']['layers']:
-                # dns_packets_count = dns_packets_count + 1
-
-                # Create a dns packet object for the current packet
-                currentPacket = DNSPacket("-", "-", "-", "0", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-                                          "-", "-")
-
-                # Check if the DNS packet is using UDP as transport protocol
-                if 'udp' in json_data[i]['_source']['layers']:
-                    currentPacket.transport_protocol = "UDP"
-                # Check if the DNS packet is using TCP as transport protocol
-                if 'tcp' in json_data[i]['_source']['layers']:
-                    currentPacket.transport_protocol = "TCP"
-                # Get the query name and break it down to its components like ip address, counter, packetloss rate.
-                # Query structure: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
-                # Query example: 94-140-14-14-1-pl95.packetloss.syssec-research.mmci.uni-saarland.de
-                if "Queries" in json_data[i]['_source']['layers']['dns']:
-                    # print(f"Not none: {jsonData[i]['_source']['layers']['dns']['Queries']}")
-                    json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
-                    splitted_json1 = json_string.split("'dns.qry.name': ")
-                    splitted2 = str(splitted_json1[1])
-                    # print(f"splitted_json[1]: {splitted2}")
-                    query_name = splitted2.split("'")[1]
-                    # print(f"Current query name: {query_name}")
-
-                    # Check if the current IP is structured right
-                    query_match = re.search(".*-.*-.*-.*-.*-pl.*.packetloss.syssec-research.mmci.uni-saarland.de",
-                                            query_name)
-                    if query_match is None:
-                        continue
-
-                    splitted_domain = query_name.split("-")
-                    ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
-                                          splitted_domain[2] + "-" + splitted_domain[3]
-
-                    op_name = get_operator_name_from_ip(ip_addr_with_dashes)
-
-                    query_ip = ip_addr_with_dashes
-                    counter = splitted_domain[4]
-                    packetloss_rate = splitted_domain[5].split(".")[0]  # [2:]
-                    test = splitted_domain[5].split(".")[0]
-
-                    currentPacket.query_name = query_name
-                    currentPacket.query_ip = query_ip
-                    currentPacket.counter = counter
-                    currentPacket.packetloss_rate = packetloss_rate
-                    currentPacket.operator = op_name
-
-                    # print(f"query_name: {query_name}")
-                    # print(f"ip_addr_with_dashes: {ip_addr_with_dashes}")
-                    # print(f"counter: {splitted_domain[4]}")
-                    # print(f"packetloss_rate: {test}")
-
-                    # if json_data[i]['_source']['layers']['dns']['Queries'][0] is not None:
-                    #    # print(f"Current: {jsonData[i]['_source']['layers']['dns']['Queries'][0]}")
-                    #     if "dns.qry.name" in jsonData[i]['_source']['layers']['dns']['Queries']
-                    #     ['94-140-14-14-1-pl95.packetloss.syssec-research.mmci.uni-saarland.de: type A, class IN']:
-                    #        current_query_name = json_data[i]['_source']['layers']['dns'][0]["dns.qry.name"]
-                    #        currentPacket.query_name = current_query_name
-
-                # Get latencies of the answer packets
-                # print(data[i]['_source']['layers']['dns'])
-                # To get the dns_time, the packet must have an "Answers" section
-                if 'Answers' in json_data[i]['_source']['layers']['dns']:
-                    # Mark packet as Answer # TODO: Unnecessary bcs of dns.flags.response(is_answer_response)?
-                    # is_answer = "1"
-                    currentPacket.is_answer = "1"
-                    # Note: Not all answers has dns.time?
-                else:
-                    # is_answer = "0"
-                    currentPacket.is_answer = "0"
-                # Get failure rate (RCODE only present when there is an Answers section in the JSON)
-                # count of dns.flags.rcode != 0
-                if 'dns.flags.response' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:  # DEBUG
-                    # response_count = response_count + 1  # DEBUG
-                    # print(f"Response count: {response_count}")  # DEBUG
-                    # Query = 0, Response (Answer) = 1
-                    # RCode only exists if dns packet has is an answer
-                    if json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "0":
-                        # is_query = "1"
-                        currentPacket.is_query = "0"
-                        # Count the message as query
-                        answer_count_data[index].append("0")
-                    if json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
-                        # Count the message as response (answer to query)
-                        answer_count_data[index].append("1")
-                        currentPacket.is_query = "1"
-
-                        # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
-                        # if dns_id == jsonData[i]['_source']['layers']['dns']['dns.id']:  # DEBUG
-                        #    duplicate = duplicate + 1  # DEBUG
-                        #    # print(f"Duplicate: {duplicate}")  # DEBUG
-                        # else:
-                        #    test_count += 1
-                        #    # print(f"Unique packet Count: {test_count}")  # DEBUG
-                        rcode = json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
-                        failure_rate_data[index].append(int(rcode))
-                        currentPacket.response_code = rcode
-
-                        # Assign packets RCODE
-                        # response_code = rcode
-                        # print(f"  rcode: {rcode}")  # DEBUG
-                        # print(f"  currentPacket.response_code: {currentPacket.response_code}")  # DEBUG
-                        # if rcode != "0":
-                        #     test_failure_rate_count = test_failure_rate_count + 1
-                        #     print(f"  test_failure_rate_count: {test_failure_rate_count}")  # DEBUG
-                        # dns_id = jsonData[i]['_source']['layers']['dns']['dns.id']  # DEBUG
-                        if 'dns.time' in json_data[i]['_source']['layers']['dns']:
-                            # print(f"DNS ID: {jsonData[i]['_source']['layers']['dns']['dns.id']}")  # DEBUG
-                            # Assign the dns response latency
-                            # response_latency = jsonData[i]['_source']['layers']['dns']['dns.time']
-
-                            dns_time = json_data[i]['_source']['layers']['dns']['dns.time']
-                            # packetlossData[index].append(float(dns_time))
-                            currentPacket.response_latency = dns_time
-                # Get the TC Bit
-                if 'dns.flags.truncated' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:
-                    truncated = json_data[i]['_source']['layers']['dns']['dns.flags_tree'][
-                        'dns.flags.truncated']
-                    currentPacket.truncated = truncated
-                # Get the DNS ID of the current DNS packet to check
-                # if the next packet has the same ID to detect duplicates
-                dns_id = json_data[i]['_source']['layers']['dns']['dns.id']  # Detect duplicates
-                # Set the dns id to the current packet
-                # dns_idx = jsonData[i]['_source']['layers']['dns']['dns.id']
-                currentPacket.dns_idx = dns_id
-
-                # packetlossData[index].append(currentPacket)
-                if "dns.retransmission" in json_data[i]['_source']['layers']['dns']:
-                    retransmission_data[index] += 1
-                    currentPacket.retransmission = "1"
-
-                # Add the current dns packet to the list
-                # dns_packets_in_pl.append(currentPacket)
-                all_packetloss_packets[index].append(currentPacket)
-            # else:
-            #     not_dns = not_dns + 1
-
-        # all_packetloss_packets[index].append(dns_packets_in_pl)
-        # dns_packets_in_pl.clear()
-        index = index + 1
-
-        # This was outside the for loop
-        # print(f"Packetloss rate: {current_packetloss_rate}")
-        # print(f"    DNS Packet count: {dns_packets_count}")
-        # print(f"  Non-DNS Packet count: {not_dns}")
-        # Reset the packet count for the next packetloss config
-        # dns_packets_count = 0
-        # not_dns = 0
 
 
 def classify_packets_by_operators():
@@ -611,6 +401,9 @@ def create_box_plot(directory_name, file_name, operator_specific_packet_list, rc
     # show plot
     # plt.show()
     print(f" Created box plot: {file_name}")
+    # Clear plots
+    plt.cla()
+    plt.close()
 
 
 def create_violin_plot(directory_name, file_name, operator_specific_packet_list, bottom_limit, upper_limit, log_scale=False):
@@ -695,6 +488,9 @@ def create_violin_plot(directory_name, file_name, operator_specific_packet_list,
     # show plot
     # plt.show()
     print(f" Created violin plot: {file_name}")
+    # Clear plots
+    plt.cla()
+    plt.close()
 
 def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_list, bottom_limit, upper_limit):
     operator_name = "UNKNOWN"
@@ -896,6 +692,9 @@ def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_
     # shot plot
     # plt.show()
     print(f" Created bar plot: {file_name}")
+    # Clear plots
+    plt.cla()
+    plt.close()
 
 
 # failure_rate_data is already filled when looping the packets
@@ -970,6 +769,9 @@ def create_bar_plot_retransmission(directory_name, file_name, bottom_limit, uppe
     # plt.show()
     print(f" Created retransmission plot: {file_name}")
     # f.write(f" Created retransmission plot: {file_name}\n")
+    # Clear plots
+    plt.cla()
+    plt.close()
 
 
 # Find and return the packet with the specified frame number
@@ -2052,14 +1854,14 @@ def run_with_filters():
             # Loop all packets of client, get all the unique query names of the queries, store in
             # client_query_names, and also get all the unique query names of responses,
             # store in client_responses_query_names
-            if file_name == "client":
-                global client_query_names
-                client_query_names = loop_all_packets_get_all_query_names()
-                # auth_and_client_read = False
-            if file_name == "auth1":
-                global auth_query_names
-                auth_query_names = loop_all_packets_get_all_query_names()
-                # auth_and_client_read = True
+            # if file_name == "client":
+            #     global client_query_names
+            #     client_query_names = loop_all_packets_get_all_query_names()
+            #     # auth_and_client_read = False
+            # if file_name == "auth1":
+            #     global auth_query_names
+            #     auth_query_names = loop_all_packets_get_all_query_names()
+            #     # auth_and_client_read = True
 
             # Add the filtering options to the file name of the plots
             filter_names_on_filename = ""
@@ -2105,9 +1907,9 @@ def run_with_filters():
 
         # Calculate, how many client queries are not redirected to the auth server
         # by the resolver suing client_query_names and auth_query_names
-        for operator in list_of_operators:
-            create_missing_query_bar_plot_for_auth(operator)
-        clear_missing_query_lists()
+        # for operator in list_of_operators:
+        #     create_missing_query_bar_plot_for_auth(operator)
+        # clear_missing_query_lists()
 
         directory_index += 1
 

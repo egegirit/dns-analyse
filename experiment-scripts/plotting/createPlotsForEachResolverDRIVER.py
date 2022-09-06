@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 import json
 import re
 import os
@@ -581,17 +582,13 @@ def create_box_plot(directory_name, file_name, operator_specific_packet_list, rc
     ax.set_title(f'Packetloss-Latency for {operator_name}')
 
     # y-axis labels
-    ax.set_xticklabels(['0', '10', '20', '30', '40', '50', '60', '70', '80', '85', '90', '95'])
-    # TODO: Fix UserWarning: FixedFormatter should only be used together with FixedLocator
+    # Set the X axis labels/positions
+    ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+    ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
 
     if log_scale:
         ax.set_yscale('log', base=2)
     # else: ax.set_yscale('linear')
-
-    # Creating plot
-    # bp = ax.boxplot(packetlossData)
-    # ax.boxplot(packetlossData)  # Old
-    ax.boxplot(latencyData)
 
     # Add the data counts onto plot
     data_count_string = ""
@@ -603,6 +600,11 @@ def create_box_plot(directory_name, file_name, operator_specific_packet_list, rc
     # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
 
     plt.ylim(bottom=bottom_limit, top=upper_limit)
+
+    # Creating plot
+    # bp = ax.boxplot(packetlossData)
+    # ax.boxplot(packetlossData)  # Old
+    ax.boxplot(latencyData, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95], widths=4.4)
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name + "_" + operator_name + '_boxPlotLatency.png'), bbox_inches='tight')
@@ -632,11 +634,18 @@ def create_violin_plot(directory_name, file_name, operator_specific_packet_list,
     ax.set_xlabel('Packetloss in percantage')
     ax.set_title(f'Packetloss-Latency for {operator_name}')
 
+    # IF a packetloss latency list is empty, add negative dummy value so that violinplot doesnt crash
+    # Since the plots bottom limit is, it wont be visible in graph
+    # But when you add this, you need to subtract it from the count on the plot text
     global latencyData
+    index_of_dummy = 0
+    dummy_indexes = []
     for packet in latencyData:
         # print(f"  packet: {packet}")
         if len(packet) == 0:
-            packet.append(float(-0.1))
+            packet.append(float(-0.2))
+            dummy_indexes.append(index_of_dummy)
+        index_of_dummy += 1
 
     # Create and save Violinplot
     # bp = ax.violinplot(packetlossData)
@@ -650,9 +659,19 @@ def create_violin_plot(directory_name, file_name, operator_specific_packet_list,
                        showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
 
     # Add the data counts onto plot
+    # But if the list was empty and we added a dummy value, subtract it from the plot text
     data_count_string = ""
-    for i in range(len(latencyData)):
-        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    if len(dummy_indexes) > 0:
+        for i in range(len(latencyData)):
+            # if the index length was 0 so that we added a dummy value, subtract it from the count
+            if i in dummy_indexes:
+                data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])-1) + "\n"
+            # Index was not 0, write the actual length
+            else:
+                data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
+    else:
+        for i in range(len(latencyData)):
+            data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(latencyData[i])) + "\n"
     text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
     # Make it transparent
     text.set_alpha(.5)
@@ -663,6 +682,13 @@ def create_violin_plot(directory_name, file_name, operator_specific_packet_list,
     # Median is red
     bp['cmedians'].set_color('r')
     plt.ylim(bottom=bottom_limit, top=upper_limit)
+
+    # Add legend for mean and median
+    blue_line = mlines.Line2D([], [], color='blue', marker='',
+                              markersize=15, label='mean')
+    red_line = mlines.Line2D([], [], color='red', marker='',
+                             markersize=15, label='median')
+    ax.legend(handles=[blue_line, red_line], loc='upper left')
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name + "_" + operator_name + '_violinPlotLatency.png'), bbox_inches='tight')
@@ -848,9 +874,6 @@ def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_
     plt.figure(figsize=(10, 5))
     # fig = plt.figure(figsize=(10, 5))
 
-    # creating the bar plot
-    plt.bar(failure_rates, values, color='maroon', width=4)
-
     # adding text inside the plot
     data_count_string = ""
     for i in range(len(latencyData)):
@@ -864,6 +887,9 @@ def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_
     plt.ylabel("DNS Response Failure Rate")
     plt.title(f"Response Failure Rate for {operator_name}")
     plt.ylim(bottom=bottom_limit, top=upper_limit)
+
+    # creating the bar plot
+    plt.bar(failure_rates, values, color='maroon', width=4)
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name + "_" + operator_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
@@ -919,9 +945,6 @@ def create_bar_plot_retransmission(directory_name, file_name, bottom_limit, uppe
     plt.figure(figsize=(10, 5))
     # fig = plt.figure(figsize=(10, 5))
 
-    # creating the bar plot
-    plt.bar(failure_rates, values, color='blue', width=4)
-
     # adding text inside the plot
     data_count_string = ""
     for i in range(len(latencyData)):
@@ -937,6 +960,9 @@ def create_bar_plot_retransmission(directory_name, file_name, bottom_limit, uppe
 
     if use_limits:
         plt.ylim(bottom=bottom_limit, top=upper_limit)
+
+    # creating the bar plot
+    plt.bar(failure_rates, values, color='blue', width=4)
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name + "_" + operator_name + '_barPlotRetransmissionCount.png'), bbox_inches='tight')
@@ -1731,8 +1757,8 @@ def clear_lists():
 
     all_packets.clear()
 
-
 def find_operator_name_of_json_packet(packet):
+    # print(f" DEBUG: packet: {packet}, len(): {len(packet)}")
     json_string = str(packet['_source']['layers']['dns']['Queries'])
     splitted_json1 = json_string.split("'dns.qry.name': ")
     splitted2 = str(splitted_json1[1])
@@ -1796,6 +1822,200 @@ def get_rcode_of_packet(packet):
         return packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
 
 
+def loop_all_packets_get_all_query_names():
+    all_query_names_pl0 = []
+    all_query_names_pl10 = []
+    all_query_names_pl20 = []
+    all_query_names_pl30 = []
+    all_query_names_pl40 = []
+    all_query_names_pl50 = []
+    all_query_names_pl60 = []
+    all_query_names_pl70 = []
+    all_query_names_pl80 = []
+    all_query_names_pl85 = []
+    all_query_names_pl90 = []
+    all_query_names_pl95 = []
+    all_query_names = [
+        all_query_names_pl0,
+        all_query_names_pl10,
+        all_query_names_pl20,
+        all_query_names_pl30,
+        all_query_names_pl40,
+        all_query_names_pl50,
+        all_query_names_pl60,
+        all_query_names_pl70,
+        all_query_names_pl80,
+        all_query_names_pl85,
+        all_query_names_pl90,
+        all_query_names_pl95
+    ]
+    global all_packets_pl
+    index = 0
+    for pl_rate in all_packets_pl:
+        for packet in pl_rate:
+            query_name_of_current_packet = extract_query_name_from_packet(packet)
+            # If query already in list, don't add a duplicate
+            if query_name_of_current_packet not in all_query_names[index]:
+                all_query_names[index].append(query_name_of_current_packet)
+        index += 1
+
+    # print(all_query_names)
+    return all_query_names
+
+
+# Create a bar plot showing how many queries are not sent to the auth server
+def create_missing_query_bar_plot_for_auth(operator_specific_packet_list):
+    operator_name = "UNKNOWN"
+    if operator_specific_packet_list[0] is not None:
+        operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
+
+    print(f" Creating missing query bar plot: {operator_name}")
+
+    global client_query_names
+    global auth_query_names
+
+    all_query_names_op_specific_pl0 = []
+    all_query_names_op_specific_pl10 = []
+    all_query_names_op_specific_pl20 = []
+    all_query_names_op_specific_pl30 = []
+    all_query_names_op_specific_pl40 = []
+    all_query_names_op_specific_pl50 = []
+    all_query_names_op_specific_pl60 = []
+    all_query_names_op_specific_pl70 = []
+    all_query_names_op_specific_pl80 = []
+    all_query_names_op_specific_pl85 = []
+    all_query_names_op_specific_pl90 = []
+    all_query_names_op_specific_pl95 = []
+
+    all_client_query_names_op_specific = [
+        all_query_names_op_specific_pl0,
+        all_query_names_op_specific_pl10,
+        all_query_names_op_specific_pl20,
+        all_query_names_op_specific_pl30,
+        all_query_names_op_specific_pl40,
+        all_query_names_op_specific_pl50,
+        all_query_names_op_specific_pl60,
+        all_query_names_op_specific_pl70,
+        all_query_names_op_specific_pl80,
+        all_query_names_op_specific_pl85,
+        all_query_names_op_specific_pl90,
+        all_query_names_op_specific_pl95
+    ]
+
+    all_auth_query_names_op_specific_pl0 = []
+    all_auth_query_names_op_specific_pl10 = []
+    all_auth_query_names_op_specific_pl20 = []
+    all_auth_query_names_op_specific_pl30 = []
+    all_auth_query_names_op_specific_pl40 = []
+    all_auth_query_names_op_specific_pl50 = []
+    all_auth_query_names_op_specific_pl60 = []
+    all_auth_query_names_op_specific_pl70 = []
+    all_auth_query_names_op_specific_pl80 = []
+    all_auth_query_names_op_specific_pl85 = []
+    all_auth_query_names_op_specific_pl90 = []
+    all_auth_query_names_op_specific_pl95 = []
+
+    all_auth_query_names_op_specific = [
+        all_auth_query_names_op_specific_pl0,
+        all_auth_query_names_op_specific_pl10,
+        all_auth_query_names_op_specific_pl20,
+        all_auth_query_names_op_specific_pl30,
+        all_auth_query_names_op_specific_pl40,
+        all_auth_query_names_op_specific_pl50,
+        all_auth_query_names_op_specific_pl60,
+        all_auth_query_names_op_specific_pl70,
+        all_auth_query_names_op_specific_pl80,
+        all_auth_query_names_op_specific_pl85,
+        all_auth_query_names_op_specific_pl90,
+        all_auth_query_names_op_specific_pl95
+    ]
+
+    # From the global list that has all the client queries, get all the queries of the current resolver
+    # And separate them into different packetloss rates
+    index = 0
+    for client_query_names_pl in client_query_names:
+        for client_query_name_pl in client_query_names_pl:
+            # Check if the query packet is a packet of the current resolver
+            if operator_name in client_query_name_pl:
+            # if operator_name in find_operator_name_of_json_packet(client_query_name_pl):
+                query_name_of_current_packet = client_query_name_pl
+                # If the query not already examined, take it into the list
+                if query_name_of_current_packet not in all_client_query_names_op_specific[index]:
+                    all_client_query_names_op_specific[index].append(query_name_of_current_packet)
+        index += 1
+
+    # From the global list that has all the auth queries, get all the queries of the current resolver
+    # And separate them into different packetloss rates
+    index = 0
+    for auth_query_names_pl in auth_query_names:
+        for auth_query_name_pl in auth_query_names_pl:
+            # Check if the query packet is a packet of the current resolver
+            if operator_name in auth_query_name_pl:
+                query_name_of_current_packet = auth_query_name_pl
+                # If the query not already examined, take it into the list
+                if query_name_of_current_packet not in all_auth_query_names_op_specific[index]:
+                    all_auth_query_names_op_specific[index].append(query_name_of_current_packet)
+        index += 1
+
+    # Create bar plot for failure rate
+    # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
+    missing_query_data_dict = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
+                               '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
+
+    failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+
+    # The bar plot accepts a dictionary like above.
+    # This for loop extracts the saved RCODE counts and converts them to a dictionary
+    index = 0
+    for current_packetloss_rate in packetloss_rates:
+        client_query_name_count_pl = len(all_client_query_names_op_specific[index])
+        auth_query_name_count_pl = len(all_auth_query_names_op_specific[index])
+        missing_query_count_on_auth_pl = client_query_name_count_pl - auth_query_name_count_pl
+        missing_query_data_dict[str(current_packetloss_rate)] = missing_query_count_on_auth_pl
+
+        index = index + 1
+
+    keys = list(missing_query_data_dict.keys())
+    values = list(missing_query_data_dict.values())
+
+    print(f"Failure rates: {keys}")
+    print(f"Missing data counts: {values}")
+
+    plt.figure(figsize=(10, 5))
+
+    # adding text inside the plot
+    # data_count_string = ""
+    # for i in range(len(latencyData)):
+    #    data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(?) + "\n"
+    # text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    # text.set_alpha(0.5)
+
+    # set labels
+    plt.xlabel("Packetloss Rate")
+    plt.ylabel("Missing Query Count")
+    plt.title(f"Missing Query Count For Authoritative Server")
+
+    # creating the bar plot
+    plt.bar(failure_rates, values, color='green', width=4)
+
+    # save plot as png
+    plt.savefig((operator_name + '_barPlotMissingQuery.png'), bbox_inches='tight')
+    # shot plot
+    # plt.show()
+    print(f" Created bar plot: {operator_name}")
+
+
+# Clear the missing transmission lists for the next filtering option
+def clear_missing_query_lists():
+    global client_query_names
+    for pl_rate in client_query_names:
+        pl_rate.clear()
+
+    global auth_query_names
+    for pl_rate in auth_query_names:
+        pl_rate.clear()
+
+
 def run_with_filters():
     # Define all possible RCODE Filters
     rcodes1 = ["0", "2"]
@@ -1819,7 +2039,8 @@ def run_with_filters():
     directory_index = 0
     for rcode_filter in all_possible_rcodes:
         print(f" @@@@ Creating Resolver plots with RCODE Filter: {rcode_filter} @@@@")
-
+        # When creating missing queries on auth, make sure you read all the JSON files of both client and auth
+        # auth_and_client_read = False
         for file_name in file_names:
 
             print(f"Creating plots for {file_name}")
@@ -1828,12 +2049,17 @@ def run_with_filters():
             # all_packets_pl, all_packets, list_of_operators
             initialize_packet_lists(file_name, opt_filter)
 
-            # for operator in list_of_operators:
-            #     print(f"len(operator): {len(operator)}")
-
-            # show_all_latencies()
-
-            # classify_packets_by_operators()
+            # Loop all packets of client, get all the unique query names of the queries, store in
+            # client_query_names, and also get all the unique query names of responses,
+            # store in client_responses_query_names
+            if file_name == "client":
+                global client_query_names
+                client_query_names = loop_all_packets_get_all_query_names()
+                # auth_and_client_read = False
+            if file_name == "auth1":
+                global auth_query_names
+                auth_query_names = loop_all_packets_get_all_query_names()
+                # auth_and_client_read = True
 
             # Add the filtering options to the file name of the plots
             filter_names_on_filename = ""
@@ -1874,23 +2100,26 @@ def run_with_filters():
                 calculated_latency_queries.clear()
                 calculated_failure_queries.clear()
 
-                # Show answer-query count
-                #  show_answer_query_count(answer_count_data)
-
-                # Show retransmission counts
-                # show_restransmission_data(retransmission_data)
-
-                # Show latencies
-                # show_latencies(packetlossData)
-
-                # show_failure_count()
+            # Problem: this deletes all the global packets
             prepare_for_next_iteration()
+
+        # Calculate, how many client queries are not redirected to the auth server
+        # by the resolver suing client_query_names and auth_query_names
+        for operator in list_of_operators:
+            create_missing_query_bar_plot_for_auth(operator)
+        clear_missing_query_lists()
+
         directory_index += 1
 
 
+# List that store unique query names for each packetloss rate
+# to find not redirected queries for auth server
+client_query_names = []
+auth_query_names = []
+
 # Write text onto plots using this coordinates
-x_axis_for_text = 1
-y_axis_for_text = 1
+x_axis_for_text = .5
+y_axis_for_text = .5
 
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]

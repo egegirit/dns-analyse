@@ -2,6 +2,10 @@ import sys
 
 # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
 
+# *.ripeatlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+
+# *.ripeatlas-<counter>-<packetloss-rate>.packetloss.syssec-research.mmci.uni-saarland.de
+
 # Nameserver definition example
 # @	IN	NS	nameserver20.packetloss.syssec-research.mmci.uni-saarland.de.
 
@@ -18,6 +22,7 @@ created_a_records = []
 
 ip_address_with_dots = "139.19.117.11"
 
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 # Creates nameserver definitions
 def create_nameserver_definitions():
@@ -34,22 +39,27 @@ def create_nameserver_definitions():
 
 # Create A records for the domains
 def create_a_records(ip_addr, delimeter="\t"):
-    # f = open("A_records.txt", "a")
+    f = open("A_records_ripe-atlas.txt", "a")
     global created_domain_names
     for domain_name in created_domain_names:
         # print(f"domain_name: {domain_name}")
         result = domain_name + delimeter + "IN" + delimeter + "A" + delimeter + ip_addr
         print(f"Created A record: {result}")
         created_a_records.append(result)
-        # f.write(result + "\n")
+        f.write(result + "\n")
 
-    # f.close()
+    f.close()
 
 
-for counter in range(100):
-    created_domain = "*.ripe-atlas-" + str(counter) + base_zone
-    # global created_domain_names
-    created_domain_names.append(created_domain)
+domain_count = 1000
+
+# *.ripeatlas-<counter>-<packetloss-rate>.packetloss.syssec-research.mmci.uni-saarland.de
+
+for pl_rate in packetloss_rates:
+    for counter in range(domain_count):
+        created_domain = "*.ripeatlas-" + str(counter) + "-pl" + str(pl_rate) + base_zone
+        # global created_domain_names
+        created_domain_names.append(created_domain)
 
 create_nameserver_definitions()
-create_a_records(ip_address_with_dots, delimeter="\t")
+# create_a_records(ip_address_with_dots, delimeter="\t")

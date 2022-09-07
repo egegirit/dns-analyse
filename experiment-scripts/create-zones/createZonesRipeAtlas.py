@@ -1,17 +1,5 @@
 import sys
 
-# Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-
-# *.ripeatlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-
-# *.ripeatlas-<counter>-<packetloss-rate>.packetloss.syssec-research.mmci.uni-saarland.de
-
-# Nameserver definition example
-# @	IN	NS	nameserver20.packetloss.syssec-research.mmci.uni-saarland.de.
-
-# A Record definition example
-# ripe-atlas-<counter>	IN	A	192.168.1.1
-
 base_zone = ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 # Results will be stored here
@@ -61,5 +49,5 @@ for pl_rate in packetloss_rates:
         # global created_domain_names
         created_domain_names.append(created_domain)
 
-create_nameserver_definitions()
-# create_a_records(ip_address_with_dots, delimeter="\t")
+# create_nameserver_definitions()
+create_a_records(ip_address_with_dots, delimeter="\t")

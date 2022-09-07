@@ -97,6 +97,8 @@ all_packets_pl = [packet_pl0, packet_pl10, packet_pl20, packet_pl30, packet_pl40
 
 # All the packets in all of the JSON files
 all_packets = []
+all_packets_1 = []  # client
+all_packets_2 = []  # auth
 
 # Store all the latencies by their packetloss rates
 latency_0 = []
@@ -1383,6 +1385,24 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
     # Slow runtime
     packets = find_all_packets_with_query_name(query_name_of_packet)
 
+    # TODO: New, test
+    # For the client, after getting all the packets with the query name
+    # Filter again by the source IP
+    packets_with_client_src_ip = []
+    if file_name == "client":
+        for packet in packets:
+            if src_ip_match(packet, client_only_source_ips):
+                packets_with_client_src_ip.append(packet)
+        packets = packets_with_client_src_ip
+
+    packets_with_auth_dst_ip = []
+    # For auth, get all the queries, that has a destination IP of our auth server
+    if file_name == "auth1":
+        for packet in packets:
+            if dst_ip_match(packet, auth_only_dest_ips):
+                packets_with_auth_dst_ip.append(packet)
+        packets = packets_with_auth_dst_ip
+
     # DEBUG
     # print(f" All packets with query name:")
     # for pac in packets:
@@ -1515,6 +1535,15 @@ def initialize_packet_lists(file_prefix, filter_ip_list, rcodes, opt_filter=Fals
                 global all_packets
                 all_packets_pl[index].append(json_data[i])
                 all_packets.append(json_data[i])
+
+                global all_packets_1
+                global all_packets_2
+
+                if file_prefix == "client":
+                    all_packets_1.append(json_data[i])
+                elif file_prefix == "auth1":
+                    all_packets_2.append(json_data[i])
+
                 # print(f"Added: {query_name}")
 
         index = index + 1
@@ -1655,50 +1684,65 @@ def get_rcode_of_packet(packet):
         return packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
 
 
-def loop_all_packets_get_all_query_names():
-    all_query_names_pl0 = []
-    all_query_names_pl10 = []
-    all_query_names_pl20 = []
-    all_query_names_pl30 = []
-    all_query_names_pl40 = []
-    all_query_names_pl50 = []
-    all_query_names_pl60 = []
-    all_query_names_pl70 = []
-    all_query_names_pl80 = []
-    all_query_names_pl85 = []
-    all_query_names_pl90 = []
-    all_query_names_pl95 = []
-    all_query_names = [
-        all_query_names_pl0,
-        all_query_names_pl10,
-        all_query_names_pl20,
-        all_query_names_pl30,
-        all_query_names_pl40,
-        all_query_names_pl50,
-        all_query_names_pl60,
-        all_query_names_pl70,
-        all_query_names_pl80,
-        all_query_names_pl85,
-        all_query_names_pl90,
-        all_query_names_pl95
-    ]
-    global all_packets_pl
-    index = 0
-    for pl_rate in all_packets_pl:
-        for packet in pl_rate:
-            query_name_of_current_packet = extract_query_name_from_packet(packet)
-            # If query already in list, don't add a duplicate
-            if query_name_of_current_packet not in all_query_names[index]:
-                all_query_names[index].append(query_name_of_current_packet)
-        index += 1
+# Input: "pl0" Output 0
+def get_index_of_packetloss_rate(pl_rate):
+    if pl_rate == "pl0":
+        return 0
+    if pl_rate == "pl10":
+        return 1
+    if pl_rate == "pl20":
+        return 2
+    if pl_rate == "pl30":
+        return 3
+    if pl_rate == "pl40":
+        return 4
+    if pl_rate == "pl50":
+        return 5
+    if pl_rate == "pl60":
+        return 6
+    if pl_rate == "pl70":
+        return 7
+    if pl_rate == "pl80":
+        return 8
+    if pl_rate == "pl85":
+        return 9
+    if pl_rate == "pl90":
+        return 10
+    if pl_rate == "pl95":
+        return 11
+    return None
 
-    # print(all_query_names)
-    return all_query_names
+
+def loop_all_packets_get_all_query_names(file_name):
+    global client_query_names
+    global auth_query_names
+    global all_packets_pl
+    global all_packets
+    global all_packets_1
+    global all_packets_2
+
+    if file_name == "client":
+        print(f"       Filling client_query_names")
+        for packet in all_packets_1:
+            qry_name = extract_query_name_from_packet(packet)
+            pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
+            pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
+            if qry_name not in client_query_names[pl_index]:
+                client_query_names[pl_index].append(qry_name)
+    elif file_name == "auth1":
+        print(f"       Filling auth_query_names")
+
+        for packet in all_packets_2:
+            qry_name = extract_query_name_from_packet(packet)
+            pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
+            pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
+            if qry_name not in auth_query_names[pl_index]:
+                auth_query_names[pl_index].append(qry_name)
 
 
 # Create a bar plot showing how many queries are not sent to the auth server
-def create_missing_query_bar_plot_for_auth(file_name):
-    print(f" Creating missing query bar plot: {file_name}")
+def create_missing_query_bar_plot_for_auth(filter_name):
+    print(f" Creating missing query bar plot: {filter_name}")
 
     global client_query_names
     global auth_query_names
@@ -1745,10 +1789,10 @@ def create_missing_query_bar_plot_for_auth(file_name):
     plt.bar(failure_rates, values, color='green', width=4)
 
     # save plot as png
-    plt.savefig((file_name + '_barPlotMissingQuery.png'), bbox_inches='tight')
+    plt.savefig((filter_name + '_barPlotMissingQuery.png'), bbox_inches='tight')
     # shot plot
     # plt.show()
-    print(f" Created bar plot: {file_name}")
+    print(f" Created bar plot: {filter_name}")
 
 
 # Clear the missing transmission lists for the next filtering option
@@ -1803,6 +1847,7 @@ def run_with_filters():
         for resolver_filter in all_resolver_filters:
             print(f" @@@@ Creating Resolver plots with RCODE Filter: {rcodes} @@@@")
             print(f" @@@@ And Resolver Filter: {resolver_filter} @@@@")
+            x = 0
             for file_name in file_names:
 
                 # Read the json dns packets
@@ -1813,13 +1858,7 @@ def run_with_filters():
                 # Loop all packets of client, get all the unique query names of the queries, store in
                 # client_query_names, and also get all the unique query names of responses,
                 # store in client_responses_query_names
-                if file_name == "client":
-                    global client_query_names
-                    client_query_names = loop_all_packets_get_all_query_names()
-                if file_name == "auth1":
-                    global auth_query_names
-                    auth_query_names = loop_all_packets_get_all_query_names()
-
+                loop_all_packets_get_all_query_names(file_name)
 
                 # file_name as argument because latency calculation needs to know if its client or auth capture
                 loop_all_packets_latencies_failures_retransmissions(file_name)
@@ -1898,24 +1937,87 @@ def run_with_filters():
                 # show_failure_count()
 
                 prepare_for_next_iteration()
+                x += 1
+
+            filters = ""
+            for rcodez in all_possible_rcodes:
+                for r in rcodez:
+                    filters += r + "_"
+            for resolver_filterz in all_resolver_filters:
+                for resolver_ip in resolver_filterz:
+                    filters += resolver_ip + "_"
             # Calculate, how many client queries are not redirected to the auth server
             # by the resolver suing client_query_names and auth_query_names
-            create_missing_query_bar_plot_for_auth(file_name)
-            clear_missing_query_lists()
+            # Create the plot only after client and auth packet initializations are done
+            if x == 2:
+                create_missing_query_bar_plot_for_auth(filters)
+                clear_missing_query_lists()
 
             directory_index += 1
 
 
 # List that store unique query names for each packetloss rate
 # to find not redirected queries for auth server
-client_query_names = []
-auth_query_names = []
+client_query_names_pl0 = []
+client_query_names_pl10 = []
+client_query_names_pl20 = []
+client_query_names_pl30 = []
+client_query_names_pl40 = []
+client_query_names_pl50 = []
+client_query_names_pl60 = []
+client_query_names_pl70 = []
+client_query_names_pl80 = []
+client_query_names_pl85 = []
+client_query_names_pl90 = []
+client_query_names_pl95 = []
+client_query_names = [
+    client_query_names_pl0,
+    client_query_names_pl10,
+    client_query_names_pl20,
+    client_query_names_pl30,
+    client_query_names_pl40,
+    client_query_names_pl50,
+    client_query_names_pl60,
+    client_query_names_pl70,
+    client_query_names_pl80,
+    client_query_names_pl85,
+    client_query_names_pl90,
+    client_query_names_pl95
+]
+
+auth_query_names_pl0 = []
+auth_query_names_pl10 = []
+auth_query_names_pl20 = []
+auth_query_names_pl30 = []
+auth_query_names_pl40 = []
+auth_query_names_pl50 = []
+auth_query_names_pl60 = []
+auth_query_names_pl70 = []
+auth_query_names_pl80 = []
+auth_query_names_pl85 = []
+auth_query_names_pl90 = []
+auth_query_names_pl95 = []
+auth_query_names = [
+    auth_query_names_pl0,
+    auth_query_names_pl10,
+    auth_query_names_pl20,
+    auth_query_names_pl30,
+    auth_query_names_pl40,
+    auth_query_names_pl50,
+    auth_query_names_pl60,
+    auth_query_names_pl70,
+    auth_query_names_pl80,
+    auth_query_names_pl85,
+    auth_query_names_pl90,
+    auth_query_names_pl95
+]
 
 # File prefixes of JSON files
 file_names = ["client", "auth1"]  # , "auth2"]
 
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
+auth_only_dest_ips = ["139.19.117.11"]
 
 log_scale_y_axis = False
 opt_filter = False

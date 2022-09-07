@@ -1467,6 +1467,24 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
     # Slow runtime
     packets = find_all_packets_with_query_name(query_name_of_packet)
 
+    # TODO: New, test
+    # For the client, after getting all the packets with the query name
+    # Filter again by the source IP
+    packets_with_client_src_ip = []
+    if file_name == "client":
+        for packet in packets:
+            if src_ip_match(packet, client_only_source_ips):
+                packets_with_client_src_ip.append(packet)
+        packets = packets_with_client_src_ip
+
+    packets_with_auth_dst_ip = []
+    # For auth, get all the queries, that has a destination IP of our auth server
+    if file_name == "auth1":
+        for packet in packets:
+            if dst_ip_match(packet, auth_only_dest_ips):
+                packets_with_auth_dst_ip.append(packet)
+        packets = packets_with_auth_dst_ip
+
     # DEBUG
     # print(f" All packets with query name:")
     # for pac in packets:

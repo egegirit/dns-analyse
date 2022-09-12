@@ -49,42 +49,6 @@ probe_dict = {"probes":
 # Store the extracted probe id's in a list
 as_ids = []
 
-
-# Disables packetloss simulation
-# Returns true if no exception occurred. False, if subprocess.run() created an exception.
-def disable_packetloss_simulation(packetloss_rate, interface_name):
-    print(f"  Disabling packetloss on {interface_name} interface with following commands:")
-    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    print("    " + disable_packetloss_1)
-    print("    " + disable_packetloss_2)
-    try:
-        subprocess.run(
-            disable_packetloss_1, shell=True, stdout=subprocess.PIPE, check=True
-        )
-        subprocess.run(
-            disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
-        )
-        return True
-    except Exception:
-        print(
-            f"  Exception occured while removing {current_packetloss_rate}% packetloss rule on interface {interface_name} !!"
-        )
-        return False
-
-
-# Sleep for a duration and show the remaining time on the console
-def sleep_for_seconds(sleep_time_between_packetloss_config):
-    print("  Remaining time:")
-    # Output how many seconds left to sleep
-    for i in range(sleep_time_between_packetloss_config, 0, -1):
-        print(f"{i}")
-        time.sleep(1)
-        # Delete the last output line of the console
-        # to show the remaining time without creating new lines
-        print("\033[A                             \033[A")
-
-
 # Compress all the packet capture logs into a logs.zip file
 def compress_log_files(directory_name_of_logs):
     compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
@@ -96,33 +60,6 @@ def compress_log_files(directory_name_of_logs):
         print("  Exception occurred while compressing the packet capture files !!")
 
 
-# Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
-# Returns True when no error.
-# Use `run()` with `check=True` when setting and deleting packetloss
-# Otherwise process might not have finished before the next code runs
-def simulate_packetloss(packetloss_rate, interface_name):
-    packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    print(
-        f"  Simulating {packetloss_rate}% packetloss on interface {interface_name} with the following command:"
-    )
-    print("    " + packetloss_filter_command_1)
-    print("    " + packetloss_filter_command_2)
-    try:
-        subprocess.run(packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True)
-        subprocess.run(packetloss_filter_command_2, shell=True, stdout=subprocess.PIPE, check=True)
-        return True
-    except Exception:
-        print(
-            f"  Exception occurred while simulating {packetloss_rate}% packetloss on interface {interface_name} !!"
-        )
-        print(
-            f"  Removing packetloss rule by calling disable_packetloss_simulation({packetloss_rate}, {interface_name})")
-        disable_packetloss_simulation(packetloss_rate, interface_name)
-        print(f"  Skipping {packetloss_rate}% packetloss configuration")
-        return False
-
-
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
 def start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name):
@@ -131,7 +68,7 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
     packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_name}_{current_packetloss_rate}.pcap -nnn -i {interface_1} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
-        f"  (1) Running packet capture on {interface_name} interface with the following command:"
+        f"  Running packet capture on {interface_name} interface with the following command:"
     )
     print("    " + packet_capture_command_1)
 
@@ -157,22 +94,34 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
 # Builds the query name string that the probe will send to the resolver
 # from the given counter value
 # Query structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-def build_query_name_from_counter(counter, packetloss_rate):
+def build_query_name_from_counter_and_pl(counter, packetloss_rate):
     if counter is not None and len(str(counter)) > 0:
         return ".ripeatlas-" + str(counter) + "-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+
+
+# Sleep for a duration and show the remaining time on the console
+def sleep_for_seconds(sleep_time_between_packetloss_config):
+    print("  Remaining time:")
+    # Output how many seconds left to sleep
+    for i in range(sleep_time_between_packetloss_config, 0, -1):
+        print(f"{i}")
+        time.sleep(1)
+        # Delete the last output line of the console
+        # to show the remaining time without creating new lines
+        print("\033[A                             \033[A")
 
 
 # Create a source from asn_id and send a query with domain_name as query name
 def send_query_from_asn(asn_id, counter, packetloss_rate):
     print(f"  Building query name from current counter value: {counter}")
     # Build the query name from the counter value
-    query_name = build_query_name_from_counter(counter, packetloss_rate)
+    query_name = build_query_name_from_counter_and_pl(counter, packetloss_rate)
     print(f"    Built query name: {query_name}")
 
     print(f"  Creating DNS Query")
     dns = Dns(
         key=ATLAS_API_KEY,
-        description=f"Ege Girit Packetloss Experiment {counter}",
+        description=f"Ege Girit Packetloss Experiment {counter}-{packetloss_rate}",
         protocol="UDP",
         af="4",
 
@@ -184,7 +133,6 @@ def send_query_from_asn(asn_id, counter, packetloss_rate):
         # Configure the DNS query
         query_class="IN",
         query_type="A",
-        # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
@@ -228,15 +176,19 @@ def send_query_from_asn(asn_id, counter, packetloss_rate):
     print(f"  Starting measurement")
     # Start the measurement
     (is_success, response) = atlas_request.create()
-    is_success, response
 
+    return (is_success, response)
+
+
+def show_results(tuple):
+    (is_success, response) = tuple
     # %%
     kwargs = {
         "msm_id": response["measurements"][0]
     }
 
     # Wait for the probes to upload their results before asking for the results
-    sleep_for_seconds(300)
+    # sleep_for_seconds(300)
 
     # No needed on authoritative Server
     # Results can be downloaded later using measurement ID's
@@ -304,9 +256,11 @@ extract_asn_values()
 # Counter value must be equal or greater than probe count.
 # Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
 counter = 0
+result_tuples = []
 for id in as_ids:
     # Example query: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-    send_query_from_asn(id, counter, current_packetloss_rate)
+    result = send_query_from_asn(id, counter, current_packetloss_rate)
+    result_tuples.append(result)
     counter += 1
 
 
@@ -323,6 +277,11 @@ if len(capture_processes) > 0:
     print(f"    Sleeping for 1 seconds for tcpdumps to terminate")
     sleep_for_seconds(1)
 
+# sleep_for_seconds(300)
+# Sleep to upload results
+
+# for result in result_tuples:
+#     show_results(result)
 
 print("\n==== Experiment ended ====\n")
 

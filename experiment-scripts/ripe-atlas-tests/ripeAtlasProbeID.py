@@ -157,7 +157,7 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
 # Builds the query name string that the probe will send to the resolver
 # from the given counter value
 # Query structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-def build_query_name_from_counter(counter, packetloss_rate):
+def build_query_name_from_counter_and_pl(counter, packetloss_rate):
     if counter is not None and len(str(counter)) > 0:
         return ".ripeatlas-" + str(counter) + "-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
 
@@ -166,7 +166,7 @@ def build_query_name_from_counter(counter, packetloss_rate):
 def send_query_from_probe(asn_id, counter, packetloss_rate):
     print(f"  Building query name from current counter value: {counter}")
     # Build the query name from the counter value
-    query_name = build_query_name_from_counter(counter, packetloss_rate)
+    query_name = build_query_name_from_counter_and_pl(counter, packetloss_rate)
     print(f"    Built query name: {query_name}")
 
     print(f"  Creating DNS Query")

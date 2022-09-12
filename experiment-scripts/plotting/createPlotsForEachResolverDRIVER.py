@@ -355,7 +355,7 @@ def clear_failure_rate_data():
 
 
 # packetlossData is filled here
-def create_box_plot(directory_name, file_name, operator_specific_packet_list, rcodes, bottom_limit, upper_limit, log_scale=False):
+def create_box_plot(directory_name, file_name, operator_specific_packet_list, bottom_limit, upper_limit, log_scale=False):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0] is not None:
         operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
@@ -492,7 +492,7 @@ def create_violin_plot(directory_name, file_name, operator_specific_packet_list,
     plt.cla()
     plt.close()
 
-def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_list, bottom_limit, upper_limit):
+def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_list, bottom_limit, upper_limit, rcodes):
     operator_name = "UNKNOWN"
     if operator_specific_packet_list[0] is not None:
         operator_name = find_operator_name_of_json_packet(operator_specific_packet_list[0])
@@ -514,7 +514,13 @@ def create_bar_plot_failure(directory_name, file_name, operator_specific_packet_
 
     if "client" in file_name:
         # Separate packets by  their packetloss rates
-        for packet in list_of_operators[op_index]:  # OLD: all_responses_of_operator:
+        for packet in list_of_operators[op_index]:
+            # Filter RCODE
+            if 'dns.flags.response' in packet['_source']['layers']['dns']['dns.flags_tree']:
+                if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+                    rcode = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+                    if rcode not in rcodes:
+                        continue
             # print(f"  get_packetloss_rate_of_packet(packet): {get_packetloss_rate_of_packet(packet)}")
             if get_packetloss_rate_of_packet(packet) == "pl0":
                 # TODO: replace with calculate_failure_rate_of_packet(packet, 0)
@@ -1413,14 +1419,18 @@ def loop_all_packets_add_latencies(file_name):
 
 
 # latency Data must be clear before this
-def loop_operator_packets_add_latencies(operator_packets, file_name):
+def loop_operator_packets_add_latencies(operator_packets, file_name, rcodes):
     print("Looping all packets to add latencies")
 
     for latency in latencyData:
         latency.clear()
 
     for packet in operator_packets:
-
+        if 'dns.flags.response' in packet['_source']['layers']['dns']['dns.flags_tree']:
+            if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+                rcode = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+                if rcode not in rcodes:
+                    continue
         pl_index = get_index_of_packetloss_rate(get_packetloss_rate_of_packet(packet))
         latency = calculate_latency_of_packet(packet, file_name)
         if latency is not None:
@@ -1536,13 +1546,19 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
         return
 
 # Loop all the json packets and calculate their latencies/response failure counts
-def loop_all_packets_for_retransmission(packet_list, file_name):
+def loop_all_packets_for_retransmission(packet_list, file_name, rcodes):
     print("Looping packets to add retransmission counts")
     # global all_packets
     # for packet in all_packets:
     #     pass
 
     for packet in packet_list:
+        # Filter RCODE
+        if 'dns.flags.response' in packet['_source']['layers']['dns']['dns.flags_tree']:
+            if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
+                rcode = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+                if rcode not in rcodes:
+                    continue
         pl_index = get_index_of_packetloss_rate(get_packetloss_rate_of_packet(packet))
         calculate_retransmission_of_query(packet, pl_index , file_name)
 
@@ -1898,11 +1914,11 @@ def run_with_filters():
 
             for operator in list_of_operators:
                 # print(f"len(operator): {len(operator)}")
-                loop_operator_packets_add_latencies(operator, file_name)
-                create_box_plot(directory_names[directory_index], file_name, operator, rcode_filter, bottom_limit, upper_limit, log_scale_y_axis)
-                create_bar_plot_failure(directory_names[directory_index], file_name, operator, bottom_limit, 100)
+                loop_operator_packets_add_latencies(operator, file_name, rcode_filter)
+                create_box_plot(directory_names[directory_index], file_name, operator, bottom_limit, upper_limit, log_scale_y_axis)
+                create_bar_plot_failure(directory_names[directory_index], file_name, operator, bottom_limit, 100, rcode_filter)
                 create_violin_plot(directory_names[directory_index], file_name, operator, bottom_limit, upper_limit, log_scale_y_axis)
-                loop_all_packets_for_retransmission(operator, file_name)
+                loop_all_packets_for_retransmission(operator, file_name, rcode_filter)
                 create_bar_plot_retransmission(directory_names[directory_index], file_name, bottom_limit, upper_limit, operator, use_limits=False)
 
                 # Clear lists

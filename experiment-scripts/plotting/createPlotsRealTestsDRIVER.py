@@ -176,11 +176,6 @@ def get_operator_name_from_ip(ip_addr_with_dashes):
         return "Not found!"
 
 
-def clear_list(multi_list):
-    for lst in multi_list:
-        lst.clear()
-
-
 # Read the JSON file and examine all the packets in the file.
 # Examine all the packets with the given rcodes only, ignore all other packets.
 # Dont examine the query names if they contain the IP of the filtered_resolvers
@@ -1643,8 +1638,17 @@ def dst_ip_match(packet, ip_list):
 # doesn't read info from the previous json files
 def prepare_for_next_iteration():
     # Clear lists for the next JSON files
-    clear_list(answer_count_data)
-    clear_list(packetlossData)
+    global answer_count_data
+    for ans in answer_count_data:
+        ans.clear()
+
+    global packetlossData
+    for data in packetlossData:
+        data.clear()
+
+    global latencyData
+    for dat in latencyData:
+        dat.clear()
 
     # Clear failure rate data:
     global failure_rate_data

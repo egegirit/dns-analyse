@@ -39,7 +39,7 @@ def create_a_records(ip_addr, delimeter="\t"):
     f.close()
 
 
-domain_count = 1000
+domain_count = 300
 
 # *.ripeatlas-<counter>-<packetloss-rate>.packetloss.syssec-research.mmci.uni-saarland.de
 

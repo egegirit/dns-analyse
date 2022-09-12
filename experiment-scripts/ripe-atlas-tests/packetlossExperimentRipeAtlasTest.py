@@ -221,7 +221,7 @@ print(" == Experiment ended ==")
 #             # submit() schedules the callable to be executed and returns a 
 #             # future object representing the execution of the callable.
 #             # TODO: How to pass multiple arguments to the function using submit?
-#             results = [executor.submit(send_query_from_probe, [id, counter]) for counter in counters]
+#             results = [executor.submit(send_query_from_asn, [id, counter]) for counter in counters]
 #       
 #     # Show the finished processes' outputs
 #     for f in concurrent.futures.as_completed(results):

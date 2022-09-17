@@ -203,10 +203,8 @@ def send_query_from_probe(measurement_id, counter, packetloss_rate):
     print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
-        {
-            "type": 'msm',
-            "value": measurement_id
-        }
+        "type": 'msm',
+        "value": measurement_id
     )
 
     print(f"  Creating request from source")

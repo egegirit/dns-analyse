@@ -110,12 +110,11 @@ def send_query_from_asn(counter_value, packetloss_rate):
     sources = []
     for as_id in as_ids:
         source = AtlasSource(
-            {
                 "type": "asn",
                 "value": as_id,
                 "requested": 1
-            }
-            # tags_include = ["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d"]
+                # tags_include = ["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d"]
+                # tags={"include":["system-ipv4-works"]}
         )
         sources.append(source)
 

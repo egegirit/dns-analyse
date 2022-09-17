@@ -12,6 +12,9 @@ ip_address_with_dots = "139.19.117.11"
 
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
+domain_count = 50
+
+
 # Creates nameserver definitions
 def create_nameserver_definitions():
     # f = open("NS_records.txt", "a")
@@ -39,13 +42,10 @@ def create_a_records(ip_addr, delimeter="\t"):
     f.close()
 
 
-domain_count = 300
-
-# *.ripeatlas-<counter>-<packetloss-rate>.packetloss.syssec-research.mmci.uni-saarland.de
-
+# *.ripeatlas-<packetloss-rate>-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
 for pl_rate in packetloss_rates:
     for counter in range(domain_count):
-        created_domain = "*.ripeatlas-" + str(counter) + "-pl" + str(pl_rate) + base_zone
+        created_domain = "*.ripeatlas-" + "pl" + str(pl_rate) + "-" + str(counter) + base_zone
         # global created_domain_names
         created_domain_names.append(created_domain)
 

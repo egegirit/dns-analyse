@@ -21,6 +21,10 @@ packetloss_95 = []
 packetlossData = [packetloss_0, packetloss_10, packetloss_20, packetloss_30, packetloss_40, packetloss_50,
                   packetloss_60, packetloss_70, packetloss_80, packetloss_85, packetloss_90, packetloss_95]
 
+packetlossData0 = {"packetloss_0": [], "packetloss_10": [], "packetloss_20": [], "packetloss_30": [],
+                   "packetloss_40": [], "packetloss_50": [], "packetloss_60": [], "packetloss_70": [],
+                   "packetloss_80": [], "packetloss_85": [], "packetloss_90": [], "packetloss_95": []}
+
 # Count the failure rates for each packetloss configuration
 failure_rate_0 = []
 failure_rate_10 = []
@@ -981,7 +985,6 @@ def find_lowest_frame_no(packet_list):
 # than you have duplicates, find the first query (using frame relative time of all of the queries),
 # calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
 def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
-
     query_name_of_packet = extract_query_name_from_packet(current_packet)
 
     debug = False
@@ -999,7 +1002,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
 
     # No RCODE Filtering
     if "0" in rcode_filter and "2" in rcode_filter:
-    # No need to filter, continue calculating
+        # No need to filter, continue calculating
         pass
     # Only packets with RCODE 0
     elif "0" in rcode_filter and "2" not in rcode_filter:
@@ -1204,7 +1207,7 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
 
     # No RCODE Filtering
     if "0" in rcode_filter and "2" in rcode_filter:
-    # No need to filter, continue calculating
+        # No need to filter, continue calculating
         pass
     # Only packets with RCODE 0 -> Count only unanswered queries as failure
     # Unanswered = There was no response
@@ -1219,7 +1222,7 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
         if len(responses) == 0:
             calculated_failure_queries.append(query_name_of_packet)
             return
-    #     # If any response to the query has a rcode 0, ignore this packet
+        #     # If any response to the query has a rcode 0, ignore this packet
         responses_with_rcode_0 = []
         for response in responses:
             if get_rcode_of_packet(response) == "0":
@@ -1478,14 +1481,14 @@ def initialize_packet_lists(file_prefix, filter_ip_list, rcodes, opt_filter=Fals
 
                 # Filter by RCode
                 # Note: A packet might be a query, in that case, not all packets will have the desired RCODE
-                #if 'dns.flags.response' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:
+                # if 'dns.flags.response' in json_data[i]['_source']['layers']['dns']['dns.flags_tree']:
                 #    if json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "1":
                 #        rcode = json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
                 #        if rcode not in rcodes:
                 #            # print(f"Skipping filtered RCODE: {rcode}")
                 #            continue
 
-                #if opt_filter:
+                # if opt_filter:
                 #    if "Additional records" in json_data[i]['_source']['layers']['dns']:
                 #        if list(dict(json_data[i]['_source']['layers']['dns']["Additional records"]).values())[0][
                 #            'dns.resp.type'] == "41":
@@ -1522,6 +1525,7 @@ def has_given_rcode(packet, rcodes):
                 return False
                 # print(f"Skipping filtered RCODE: {rcode}")
                 # continue
+
 
 # Loop all the json packets and calculate their latencies/response failure counts
 def loop_all_packets_latencies_failures_retransmissions(file_name, rcode_filter):

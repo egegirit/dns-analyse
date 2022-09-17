@@ -1,38 +1,31 @@
 import subprocess
-import concurrent.futures
 import time
 import os
 import sys
 import signal
-import dns.resolver
-import dns.reversename
+from datetime import datetime
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
 from ripe.atlas.sagan import DnsResult
-from pprint import pprint
-from datetime import datetime
 
 # Execute this script as root user
 
 # Time to wait after one domain query is sent to all resolver IP Addresses
 # (Sleeping time between counters)
-sleep_time = 1
+# sleep_time = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
-sleep_time_between_packetloss_config = 600
+# sleep_time_between_packetloss_config = 600
 
 # Minimum and maximum counter values for the domains
-counter_min = 1  # Inclusive
-counter_max = 50  # Exclusive 
+# counter_min = 1  # Inclusive
+# counter_max = 50  # Exclusive
 
 # Set the interface names for packet capture with tcpdump
-interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
+# interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
 
-directory_name_of_logs = "packet_capture_logs"
+# directory_name_of_logs = "packet_capture_logs"
 
 # Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
-
-counter_min = 0  # Inclusive
-counter_max = 50  # Exclusive
+# packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 ATLAS_API_KEY = ""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
@@ -44,10 +37,12 @@ probe_dict = {"probes":
             "value": 24521,
             "requested": 1
         },  # ...
-    ]}
+    ]
+}
 
 # Store the extracted probe id's in a list
 as_ids = []
+
 
 # Compress all the packet capture logs into a logs.zip file
 def compress_log_files(directory_name_of_logs):
@@ -66,7 +61,7 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_name}_{current_packetloss_rate}.pcap -nnn -i {interface_1} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_name}_{current_packetloss_rate}.pcap -nnn -i {interface_name} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
         f"  Running packet capture on {interface_name} interface with the following command:"
     )
@@ -93,10 +88,11 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
 
 # Builds the query name string that the probe will send to the resolver
 # from the given counter value
-# Query structure: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+# Query structure: *.ripe-atlas-<counter>-<pl-rate>.packetloss.syssec-research.mmci.uni-saarland.de
 def build_query_name_from_counter_and_pl(counter, packetloss_rate):
+    # $p-$t.ripeatlas-pl0-1.packetloss.syssec-research.mmci.uni-saarland.de
     if counter is not None and len(str(counter)) > 0:
-        return ".ripeatlas-" + str(counter) + "-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+        return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 
 # Sleep for a duration and show the remaining time on the console
@@ -112,7 +108,7 @@ def sleep_for_seconds(sleep_time_between_packetloss_config):
 
 
 # Create a source from asn_id and send a query with domain_name as query name
-def send_query_from_asn(asn_id, counter, packetloss_rate):
+def send_query_from_asn(counter, packetloss_rate):
     print(f"  Building query name from current counter value: {counter}")
     # Build the query name from the counter value
     query_name = build_query_name_from_counter_and_pl(counter, packetloss_rate)
@@ -136,7 +132,7 @@ def send_query_from_asn(asn_id, counter, packetloss_rate):
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
-        prepend_probe_id=True,
+        prepend_probe_id=False,
 
         # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
         use_probe_resolver=True,
@@ -153,13 +149,22 @@ def send_query_from_asn(asn_id, counter, packetloss_rate):
         udp_payload_size=1200,
     )
 
-    print(f"  Creating source from given asn_ID: {asn_id}")
-    # Probe ID as parameter
-    source1 = AtlasSource(
-        "type": "asn",
-                "value": asn_ID,
-    "requested": 1
-    )
+    global as_ids
+    print(f"  Creating sources from the selected asn ID's")
+
+    # For each asn_id that is given in the probes_dict, create a source
+    # using the asn_id to the sources list
+    sources = []
+    for as_id in as_ids:
+        source = AtlasSource(
+            {
+                "type": "asn",
+                "value": as_id,
+                "requested": 1
+            }
+            # tags_include = ["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d"]
+        )
+        sources.append(source)
 
     print(f"  Creating request from source")
     # Create request from given probe ID
@@ -167,7 +172,8 @@ def send_query_from_asn(asn_id, counter, packetloss_rate):
         start_time=datetime.utcnow(),
         key=ATLAS_API_KEY,
         measurements=[dns],
-        sources=[source1],
+        # All probes with the selected asn_id's
+        sources=sources,
         # Always set this to true
         # The measurement will only be run once
         is_oneoff=True
@@ -243,26 +249,22 @@ createFolder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
 
-current_packetloss_rate = "pl0"
+current_packetloss_rate = 0
 # Start packet capture on the authoritative server
 capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name)
 
-
-# Ripe atlas
-# Extracts the asn values in as_ids list
+# Extracts the asn values from the global variable probes_dict to the global as_ids list
 extract_asn_values()
 
 # For each asn ID in as_ids, send a query from that probe and build the query with a counter value.
 # Counter value must be equal or greater than probe count.
 # Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
 counter = 0
-result_tuples = []
-for id in as_ids:
-    # Example query: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-    result = send_query_from_asn(id, counter, current_packetloss_rate)
-    result_tuples.append(result)
-    counter += 1
-
+# result_tuples = []
+# for id in as_ids:
+result = send_query_from_asn(counter, current_packetloss_rate)
+# result_tuples.append(result)
+# counter += 1
 
 # Terminate packet captures / all created processes
 print(f"  Stopping packet capture.")

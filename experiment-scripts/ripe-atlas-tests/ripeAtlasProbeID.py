@@ -38,10 +38,16 @@ msm_id = 0
 
 # Disables packetloss simulation
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
-def disable_packetloss_simulation(packetloss_rate, interface_name):
-    print(f"  Disabling packetloss on {interface_name} interface with following commands:")
-    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+def disable_packetloss_simulation(packetloss_rate, interface_name_for_capture):
+    print(f"  Disabling packetloss on {interface_name_for_capture} interface with following commands:")
+    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport ' \
+                           f'53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment '\
+                           f'--comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+
+    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport ' \
+                           f'53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment '\
+                           f'--comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+
     print("    " + disable_packetloss_1)
     print("    " + disable_packetloss_2)
     try:
@@ -54,16 +60,16 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
         return True
     except Exception:
         print(
-            f"  Exception occured while removing {current_packetloss_rate}% packetloss rule on interface {interface_name} !!"
+            f"  Exception occurred while removing {current_packetloss_rate}% packetloss rule on interface {interface_name} !!"
         )
         return False
 
 
 # Sleep for a duration and show the remaining time on the console
-def sleep_for_seconds(sleep_time_between_packetloss_config):
+def sleep_for_seconds(sleeping_time):
     print("  Remaining time:")
     # Output how many seconds left to sleep
-    for i in range(sleep_time_between_packetloss_config, 0, -1):
+    for i in range(sleeping_time, 0, -1):
         print(f"{i}")
         time.sleep(1)
         # Delete the last output line of the console
@@ -86,11 +92,11 @@ def compress_log_files(directory_name_of_logs):
 # Returns True when no error.
 # Use `run()` with `check=True` when setting and deleting packetloss
 # Otherwise process might not have finished before the next code runs
-def simulate_packetloss(packetloss_rate, interface_name):
+def simulate_packetloss(packetloss_rate, interface_name_for_capture):
     packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
     packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
     print(
-        f"  Simulating {packetloss_rate}% packetloss on interface {interface_name} with the following command:"
+        f"  Simulating {packetloss_rate}% packetloss on interface {interface_name_for_capture} with the following command:"
     )
     print("    " + packetloss_filter_command_1)
     print("    " + packetloss_filter_command_2)
@@ -111,11 +117,13 @@ def simulate_packetloss(packetloss_rate, interface_name):
 
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
-def start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name):
+def start_packet_captures(directory_name, current_pl_rate, interface_name_for_capture):
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_name}_{current_packetloss_rate}.pcap -nnn -i {interface_name} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name}/tcpdump_log_auth1_' \
+                               f'{interface_name}_{current_pl_rate}.pcap -nnn -i {interface_name_for_capture} ' \
+                               f'"host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
         f"  (1) Running packet capture on {interface_name} interface with the following command:"
     )
@@ -140,17 +148,17 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     return result_processes
 
 
-# Builds the query name string that the probe will send to the resolver
-# from the given counter value
-# Query structure: *.ripe-atlas-<counter>-<pl-rate>.packetloss.syssec-research.mmci.uni-saarland.de
-def build_query_name_from_counter_and_pl(counter, packetloss_rate):
-    # $p-$t.ripeatlas-pl0-1.packetloss.syssec-research.mmci.uni-saarland.de
-    if counter is not None and len(str(counter)) > 0:
-        return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+# Builds the query name string that the probe will send to its resolver
+# from the given counter value and packetloss rate
+# Query structure: *.ripeatlas-<plrate>-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
+# Example: *.ripeatlas-pl95-15.packetloss.syssec-research.mmci.uni-saarland.de
+def build_query_name_from_counter_and_pl(current_counter, packetloss_rate):
+    return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(current_counter) + \
+           ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 
 # Create a source from measurement ID msm_ID
-def send_query_from_probe(msm_ID, counter, packetloss_rate):
+def send_query_from_probe(measurement_id, counter, packetloss_rate):
     print(f"  Building query name from current counter value: {counter}")
     # Build the query name from the counter value
     query_name = build_query_name_from_counter_and_pl(counter, packetloss_rate)
@@ -159,7 +167,7 @@ def send_query_from_probe(msm_ID, counter, packetloss_rate):
     print(f"  Creating DNS Query")
     dns = Dns(
         key=ATLAS_API_KEY,
-        description=f"Ege Girit Packetloss Experiment {counter}-{packetloss_rate}",
+        description=f"Ege Girit 2. Packetloss Experiment {counter}-{packetloss_rate}",
         protocol="UDP",
         af="4",
 
@@ -192,12 +200,12 @@ def send_query_from_probe(msm_ID, counter, packetloss_rate):
         udp_payload_size=1200,
     )
 
-    print(f"  Creating source from given msm_ID: {msm_id}")
+    print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
         {
             "type": 'msm',
-            "value": msm_ID
+            "value": measurement_id
         }
     )
 
@@ -223,20 +231,20 @@ def send_query_from_probe(msm_ID, counter, packetloss_rate):
     }
 
 
-def createFolder(directory_name_of_logs):
-    # Create directory to store the packet capture log files
-    create_folder_command = f"mkdir {directory_name_of_logs}"
-    print(f"Creating a folder named {directory_name_of_logs} with the following command:")
+# Create directory to store the packet capture log files
+def create_folder(directory_name):
+    create_folder_command = f"mkdir {directory_name}"
+    print(f"Creating a folder named {directory_name} with the following command:")
     print("  " + create_folder_command)
 
     try:
         subprocess.run(create_folder_command, shell=True, stdout=subprocess.PIPE, check=True)
-        print(f"Folder {directory_name_of_logs} created.")
+        print(f"Folder {directory_name} created.")
     except Exception:
         print(f"Folder not created.")
 
 
-createFolder(directory_name_of_logs)
+create_folder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
 # Parallelized and automated query sending with different packetloss rates
@@ -257,19 +265,16 @@ for current_packetloss_rate in packetloss_rates:
     # TODO: Get probes of the last experiment from measurement ID
 
     # Ripe atlas
+    # Measurement ID to get the same Probes as the first experiment
+    global msm_id
 
-    # For each asn ID in as_ids, send a query from that probe and build the query with a counter value.
-    # Counter value must be equal or greater than probe count.
+    # Send a query from all probe and build the query with a counter value.
+    # Do this for counter_max times
     # Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
-    counter = 0
-    for id in as_ids:
-        # Example query: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-        send_query_from_probe(id, counter)
-        counter += 1
 
     # Send queries of the current packetloss rate with ripe atlas
     for counter in range(counter_min, counter_max):
-        send_query_from_probe(asn_id, counter, current_packetloss_rate)
+        send_query_from_probe(msm_id, counter, current_packetloss_rate)
 
     # Disable packetloss on the authoritative server
     if current_packetloss_rate != 0:
@@ -291,7 +296,7 @@ for current_packetloss_rate in packetloss_rates:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             except Exception:
                 print(f"    Exception while terminating tcpdump")
-        print(f"    Sleeping for 1 seconds for tcpdumps to terminate")
+        print(f"    Sleeping for 1 seconds for tcpdump to terminate")
         sleep_for_seconds(1)
 
         # Sleep for 10 minutes between packetloss configurations

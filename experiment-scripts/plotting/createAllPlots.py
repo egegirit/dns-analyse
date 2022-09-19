@@ -1156,8 +1156,6 @@ def create_resolver_violin_plot_retransmission(directory_name, file_name, operat
     retransmission_list_of_op = get_values_of_dict(retransmission_counts_for_all_pl)   # list(retransmission_counts_of_resolver_pl[operator_name].values())
     # = get_values_of_dict(get_nth_value_of_dict(retransmission_counts_of_resolver_pl, op_index))
 
-    print(f"str(retransmission_list_of_op) = {str(retransmission_list_of_op)}")
-
     # Add dummy value if a list is empty
     index_of_dummy = 0
     dummy_indexes = []
@@ -1170,8 +1168,6 @@ def create_resolver_violin_plot_retransmission(directory_name, file_name, operat
             # packets_with_pl.append(float(-0.2))
             dummy_indexes.append(index_of_dummy)
         index_of_dummy += 1
-
-    print(f"str(retransmission_list_of_op) DUMMY = {str(retransmission_list_of_op)}")
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=retransmission_list_of_op, showmeans=True, showmedians=True,
@@ -2316,38 +2312,7 @@ def loop_all_packets_for_retransmission_for_resolver(operator_packet_list, file_
             op_name = find_operator_name_of_json_packet(packet)
             index_of_op = get_index_of_operator(op_name)
 
-            #print(f"      OLD dict:")
-            #print(f"        {retransmission_counts_of_resolver_pl[get_operator_name_from_index(index_of_op)]}")
-
-            print(f"      OLD dict:")
-            print(f"        {str(retransmission_counts_for_all_pl)}")
-
-            #print(f"    packetloss_index: {pl_index}")
-            #print(f"    OP name of packet: {op_name}")
-            #print(f"    Index of OP: {index_of_op}")
-            #print(f"    current_retransmission_count: {current_retransmission_count}")
-
-            # global packetloss_rates
-            # pl_rate_string = "pl_" + str(packetloss_rates[pl_index])
-
-            # all_keys = list(retransmission_counts_of_resolver_pl.keys())
-            # print(f"@ all_keys: {all_keys }")
-            # print(f"@ pl_rate_string: {pl_rate_string}")
-            # print(f"@ Appending to: {retransmission_counts_of_resolver_pl[all_keys[index_of_op]][pl_rate_string]}")
-            # pl_rate_key = list(dictionary[all_keys[op_index]].keys())[pl_index]
-            # dictionary[all_keys[op_index]][pl_rate_key].append(item)
-            # retransmission_counts_of_resolver_pl[all_keys[index_of_op]][pl_rate_string].append(current_retransmission_count)
-
             append_item_to_nth_value_of_dict(retransmission_counts_for_all_pl, pl_index, current_retransmission_count)
-
-            #append_item_to_op_index_pl_index_value_of_multi_dict(retransmission_counts_of_resolver_pl,
-            #                                                     index_of_op, pl_index, current_retransmission_count)
-
-            print(f"      Appended to dict:")
-            print(str(get_nth_value_of_dict(retransmission_counts_for_all_pl, pl_index)))
-
-            print(f"      NEW dict:")
-            print(f"        {str(retransmission_counts_for_all_pl)}")
 
 
 def create_resolver_plots_for_one_filter(rcode, bottom_limit, upper_limit, directory_name):
@@ -2469,7 +2434,7 @@ auth_upper_limit = 10
 resolver_filter = []
 directory_name = "overall-plot-results"
 
-create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-                                    auth_bottom_limit, auth_upper_limit, resolver_filter, directory_name)
+# create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
+#                                     auth_bottom_limit, auth_upper_limit, resolver_filter, directory_name)
 
-# create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, "resolver-plot-results")
+create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, "resolver-plot-results")

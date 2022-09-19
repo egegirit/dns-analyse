@@ -1436,7 +1436,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         responses = find_the_response_packets(packets, file_name)
         queries = find_the_query_packets(packets, file_name)
 
-        # latency = first_term(answer packet) - last_term(query packet)
+        # latency = first_term(answer packet's relate frame time) - last_term(query packet's relate frame time)
         first_term = 0
         last_term = 0
         # latency = -999
@@ -1519,6 +1519,13 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
                 if latency <= 0:
                     print(f"  !! Negative Latency for:{query_name_of_packet}")
                     print(f"    !! Latency calculation: {first_term} - {last_term}")
+                    print(f"    !! Latency = {latency}")
+                    print(f"    lowest_frame_no_of_responses_with_0 = {lowest_frame_no_of_responses_with_0}")
+                    print(f"    lowest_frame_no_of_queries: {lowest_frame_no_of_queries}")
+                    print(f"    rel_fr_time_of_first_query: {rel_fr_time_of_first_query}")
+                    print(f"    query_packet_with_lowest_frame_no: {query_packet_with_lowest_frame_no}")
+                    print(f"    response_packet_0_with_lowest_frame_no = {response_packet_0_with_lowest_frame_no}")
+                    print(f"    Responses: {responses}")
 
                 return latency
             # There are ServFails and also valid answers
@@ -2424,7 +2431,16 @@ y_axis_for_text = 0
 #                                         bottom_limit_auth, upper_limit_auth, filtered_resolvers, directory_name
 
 # Filtering options
-rcodes_to_get = ["0", "2"]  # ["0", "2"] -> No filtering
+rcodes_to_get = ["0", "2"]
+# ["0", "2"] -> Calculate latencies of ONLY valid answers
+# ["0"] -> Calculate latencies of valid answers AND ServFails
+# ["2"] -> Calculate latencies of ONLY ServFails
+
+filtering = "valid"
+# "valid" -> Calculate latencies of ONLY valid answers
+# "valid+servfails" -> Calculate latencies of valid answers AND ServFails
+# "servfails"" -> Calculate latencies of ONLY ServFails
+
 client_bottom_limit = 0
 client_upper_limit = 30
 auth_bottom_limit = 0
@@ -2433,7 +2449,7 @@ resolver_filter = []
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-# create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-#                                     auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
+create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
+                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
 
-create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)
+# create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)

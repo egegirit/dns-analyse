@@ -71,9 +71,9 @@ dns.qry.name matches "216-146-35-35-" && dns.qry.name matches "pl95" && dns.flag
 
 (dns.qry.name matches "77-88-8-1-" || dns.qry.name matches "77-88-8-8-") && dns.qry.name matches "pl80" && dns.time
 
-dns.qry.name matches "185-228-168-168" && dns.qry.name matches "pl30" && dns.flags.response == 0 && dns.flags.rcode == 0
+dns.qry.name matches "77-88-8-8" && dns.qry.name matches "pl95" && dns.flags.response == 0 && dns.flags.rcode == 0
 
-dns.qry.name matches "216-146-36-36-47-pl30.packetloss.syssec-research.mmci.uni-saarland.de" && dns.qry.name matches "pl85"
+dns.qry.name matches "94-140-14-15-2-pl80.packetloss.syssec-research.mmci.uni-saarland.de"
 
 WARNING: dns.qry.name matches "8-8-8-8" also shows the packets for Yandex2 with 77-88-8-8 IP Address and counter 8.
 

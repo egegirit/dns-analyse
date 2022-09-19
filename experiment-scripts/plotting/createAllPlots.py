@@ -169,7 +169,6 @@ retransmission_counts_of_resolver_pl = {
                 "pl_80": [], "pl_85": [], "pl_90": [], "pl_95": []}
 }
 
-
 # If you already calculated the latency/retransmission/failure for a query name and
 # there were multiple duplicate queries and maybe duplicate answers for that exact
 # query name, you should only calculate the latency once, to avoid calculating it
@@ -804,9 +803,6 @@ def create_bar_plot_failure_for_resolver(directory_name, file_name, operator_spe
         # print(f"Fail count: {fail_count}")
         if fail_count != 0:
             # divide by 180 bcs every resolver sends 50 queries for a pl rate, multiply by 100 to get the percentage of the failure rate
-            # TODO: change 50 by the query count of the resolver
-            # Wrong, this is all the packetloss configs queries
-            # Divide by 12?
             # all_queryname_of_resolver = len(find_the_query_packets(operator_specific_packet_list, file_name))
 
             queries_of_pl_rate_of_resolver = []
@@ -984,8 +980,8 @@ def create_overall_violin_plot_retransmission(directory_name, file_name):
         index_of_dummy += 1
 
     # Debug
-    retransmission_values = get_values_of_dict(retransmission_counts_for_all_pl)
-    print(f"Retransmission values = {str(retransmission_values)}")
+    # retransmission_values = get_values_of_dict(retransmission_counts_for_all_pl)
+    # print(f"Retransmission values = {str(retransmission_values)}")
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=get_values_of_dict(retransmission_counts_for_all_pl), showmeans=True, showmedians=True,
@@ -1151,7 +1147,8 @@ def create_resolver_violin_plot_retransmission(directory_name, file_name, operat
     # print(f"    DEBUG TEST:  \n        OP name dict: {retransmission_counts_of_resolver_pl[operator_name]}")
     # print(f"        Values: {retransmission_counts_of_resolver_pl[operator_name].values()}")
 
-    retransmission_list_of_op = get_values_of_dict(retransmission_counts_for_all_pl)   # list(retransmission_counts_of_resolver_pl[operator_name].values())
+    retransmission_list_of_op = get_values_of_dict(
+        retransmission_counts_for_all_pl)  # list(retransmission_counts_of_resolver_pl[operator_name].values())
     # = get_values_of_dict(get_nth_value_of_dict(retransmission_counts_of_resolver_pl, op_index))
 
     # Add dummy value if a list is empty
@@ -1338,16 +1335,17 @@ def find_the_query_packets(packet_list, file_name):
 # Find and return the packet with the specified frame number
 def get_packet_by_frame_no_from_list(frame_no, packet_list):
     for packet in packet_list:
-        if packet["_source"]["layers"]["frame"]["frame.number"] == frame_no:
+        if int(packet["_source"]["layers"]["frame"]["frame.number"]) == int(frame_no):
             return packet
     # If the frame number doesn't exist, return None
+    print(f"Frame number {frame_no} doesn't exits!")
     return None
 
 
 def find_lowest_frame_no(packet_list):
     frame_numbers = []
     for packet in packet_list:
-        number = packet["_source"]["layers"]["frame"]["frame.number"]
+        number = int(packet["_source"]["layers"]["frame"]["frame.number"])
         frame_numbers.append(number)
     return min(frame_numbers)
 
@@ -1373,12 +1371,8 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
     packets = find_all_packets_with_query_name(query_name_of_packet)
     responses = find_the_response_packets(packets, file_name)
 
-    # No RCODE Filtering
-    if "0" in rcode_filter and "2" in rcode_filter:
-        # No need to filter, continue calculating
-        pass
-    # Only packets with RCODE 0
-    elif "0" in rcode_filter and "2" not in rcode_filter:
+    # Only valid answer latency calculation -> ignore servfails
+    if "valid" == rcode_filter:
         # If all the responses to the query has RCODE 2, ignore the packet
         responses_with_rcode_0 = []
         responses_with_rcode_2 = []
@@ -1391,9 +1385,8 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         if len(responses_with_rcode_0) == 0 and len(responses_with_rcode_2) != 0:
             calculated_queries.append(query_name_of_packet)
             return None
-    # Else continue calculating
-    # Only packets with RCODE 2
-    elif "0" not in rcode_filter and "2" in rcode_filter:
+    # Only servfail latency calculation -> ignore normal valid responses
+    elif "servfails" == rcode_filter:
         # If any response to the query has a rcode 0, ignore this packet
         responses_with_rcode_0 = []
         for response in responses:
@@ -1402,7 +1395,10 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         if len(responses_with_rcode_0) > 0:
             calculated_queries.append(query_name_of_packet)
             return None
-        # Else continue with the calculation
+    # Get both valid responses and servfails in the latency plots
+    # Continue with the calculation because we filtered others
+    elif "valid+servfails" == rcode_filter:
+        pass
 
     # Filter the source and destination Addresses for client
     if file_name == "client":
@@ -1413,74 +1409,124 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
             print(" Source-Destination Ip not match: None!")
             return None
 
+    latency = 0
+
     # Get the dns.time if it exists, packets with dns.time are Responses with either No error or Servfail
-    # Note: the packet has to have "Answers" section because an NS record has also dns.time,
-    # but we want A record for resolution. But NS records can be filtered in the beginning now.
+    # All query packets are ignored after here
     if 'dns.time' in current_packet['_source']['layers']['dns']:
         # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
 
-        query_name_of_packet = extract_query_name_from_packet(current_packet)
+    packets = find_all_packets_with_query_name(query_name_of_packet)
 
-        # If already calculated, skip
-        if query_name_of_packet is not None:
-            if query_name_of_packet in calculated_queries:
-                if debug:
-                    print(f"    !! You already calculated latency for: {query_name_of_packet}")
-                # f.write(f"    !! You already calculated latency for: {query_name_of_packet}\n")
-                return None
+    responses = find_the_response_packets(packets, file_name)
+    queries = find_the_query_packets(packets, file_name)
 
-        packets = find_all_packets_with_query_name(query_name_of_packet)
+    # latency = first_term(answer packet's relate frame time) - last_term(query packet's relate frame time)
+    first_term = 0
+    last_term = 0
+    # latency = -999
 
-        responses = find_the_response_packets(packets, file_name)
-        queries = find_the_query_packets(packets, file_name)
+    # Find the first ever query that was sent for this query name
+    lowest_frame_no_of_queries = find_lowest_frame_no(queries)
+    query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
+    # get the relative frame time of packet
+    rel_fr_time_of_first_query = get_frame_time_relative_of_packet(query_packet_with_lowest_frame_no)
 
-        # latency = first_term(answer packet's relate frame time) - last_term(query packet's relate frame time)
-        first_term = 0
-        last_term = 0
-        # latency = -999
+    last_term = rel_fr_time_of_first_query
 
-        # Find the first ever query that was sent for this query name
-        lowest_frame_no_of_queries = find_lowest_frame_no(queries)
-        query_packet_with_lowest_frame_no = get_packet_by_frame_no_from_list(lowest_frame_no_of_queries, queries)
-        # get the relative frame time of packet
-        rel_fr_time_of_first_query = get_frame_time_relative_of_packet(query_packet_with_lowest_frame_no)
+    # Cases where latency is undefined
+    # There was no response
+    # Note: code shouldn't reach here bcs queries can't have dns.time
+    if len(responses) == 0:
+        calculated_queries.append(query_name_of_packet)
+        if debug:
+            print(f"    Query has no answers: {query_name_of_packet}")
+            print(f"      (No latency calculation)")
+        return None
+    # There exist response to the query packet
+    elif len(responses) > 0:
+        # Check if responses are sent with multiple source IP's, but no handling for this situation
+        response_src_ips = get_unique_src_ips_of_packets(responses)
+        response_ip_count = len(response_src_ips)
+        if response_ip_count > 1:
+            print(f"    Responses are sent from different source IP's ({response_ip_count})")
+            print(f"      Query: {query_name_of_packet}")
+            index = 0
+            for ip in response_src_ips:
+                print(f"        {index}. IP: {ip}")
+                index += 1
 
-        last_term = rel_fr_time_of_first_query
+        # Split responses by their RCODES
+        responses_with_rcode_0 = []
+        responses_with_rcode_2 = []
+        for response in responses:
+            if get_rcode_of_packet(response) == "0":
+                responses_with_rcode_0.append(response)
+            if get_rcode_of_packet(response) == "2":
+                responses_with_rcode_2.append(response)
+        # Responses are only ServFails
+        # Get the latency between first query and first ServFail
+        if len(responses_with_rcode_0) == 0 and len(responses_with_rcode_2) != 0:
+            lowest_frame_no_of_responses_with_2 = find_lowest_frame_no(responses_with_rcode_2)
+            response_packet_2_with_lowest_frame_no = get_packet_by_frame_no_from_list(
+                lowest_frame_no_of_responses_with_2,
+                responses_with_rcode_2)
+            # get the relative frame time of packet
+            rel_fr_time_of_first_response = get_frame_time_relative_of_packet(
+                response_packet_2_with_lowest_frame_no)
 
-        # Cases where latency is undefined
-        # There was no response
-        if len(responses) == 0:
+            first_term = rel_fr_time_of_first_response
+            latency = first_term - last_term
+
+            # Mark the query name as calculated (Calculated time between first servfail and first query)
             calculated_queries.append(query_name_of_packet)
-            if debug:
-                print(f"    Query has no answers: {query_name_of_packet}")
-                print(f"      (No latency calculation)")
-            return None
-        elif len(responses) > 0:
 
-            # Check if responses are sent with multiple source IP's, but no handling for this situation
-            response_src_ips = get_unique_src_ips_of_packets(responses)
-            response_ip_count = len(response_src_ips)
-            if response_ip_count > 1:
-                print(f"    Responses are sent from different source IP's ({response_ip_count})")
-                print(f"      Query: {query_name_of_packet}")
-                index = 0
-                for ip in response_src_ips:
-                    print(f"        {index}. IP: {ip}")
-                    index += 1
+            if latency <= 0:
+                print(f"  !! Negative Latency for:{query_name_of_packet}")
+                print(f"    !! Latency calculation: {first_term} - {last_term}")
 
+            return latency
+
+        # All Responses are valid (No Errors)
+        # Get the latency between first query and first (valid) answer
+        elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) == 0:
+            lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
+            response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
+                lowest_frame_no_of_responses_with_0,
+                responses_with_rcode_0)
+            # get the relative frame time of packet
+            rel_fr_time_of_first_response = get_frame_time_relative_of_packet(
+                response_packet_0_with_lowest_frame_no)
+
+            first_term = rel_fr_time_of_first_response
+            latency = first_term - last_term
+
+            calculated_queries.append(query_name_of_packet)
+
+            if latency <= 0:
+                print(f"  !! Negative Latency for:{query_name_of_packet}")
+                print(f"    !! Latency calculation: {first_term} - {last_term}")
+                print(f"    !! Latency = {latency}")
+                print(f"    lowest_frame_no_of_responses_with_0 = {lowest_frame_no_of_responses_with_0}")
+                print(f"    lowest_frame_no_of_queries: {lowest_frame_no_of_queries}")
+                print(f"    rel_fr_time_of_first_query: {rel_fr_time_of_first_query}")
+                print(f"    query_packet_with_lowest_frame_no: {query_packet_with_lowest_frame_no}")
+                print(f"    response_packet_0_with_lowest_frame_no = {response_packet_0_with_lowest_frame_no}")
+                print(f"    Responses: {responses}")
+
+            return latency
+        # There are ServFails and also valid answers
+        # Get the latency between first query and first valid answer
+        elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) != 0:
+            # examine all the response's RCODES, get the ones with RCODE = 0, get the first of them.
             responses_with_rcode_0 = []
-            responses_with_rcode_2 = []
             for response in responses:
                 if get_rcode_of_packet(response) == "0":
                     responses_with_rcode_0.append(response)
-                if get_rcode_of_packet(response) == "2":
-                    responses_with_rcode_2.append(response)
-            # Responses are only ServFails
-            # Get the latency between first query and first ServFail
-            if len(responses_with_rcode_0) == 0 and len(responses_with_rcode_2) != 0:
-                lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses)
+            if len(responses_with_rcode_0) > 0:
+                lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
                 response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
                     lowest_frame_no_of_responses_with_0,
                     responses)
@@ -1489,71 +1535,14 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
                     response_packet_0_with_lowest_frame_no)
 
                 first_term = rel_fr_time_of_first_response
-                latency = first_term - last_term
 
-                calculated_queries.append(query_name_of_packet)
+            calculated_queries.append(query_name_of_packet)
+            latency = first_term - last_term
 
-                if latency <= 0:
-                    print(f"  !! Negative Latency for:{query_name_of_packet}")
-                    print(f"    !! Latency calculation: {first_term} - {last_term}")
-
-                return latency
-
-            # All Responses are valid (No Errors)
-            # Get the latency between first query and first (valid) answer
-            elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) == 0:
-
-                lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses)
-                response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
-                    lowest_frame_no_of_responses_with_0,
-                    responses)
-                # get the relative frame time of packet
-                rel_fr_time_of_first_response = get_frame_time_relative_of_packet(
-                    response_packet_0_with_lowest_frame_no)
-
-                first_term = rel_fr_time_of_first_response
-                latency = first_term - last_term
-
-                calculated_queries.append(query_name_of_packet)
-
-                if latency <= 0:
-                    print(f"  !! Negative Latency for:{query_name_of_packet}")
-                    print(f"    !! Latency calculation: {first_term} - {last_term}")
-                    print(f"    !! Latency = {latency}")
-                    print(f"    lowest_frame_no_of_responses_with_0 = {lowest_frame_no_of_responses_with_0}")
-                    print(f"    lowest_frame_no_of_queries: {lowest_frame_no_of_queries}")
-                    print(f"    rel_fr_time_of_first_query: {rel_fr_time_of_first_query}")
-                    print(f"    query_packet_with_lowest_frame_no: {query_packet_with_lowest_frame_no}")
-                    print(f"    response_packet_0_with_lowest_frame_no = {response_packet_0_with_lowest_frame_no}")
-                    print(f"    Responses: {responses}")
-
-                return latency
-            # There are ServFails and also valid answers
-            # Get the latency between first query and first valid answer
-            elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) != 0:
-                # examine all the responses's RCODES, get the ones with RCODE = 0, get the first of them.
-                responses_with_rcode_0 = []
-                for response in responses:
-                    if get_rcode_of_packet(response) == "0":
-                        responses_with_rcode_0.append(response)
-                if len(responses_with_rcode_0) > 0:
-                    lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
-                    response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
-                        lowest_frame_no_of_responses_with_0,
-                        responses)
-                    # get the relative frame time of packet
-                    rel_fr_time_of_first_response = get_frame_time_relative_of_packet(
-                        response_packet_0_with_lowest_frame_no)
-
-                    first_term = rel_fr_time_of_first_response
-
-                calculated_queries.append(query_name_of_packet)
-                latency = first_term - last_term
-
-                if latency <= 0:
-                    print(f"  !! Negative Latency for:{query_name_of_packet}")
-                    print(f"    !! Latency calculation: {first_term} - {last_term}")
-                return latency
+            if latency <= 0:
+                print(f"  !! Negative Latency for:{query_name_of_packet}")
+                print(f"    !! Latency calculation: {first_term} - {last_term}")
+            return latency
 
 
 # Failure rate of client: Count of rcode != 0 for each query name + unanswered unique query count
@@ -1561,12 +1550,6 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
 def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name, rcode_filter):
     # If already calculated, skip
     query_name_of_packet = extract_query_name_from_packet(current_packet)
-
-    # DEBUG
-    # debug = False
-    # if "64-6-64-6" in query_name_of_packet and "pl80" in query_name_of_packet:
-    #     debug = True
-    #     print(f"  NEUSTAR1 Match: {query_name_of_packet}")
 
     if query_name_of_packet is not None:
         if query_name_of_packet in calculated_failure_queries:
@@ -1577,24 +1560,17 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
     packets = find_all_packets_with_query_name(query_name_of_packet)
     responses = find_the_response_packets(packets, file_name)
 
-    # No RCODE Filtering
-    if "0" in rcode_filter and "2" in rcode_filter:
+    # Count unanswered query AND servfails as fail
+    if "valid+servfails" == rcode_filter:
         # No need to filter, continue calculating
         pass
-    # Only packets with RCODE 0 -> Count only unanswered queries as failure
-    # Unanswered = There was no response
-    elif "0" in rcode_filter and "2" not in rcode_filter:
-        if len(responses) != 0:
-            calculated_failure_queries.append(query_name_of_packet)
-            return
-    # Else continue calculating
-
-    # Only packets with RCODE 2 -> Count only ServFails as failure and not the unanswered queries
-    elif "0" not in rcode_filter and "2" in rcode_filter:
+    # Count only servfails as fail
+    elif "valid" == rcode_filter:
+        # No response packet was found -> Query unanswered but dont calculate this as failure
         if len(responses) == 0:
             calculated_failure_queries.append(query_name_of_packet)
             return
-        #     # If any response to the query has a rcode 0, ignore this packet
+        # If any response to the query has a rcode 0, ignore this packet
         responses_with_rcode_0 = []
         for response in responses:
             if get_rcode_of_packet(response) == "0":
@@ -1602,7 +1578,12 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
         if len(responses_with_rcode_0) > 0:
             calculated_failure_queries.append(query_name_of_packet)
             return
-    #     # Else continue with the calculation
+    # Count only unanswered queries as fails (and not servfails)
+    elif "servfails" == rcode_filter:
+        # There was a response to the packet, ignore it
+        if len(responses) != 0:
+            calculated_failure_queries.append(query_name_of_packet)
+            return
 
     # Filter the source and destination Addresses for client
     if file_name == "client":
@@ -1612,9 +1593,9 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
             return
 
     rcode_is_error = False
-
     current_rcode = "-"
-    # If the packet is a response with no error, dont examine it, count as success
+
+    # If the packet is a response with no error, don't examine it, count as success
     if 'dns.flags.rcode' in current_packet['_source']['layers']['dns']['dns.flags_tree']:
         current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
         if current_rcode == "0":
@@ -1622,7 +1603,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
 
             # get_values_of_dict(failure_rate_data)[packetloss_index].append("0")
             append_item_to_nth_value_of_dict(failure_rate_data, packetloss_index, "0")
-
             return
         # If there is a response with error, count as failure
         else:  # current_rcode != "0"
@@ -1928,7 +1908,7 @@ def has_given_rcode(packet, rcodes):
 # Loop all the JSON packets and calculate their latencies/failure rate/retransmissions
 def loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode_filter):
     print("Looping all packets to calculate latency/failure rate/retransmission count")
-    print(f"  RCODE Filter: {rcode_filter}")
+    print(f"  Filter: {rcode_filter}")
     global retransmission_counts_for_all_pl
     global allPacketsOfPL
     packets_list = get_values_of_dict(allPacketsOfPL)
@@ -1948,15 +1928,6 @@ def loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode
             if current_retransmission_count is not None:
                 # Store retransmission count in the global dictionary with all packetloss rates
                 append_item_to_nth_value_of_dict(retransmission_counts_for_all_pl, index, current_retransmission_count)
-
-                # Store retransmission count in packet specific dictionary
-                # op_name = find_operator_name_of_json_packet(packet)
-                # index_of_op = get_index_of_operator(op_name)
-
-                # append_item_to_op_index_pl_index_value_of_multi_dict(retransmission_counts_of_resolver_pl,
-                #                                                     index_of_op, index, current_retransmission_count)
-                # print(f"          Appended to dict:")
-                # print(str(get_nth_value_of_dict(get_nth_value_of_dict(retransmission_counts_of_resolver_pl, index_of_op), index)))
 
         index += 1
 
@@ -2008,7 +1979,6 @@ def dst_ip_match(packet, ip_list):
 # Clears all the lists etc. so that the next plotting
 # doesn't read info from the previous json files
 def prepare_for_next_iteration():
-
     global retransmission_counts_of_resolver_pl
     reset_multi_dict_to_item(retransmission_counts_of_resolver_pl, [])
 
@@ -2192,7 +2162,7 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
     if not os.path.exists(directory_name):
         os.makedirs(directory_name)
 
-    print(f" @@@@ Creating Resolver plots with RCODE Filter: {rcode} @@@@")
+    print(f" @@@@ Creating Resolver plots with Filter: {rcode} @@@@")
     print(f" @@@@ And Resolver Filter: {filtered_resolvers} @@@@")
     x = 0
     for file_name in file_names:
@@ -2225,12 +2195,8 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
             upper_limit = upper_limit_client
 
         # If rcode is applied, add the filter to the file name
-        if len(rcode) > 0:
-            if "0" not in rcode or "2" not in rcode:
-                filter_names_on_filename += "_RCODE"
-                filter_names_on_filename += str(rcode) + ""
-                # for rcodex in rcode:
-                #     filter_names_on_filename += (rcodex + "-")
+        filter_names_on_filename += "_"
+        filter_names_on_filename += str(rcode)
 
         if len(filtered_resolvers) > 0:
             filter_names_on_filename += "_IPFilter"
@@ -2273,10 +2239,7 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
 
     filters = ""
 
-    if len(rcode) > 0:
-        if "0" not in rcode or "2" not in rcode:
-            filters += "_RCODE"
-            filters += str(rcode) + ""
+    filters += ("_" + str(rcode))
 
     if len(filtered_resolvers) > 0:
         filters += "_IPFilter"
@@ -2347,10 +2310,8 @@ def create_resolver_plots_for_one_filter(rcode, bottom_limit, upper_limit, direc
         filter_names_on_filename += "Lim" + str(bottom_limit) + "," + str(upper_limit) + ""
 
         # If rcode is applied, add the filter to the file name
-        if len(rcode) > 0:
-            if "0" not in rcode or "2" not in rcode:
-                filter_names_on_filename += "_RCODE"
-                filter_names_on_filename += str(rcode) + ""
+        filter_names_on_filename += "_"
+        filter_names_on_filename += str(rcode)
 
         file_name += filter_names_on_filename
 
@@ -2431,12 +2392,12 @@ y_axis_for_text = 0
 #                                         bottom_limit_auth, upper_limit_auth, filtered_resolvers, directory_name
 
 # Filtering options
-rcodes_to_get = ["0", "2"]
+# rcodes_to_get = ["0", "2"]
 # ["0", "2"] -> Calculate latencies of ONLY valid answers
 # ["0"] -> Calculate latencies of valid answers AND ServFails
 # ["2"] -> Calculate latencies of ONLY ServFails
 
-filtering = "valid"
+rcodes_to_get = "valid"
 # "valid" -> Calculate latencies of ONLY valid answers
 # "valid+servfails" -> Calculate latencies of valid answers AND ServFails
 # "servfails"" -> Calculate latencies of ONLY ServFails

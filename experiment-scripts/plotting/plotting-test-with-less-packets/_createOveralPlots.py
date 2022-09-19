@@ -1130,9 +1130,11 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
 
     # Filter the source and destination Addresses for client
     if file_name == "client":
+        debug = True
         src_match = src_ip_match(current_packet, client_only_source_ips)
         dst_match = dst_ip_match(current_packet, client_only_dest_ips)
         if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
+            print(" Source-Destination Ip not match: None!")
             return None
 
     # Get the dns.time if it exists, packets with dns.time are Responses with either No error or Servfail
@@ -1508,7 +1510,7 @@ def calculate_retransmission_of_query(current_packet, packetloss_index, file_nam
 # Read the JSON files for each captured packet and store all the dns packets
 # into the global lists
 # Filter the source and destination IP's of client for only the client packet capture
-def initialize_packet_lists(file_prefix, filter_ip_list, rcodes):
+def initialize_packet_lists(file_prefix, filter_ip_list):
     index = 0
     # There are 12 packetloss rates and 12 JSON files for each packetloss rate
     for current_packetloss_rate in packetloss_rates:
@@ -1567,9 +1569,8 @@ def initialize_packet_lists(file_prefix, filter_ip_list, rcodes):
                 if file_prefix == "client":
                     allPacketsOfClient.append(json_data[i])
                 elif file_prefix == "auth1":
+                    # print(f"Added: {query_name}")
                     allPacketsOfAuth.append(json_data[i])
-
-                # print(f"Added: {query_name}")
 
         # Continue reading packets with the next packetloss rate JSON file
         index = index + 1
@@ -1606,7 +1607,6 @@ def loop_all_packets_latencies_failures_retransmissions(file_name, rcode_filter)
             latency = calculate_latency_of_packet(packet, file_name, rcode_filter)
             calculate_failure_rate_of_packet(packet, index, file_name, rcode_filter)
             if latency is not None:
-                # latencyData[index].append(latency)
                 append_item_to_nth_value_of_dict(latencyData, index, latency)
             calculate_retransmission_of_query(packet, index, file_name)
         index += 1
@@ -1659,14 +1659,6 @@ def dst_ip_match(packet, ip_list):
 # Clears all the lists etc. so that the next plotting
 # doesn't read info from the previous json files
 def prepare_for_next_iteration():
-    # Clear lists for the next JSON files
-    # global answer_count_data
-    # for ans in answer_count_data:
-    #     ans.clear()
-
-    # global packetlossData
-    # for data in packetlossData:
-    #     data.clear()
 
     global latencyData
     reset_values_of_dict_to_empty_list(latencyData)
@@ -1738,7 +1730,6 @@ def get_index_of_packetloss_rate(pl_rate):
 def loop_all_packets_get_all_query_names(file_name):
     global client_query_names
     global auth_query_names
-    global all_packets_pl
     global all_packets
     global allPacketsOfClient
     global allPacketsOfAuth
@@ -1754,7 +1745,6 @@ def loop_all_packets_get_all_query_names(file_name):
                 append_item_to_nth_value_of_dict(client_query_names, pl_index, qry_name)
     elif file_name == "auth1":
         print(f"       Filling auth_query_names")
-
         for packet in allPacketsOfAuth:
             qry_name = extract_query_name_from_packet(packet)
             pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
@@ -1861,7 +1851,7 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
 
         # Read and store all the matching JSON packets
         # with the applied filters
-        initialize_packet_lists(file_name, filtered_resolvers, rcode)
+        initialize_packet_lists(file_name, filtered_resolvers)
 
         # Loop all packets of client, get all the unique query names of the queries, store in
         # client_query_names, and also get all the unique query names of responses,
@@ -1890,8 +1880,8 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
         # If rcode is applied, add the filter to the file name
         if len(rcode) > 0:
             filter_names_on_filename += "_rcodeFilter-"
-            for rcode in rcode:
-                filter_names_on_filename += (rcode + "-")
+            for rcodex in rcode:
+                filter_names_on_filename += (rcodex + "-")
 
         if len(filtered_resolvers) > 0:
             filter_names_on_filename += "_IPFilter-"
@@ -1927,8 +1917,8 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
         prepare_for_next_iteration()
         x += 1
 
-    filters = ""
-    filters += rcode
+    filters = "RCODES_"
+    filters += str(rcode)
 
     for resolver_ip in filtered_resolvers:
         filters += resolver_ip + "_"
@@ -1977,7 +1967,7 @@ def create_plots_for_all_filter_combinations():
 
                 # Read and store all the matching JSON packets
                 # with the applied filters
-                initialize_packet_lists(file_name, resolver_filter, rcodes)
+                initialize_packet_lists(file_name, resolver_filter)
 
                 # Loop all packets of client, get all the unique query names of the queries, store in
                 # client_query_names, and also get all the unique query names of responses,
@@ -2075,7 +2065,7 @@ auth_query_names = {"auth_query_names_pl0": [], "auth_query_names_pl10": [], "au
                     "auth_query_names_pl85": [], "auth_query_names_pl90": [], "auth_query_names_pl95": []}
 
 # File prefixes of JSON files
-file_names = ["client", "auth1"]
+file_names = ["auth1", "client"]
 
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
@@ -2094,4 +2084,4 @@ y_axis_for_text = 1
 
 rcodes_to_get = ["0", "2"]
 # ["0", "2"] -> No filtering
-create_overall_plots_for_one_filter(rcodes_to_get, 0, 50, 0, 50, [], "test_directory")
+create_overall_plots_for_one_filter(rcodes_to_get, 0, 50, 0, 50, [], "plot-results")

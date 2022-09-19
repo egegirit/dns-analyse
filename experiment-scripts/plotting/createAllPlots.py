@@ -1302,18 +1302,16 @@ def find_the_response_packets(packet_list, file_name):
     responses = []
 
     for packet in packet_list:
-        # Filter responses of client, reponse must have destination IP of client
+        # Filter responses of client, response must have destination IP of client
         if file_name == "client":
             if not dst_ip_match(packet, client_only_dest_ips):
+                # print(f"    SKIPPED  CLIENT PACKET BCS NO DST IP MATCH")
                 continue
 
-        # New condition to filter NS record answers of anycast
-        # and get only responses with A records
-        if "Answers" in packet['_source']['layers']['dns']:
-            response = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response']
-            # print(f"Response: {response}")
-            if response == "1":
-                responses.append(packet)
+        response = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response']
+        # print(f"@@ Response: {response}")
+        if response != "0":
+            responses.append(packet)
     return responses
 
 
@@ -1388,13 +1386,19 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
     # Only servfail latency calculation -> ignore normal valid responses
     elif "servfails" == rcode_filter:
         # If any response to the query has a rcode 0, ignore this packet
+
+        # print(f" SERVFAIL AS FILTER SELECTED FOR: {query_name_of_packet}")
+
         responses_with_rcode_0 = []
         for response in responses:
             if get_rcode_of_packet(response) == "0":
                 responses_with_rcode_0.append(response)
         if len(responses_with_rcode_0) > 0:
             calculated_queries.append(query_name_of_packet)
+            # print(f"   BUT THERE WAS A VALID PACKET FOR: {query_name_of_packet}")
             return None
+        # print(f"   NO VALID RESPONSE FOR: {query_name_of_packet}")
+        # print(f"   CONTINUE CALCULATION OF: {query_name_of_packet}")
     # Get both valid responses and servfails in the latency plots
     # Continue with the calculation because we filtered others
     elif "valid+servfails" == rcode_filter:
@@ -1406,7 +1410,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         src_match = src_ip_match(current_packet, client_only_source_ips)
         dst_match = dst_ip_match(current_packet, client_only_dest_ips)
         if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
-            print(" Source-Destination Ip not match: None!")
+            # print(" Source-Destination Ip not match: None!")
             return None
 
     latency = 0
@@ -1417,11 +1421,18 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
         dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
         latency = dns_time
+        # print(f"   DNS.TIME SET: {latency}")
 
     packets = find_all_packets_with_query_name(query_name_of_packet)
+    # print(f"   LENGTH OF ALL PACKETS WITH QUERYNAME: {len(packets)}")
+
+    # for p in packets:
+    #     print(f"Frame times of packets: {get_frame_time_relative_of_packet(p)}")
 
     responses = find_the_response_packets(packets, file_name)
+    # print(f"   LENGTH OF ALL RESPONSES: {len(responses)}")
     queries = find_the_query_packets(packets, file_name)
+    # print(f"   LENGTH OF ALL QUERIES: {len(queries)}")
 
     # latency = first_term(answer packet's relate frame time) - last_term(query packet's relate frame time)
     first_term = 0
@@ -1441,12 +1452,14 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
     # Note: code shouldn't reach here bcs queries can't have dns.time
     if len(responses) == 0:
         calculated_queries.append(query_name_of_packet)
+        # print(f"   NOT A SINGLE RESPONSE FOR: {query_name_of_packet}")
         if debug:
             print(f"    Query has no answers: {query_name_of_packet}")
             print(f"      (No latency calculation)")
         return None
     # There exist response to the query packet
     elif len(responses) > 0:
+        # print(f"   THERE WERE RESPONSES FOR: {query_name_of_packet}")
         # Check if responses are sent with multiple source IP's, but no handling for this situation
         response_src_ips = get_unique_src_ips_of_packets(responses)
         response_ip_count = len(response_src_ips)
@@ -1469,6 +1482,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
         # Responses are only ServFails
         # Get the latency between first query and first ServFail
         if len(responses_with_rcode_0) == 0 and len(responses_with_rcode_2) != 0:
+            # print(f"   ALL RESPONSES WERE SERVFAILS FOR: {query_name_of_packet}")
             lowest_frame_no_of_responses_with_2 = find_lowest_frame_no(responses_with_rcode_2)
             response_packet_2_with_lowest_frame_no = get_packet_by_frame_no_from_list(
                 lowest_frame_no_of_responses_with_2,
@@ -1486,12 +1500,13 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
             if latency <= 0:
                 print(f"  !! Negative Latency for:{query_name_of_packet}")
                 print(f"    !! Latency calculation: {first_term} - {last_term}")
-
+            # print(f"   RETURNED LATENCY {latency} FOR: {query_name_of_packet}")
             return latency
 
         # All Responses are valid (No Errors)
         # Get the latency between first query and first (valid) answer
         elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) == 0:
+            # print(f"   ALL RESPONSES WERE VALID FOR: {query_name_of_packet}")
             lowest_frame_no_of_responses_with_0 = find_lowest_frame_no(responses_with_rcode_0)
             response_packet_0_with_lowest_frame_no = get_packet_by_frame_no_from_list(
                 lowest_frame_no_of_responses_with_0,
@@ -1515,11 +1530,12 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
                 print(f"    query_packet_with_lowest_frame_no: {query_packet_with_lowest_frame_no}")
                 print(f"    response_packet_0_with_lowest_frame_no = {response_packet_0_with_lowest_frame_no}")
                 print(f"    Responses: {responses}")
-
+            # print(f"   RETURNED LATENCY {latency} FOR: {query_name_of_packet}")
             return latency
         # There are ServFails and also valid answers
         # Get the latency between first query and first valid answer
         elif len(responses_with_rcode_0) != 0 and len(responses_with_rcode_2) != 0:
+            # print(f"   THERE ARE BOTH SERVFAIL AND VALID RESPONSES FOR: {query_name_of_packet}")
             # examine all the response's RCODES, get the ones with RCODE = 0, get the first of them.
             responses_with_rcode_0 = []
             for response in responses:
@@ -1542,6 +1558,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
             if latency <= 0:
                 print(f"  !! Negative Latency for:{query_name_of_packet}")
                 print(f"    !! Latency calculation: {first_term} - {last_term}")
+            # print(f"   RETURNED LATENCY {latency} FOR: {query_name_of_packet}")
             return latency
 
 
@@ -1971,6 +1988,7 @@ def src_ip_match(packet, ip_list):
 def dst_ip_match(packet, ip_list):
     if len(ip_list) > 0:
         ip_dst_of_packet = packet['_source']['layers']["ip"]["ip.dst"]
+        print(f" DEST IP OF PACKET: {ip_dst_of_packet}")
         if ip_dst_of_packet in ip_list:
             return True
     return False
@@ -2397,7 +2415,7 @@ y_axis_for_text = 0
 # ["0"] -> Calculate latencies of valid answers AND ServFails
 # ["2"] -> Calculate latencies of ONLY ServFails
 
-rcodes_to_get = "valid"
+rcodes_to_get = "valid+servfails"
 # "valid" -> Calculate latencies of ONLY valid answers
 # "valid+servfails" -> Calculate latencies of valid answers AND ServFails
 # "servfails"" -> Calculate latencies of ONLY ServFails
@@ -2410,7 +2428,7 @@ resolver_filter = []
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
+# create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
+#                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
 
-# create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)
+create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)

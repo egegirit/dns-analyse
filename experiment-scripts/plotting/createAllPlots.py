@@ -2428,11 +2428,12 @@ rcodes_to_get = ["0", "2"]  # ["0", "2"] -> No filtering
 client_bottom_limit = 0
 client_upper_limit = 30
 auth_bottom_limit = 0
-auth_upper_limit = 10
+auth_upper_limit = 30
 resolver_filter = []
-directory_name = "overall-plot-results"
+overall_directory_name = "Overall-plot-results"
+resolver_directory_name = "Resolver-plot-results"
 
 # create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-#                                     auth_bottom_limit, auth_upper_limit, resolver_filter, directory_name)
+#                                     auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
 
-create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, "resolver-plot-results")
+create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)

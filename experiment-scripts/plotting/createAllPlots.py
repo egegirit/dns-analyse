@@ -1,5 +1,4 @@
 import sys
-
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import json
@@ -220,7 +219,6 @@ def append_item_to_op_index_pl_index_value_of_multi_dict(dictionary, op_index, p
     print(f"  dictionary[all_keys[{op_index}]][{pl_rate_key}]: {dictionary[all_keys[op_index]][pl_rate_key]}")
 
     dictionary[all_keys[op_index]][pl_rate_key].append(item)
-    list.append()
 
 
 # Set the nth element (list) of the given dictionary

@@ -2,7 +2,7 @@ import subprocess
 import time
 import os
 import sys
-import signal
+
 from datetime import datetime
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
 from ripe.atlas.sagan import DnsResult

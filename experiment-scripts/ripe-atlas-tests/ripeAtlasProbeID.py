@@ -4,9 +4,7 @@ import os
 import signal
 from datetime import datetime
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
-
 # from ripe.atlas.sagan import DnsResult
-
 
 # Execute this script as root user
 
@@ -16,9 +14,11 @@ sleep_time = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
+# Mit 6 Packetloss Raten und 20 Wiederholungen (counter) -> maximal 830 Probes am Tag
+
 # Minimum and maximum counter values for the domains
-counter_min = 1  # Inclusive
-counter_max = 50  # Exclusive 
+counter_min = 0  # Inclusive
+counter_max = 21  # Exclusive
 
 # Set the interface names for packet capture with tcpdump
 interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
@@ -26,7 +26,9 @@ interface_name = "bond0"  # The interface of authoritative server without the pa
 directory_name_of_logs = "packet_capture_logs"
 
 # Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+# packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+# packetloss_rates = [0, 10, 20, 30, 50, 85]
+packetloss_rates = [40, 60, 70, 80, 90, 95]
 
 ATLAS_API_KEY = ""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
@@ -40,13 +42,8 @@ msm_id = 0
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
 def disable_packetloss_simulation(packetloss_rate, interface_name_for_capture):
     print(f"  Disabling packetloss on {interface_name_for_capture} interface with following commands:")
-    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport ' \
-                           f'53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment '\
-                           f'--comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-
-    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport ' \
-                           f'53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment '\
-                           f'--comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
 
     print("    " + disable_packetloss_1)
     print("    " + disable_packetloss_2)
@@ -78,8 +75,8 @@ def sleep_for_seconds(sleeping_time):
 
 
 # Compress all the packet capture logs into a logs.zip file
-def compress_log_files(directory_name_of_logs):
-    compress_files_command = f"zip -r logs.zip {directory_name_of_logs}"
+def compress_log_files(directory_name):
+    compress_files_command = f"zip -r logs.zip {directory_name}"
     print("Compressing all log files into a logs.zip file with the following command:")
     print("  " + compress_files_command)
     try:
@@ -121,9 +118,7 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name}/tcpdump_log_auth1_' \
-                               f'{interface_name}_{current_pl_rate}.pcap -nnn -i {interface_name_for_capture} ' \
-                               f'"host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name}/tcpdump_log_auth1_{interface_name}_{current_pl_rate}.pcap -nnn -i {interface_name_for_capture} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
         f"  (1) Running packet capture on {interface_name} interface with the following command:"
     )
@@ -143,7 +138,7 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
 
     # If packet capture commands are delayed for a reason, the send_query function executes before the packet capture.
     # Added 1-second sleep to avoid this.
-    print(f"  Sleeping 1 second to let the packet captures start")
+    print(f"  Sleeping 1 second to let the packet capture start")
     time.sleep(1)
     return result_processes
 
@@ -153,21 +148,20 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
 # Query structure: *.ripeatlas-<plrate>-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
 # Example: *.ripeatlas-pl95-15.packetloss.syssec-research.mmci.uni-saarland.de
 def build_query_name_from_counter_and_pl(current_counter, packetloss_rate):
-    return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(current_counter) + \
-           ".packetloss.syssec-research.mmci.uni-saarland.de"
+    return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(current_counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 
 # Create a source from measurement ID msm_ID
-def send_query_from_probe(measurement_id, counter, packetloss_rate):
-    print(f"  Building query name from current counter value: {counter}")
+def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
+    print(f"  Building query name from current counter value: {counter_value}")
     # Build the query name from the counter value
-    query_name = build_query_name_from_counter_and_pl(counter, packetloss_rate)
+    query_name = build_query_name_from_counter_and_pl(counter_value, packetloss_rate)
     print(f"    Built query name: {query_name}")
 
     print(f"  Creating DNS Query")
     dns = Dns(
         key=ATLAS_API_KEY,
-        description=f"Ege Girit 2. Packetloss Experiment {counter}-{packetloss_rate}",
+        description=f"Ege Girit 2. Packetloss Experiment {counter_value}-{packetloss_rate}",
         protocol="UDP",
         af="4",
 

@@ -1386,9 +1386,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
     # Only servfail latency calculation -> ignore normal valid responses
     elif "servfails" == rcode_filter:
         # If any response to the query has a rcode 0, ignore this packet
-
         # print(f" SERVFAIL AS FILTER SELECTED FOR: {query_name_of_packet}")
-
         responses_with_rcode_0 = []
         for response in responses:
             if get_rcode_of_packet(response) == "0":
@@ -2428,7 +2426,7 @@ resolver_filter = []
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
+# create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
+#                                     auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
 
 create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)

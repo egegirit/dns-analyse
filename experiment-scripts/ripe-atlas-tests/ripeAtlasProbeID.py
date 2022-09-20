@@ -10,7 +10,7 @@ from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResul
 
 # Time to wait after one domain query is sent to all resolver IP Addresses
 # (Sleeping time between counters)
-sleep_time = 1
+sleep_time = 2
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
@@ -203,8 +203,8 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
-        "type": 'msm',
-        "value": measurement_id
+        type= 'msm',
+        value=measurement_id
     )
 
     print(f"  Creating request from source")

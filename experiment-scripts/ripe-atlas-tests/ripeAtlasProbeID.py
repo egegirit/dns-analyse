@@ -203,7 +203,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
-        type= 'msm',
+        type='msm',
         value=measurement_id
     )
 
@@ -222,11 +222,6 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Starting measurement")
     # Start the measurement
     (is_success, response) = atlas_request.create()
-
-    # %%
-    kwargs = {
-        "msm_id": response["measurements"][0]
-    }
 
 
 # Create directory to store the packet capture log files

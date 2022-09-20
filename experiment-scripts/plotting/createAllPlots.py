@@ -1988,7 +1988,7 @@ def src_ip_match(packet, ip_list):
 def dst_ip_match(packet, ip_list):
     if len(ip_list) > 0:
         ip_dst_of_packet = packet['_source']['layers']["ip"]["ip.dst"]
-        print(f" DEST IP OF PACKET: {ip_dst_of_packet}")
+        # print(f" DEST IP OF PACKET: {ip_dst_of_packet}")
         if ip_dst_of_packet in ip_list:
             return True
     return False
@@ -2428,7 +2428,7 @@ resolver_filter = []
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-# create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-#                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
+create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
+                                    auth_bottom_limit, auth_upper_limit, resolver_filter, overall_directory_name)
 
 create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)

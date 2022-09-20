@@ -14,7 +14,11 @@ sleep_time = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
-# Mit 6 Packetloss Raten und 20 Wiederholungen (counter) -> maximal 830 Probes am Tag
+# 1 Million daily ripe atlas kredit limit
+# 1 DNS Query (UDP) = 10 Kredits, 1 DNS Query (TCP) = 20 Kredits
+# With UDP -> 100000 Queries per day, 100000/12 = 8333 Queries per packetloss rate
+# 8333/20 -> 416 Probes per day with counter 20
+# With 6 packetloss rates and 20 repetitions (counter) -> maximum 830 Probes in one day
 
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
@@ -29,6 +33,8 @@ directory_name_of_logs = "packet_capture_logs"
 # packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # packetloss_rates = [0, 10, 20, 30, 50, 85]
 packetloss_rates = [40, 60, 70, 80, 90, 95]
+# Used to identify the end of an experiment and save time not to wait for 10 minutes at the end
+last_packetloss_rate = 95
 
 ATLAS_API_KEY = ""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
 
@@ -246,56 +252,54 @@ for current_packetloss_rate in packetloss_rates:
 
     # If current packetloss rate is 0, no need to execute packetloss filter
     if current_packetloss_rate != 0:
-        if not (simulate_packetloss(current_packetloss_rate, interface_name)):
+        if simulate_packetloss(current_packetloss_rate, interface_name):
             # if simulate_packetloss() returns false, there was an exception while simulating packetloss
             # continue with the next packetloss configuration
-            continue
+            print(f"  {current_packetloss_rate}% Packetloss simulation successful")
+        else:
+            print(f"  {current_packetloss_rate}% Packetloss simulation failed!")
 
-    # Start packet capture on the authoritative server
+    # Start packet capture on interface_name of the authoritative server, store the pcap in directory_name_of_logs
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name)
-
-    # TODO: Get probes of the last experiment from measurement ID
 
     # Ripe atlas
     # Measurement ID to get the same Probes as the first experiment
     global msm_id
 
-    # Send a query from all probe and build the query with a counter value.
-    # Do this for counter_max times
+    # Build a source with the measurement ID, build the query name for each probe with a counter value,
+    # send a query from all probes, do this for counter_max times
     # Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
 
     # Send queries of the current packetloss rate with ripe atlas
     for counter in range(counter_min, counter_max):
         send_query_from_probe(msm_id, counter, current_packetloss_rate)
+        # Sleep a while after sending queries from Probes
+        sleep_for_seconds(sleep_time)
 
-    # Disable packetloss on the authoritative server
+    # If there is packetloss simulation, disable simulation on the authoritative server
     if current_packetloss_rate != 0:
+        # Output of disable_packetloss_simulation():
         # True -> No error. False -> Exception occurred while disabling packetloss.
         disable_packetloss_simulation(current_packetloss_rate, interface_name)
-        # Exit the program because continuing would stack the packetloss rules.
-        # exit()
-        # Continue with next packetloss simulation because the next packetloss rule will overwrite the old one
-        # Not disabling the old packetloss rule won't be a problem.
-        # continue
 
     # Terminate packet captures / all created processes
-    print(f"  Stopping packet capture.")
-    # Using .terminate() did not stop the packet captures    
+    print(f"  Stopping packet capture")
+    # Using .terminate() doesn't stop the packet capture
     if len(capture_processes) > 0:
         for process in capture_processes:
             try:
-                # Send the signal to all the process groups
+                # Send the SIGTERM signal to all the process groups
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             except Exception:
                 print(f"    Exception while terminating tcpdump")
         print(f"    Sleeping for 1 seconds for tcpdump to terminate")
         sleep_for_seconds(1)
 
-        # Sleep for 10 minutes between packetloss configurations
-    print(f"  {current_packetloss_rate}% Packetloss Config Finished")
+    # Sleep for 10 minutes between packetloss configurations
+    print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
 
     # If we are in the last iteration, no need to wait
-    if current_packetloss_rate != 95:
+    if current_packetloss_rate != last_packetloss_rate:
         print(
             f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
         )

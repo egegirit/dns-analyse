@@ -2,42 +2,18 @@ import subprocess
 import time
 import os
 import sys
-
+import json
 from datetime import datetime
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
 from ripe.atlas.sagan import DnsResult
 
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
-# Atlas API specification from the probe selection website https://ihr.iijlab.net/ihr/en-us/metis/selection
-probe_dict = {
-    "probes": [
-        {
-            "type": "asn",
-            "value": 209090,
-            "requested": 1
-        },
-        {
-            "type": "asn",
-            "value": 206157,
-            "requested": 1
-        },
-        {
-            "type": "asn",
-            "value": 327687,
-            "requested": 1
-        },
-        {
-            "type": "asn",
-            "value": 9135,
-            "requested": 1
-        }
-    ]
-}
-
 # Store the extracted probe id's in a list
 as_ids = []
 
+# File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
+asn_file_name = "830-probes-atlas-API.txt"
 
 # Builds the query name string that the probe will send to its resolver
 # from the given counter value and packetloss rate
@@ -152,8 +128,13 @@ def send_query_from_asn(counter_value, packetloss_rate):
 # Extract the asn values from the global probe_dict variable
 # and store them in the global list as_ids
 # We create atlas sources from the id's stored in as_ids
-def extract_asn_values():
-    print("Reading the asn values")
+def extract_asn_values(text_file_name):
+    print(f"Reading the asn values from file: {text_file_name}")
+
+    # This text file contains the Atlas API specification of the probe selection
+    # from https://ihr.iijlab.net/ihr/en-us/metis/selection
+    f = open(text_file_name, "r")
+    probe_dict = json.loads(f.read())
 
     global as_ids
 
@@ -266,7 +247,7 @@ current_packetloss_rate = 0
 # capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name)
 
 # Extracts the asn values from the global variable probes_dict to the global as_ids list
-extract_asn_values()
+extract_asn_values(asn_file_name)
 
 counter = 0
 

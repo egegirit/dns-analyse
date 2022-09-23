@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import time
 import os
 import signal
@@ -36,14 +37,19 @@ directory_name_of_logs = "packet_capture_logs"
 # packetloss_rates = [0, 10, 20, 30, 50, 85]
 packetloss_rates = [40, 60, 70, 80, 90, 95]
 # Used to identify the end of an experiment and save time not to wait for 10 minutes at the end
-last_packetloss_rate = 95
+last_index = len(packetloss_rates) - 1
+if last_index >= 0:
+    last_packetloss_rate = packetloss_rates[len(packetloss_rates) - 1]
+else:
+    print("Invalid packetloss rates")
+    sys.exit()
 
-ATLAS_API_KEY = ""  # 0c51be25-dfac-4e86-9d0d-5fef89ea4670
+ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
-# The measurement ID from the first experiment
+# The measurement ID (integer) from the first experiment
 # This allows us to use the same probes again that are selected in the first experiment
 # But some probes might be unstable, expect unresponsive probes.
-msm_id = 0
+msm_id = ?
 
 
 # Disables packetloss simulation

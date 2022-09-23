@@ -9,11 +9,12 @@ from ripe.atlas.sagan import DnsResult
 
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
-# Store the extracted probe id's in a list
-as_ids = []
-
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
 asn_file_name = "830-probes-atlas-API.txt"
+
+# Store the extracted asn_id's in this list
+as_ids = []
+
 
 # Builds the query name string that the probe will send to its resolver
 # from the given counter value and packetloss rate
@@ -86,11 +87,11 @@ def send_query_from_asn(counter_value, packetloss_rate):
     sources = []
     for as_id in as_ids:
         source = AtlasSource(
-                type="asn",
-                value=as_id,
-                requested=1,
-                tags_include=["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d", "system-ipv4-stable-30d", "system-ipv4-stable-90d"]
-                # tags={"include":["system-ipv4-works"]}
+            type="asn",
+            value=as_id,
+            requested=1,
+            tags_include=["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d",
+                          "system-ipv4-stable-30d", "system-ipv4-stable-90d"]
         )
         sources.append(source)
 
@@ -122,7 +123,15 @@ def send_query_from_asn(counter_value, packetloss_rate):
     # Start the measurement
     (is_success, response) = atlas_request.create()
 
-    return is_success, response
+    time.sleep(1)
+    print(f"\n    Results:\n")
+    try:
+        print(f"      is_success: {is_success}")
+        print(f"      Response: {response}")
+    except Exception:
+        print("      Error while fetching results")
+
+    # return is_success, response
 
 
 # Extract the asn values from the global probe_dict variable
@@ -252,7 +261,7 @@ extract_asn_values(asn_file_name)
 counter = 0
 
 # For each asn ID in as_ids, send a query from that probe and build the query with a counter value.
-result = send_query_from_asn(counter, current_packetloss_rate)
+send_query_from_asn(counter, current_packetloss_rate)
 
 # (OPTIONAL) Terminate packet captures / all created processes
 # print(f"  Stopping packet capture.")

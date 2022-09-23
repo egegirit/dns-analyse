@@ -119,9 +119,20 @@ def send_query_from_asn(counter_value, packetloss_rate):
         sources.append(source)
 
     print(f"  Creating request from source")
+
+    seconds_to_add = 10
+
+    print(f"Current time: {datetime.utcnow()}")
+
+    past_time = datetime.now()
+    new_second = seconds_to_add + int(past_time.second)
+    new_date_time = past_time.replace(second=new_second)
+
+    print(f"Request scheduled for: {new_date_time}")
+
     # Create request from given probe ID
     atlas_request = AtlasCreateRequest(
-        start_time=datetime.utcnow(),
+        start_time=new_date_time,
         key=ATLAS_API_KEY,
         measurements=[dns],
         # All probes with the selected asn_id's

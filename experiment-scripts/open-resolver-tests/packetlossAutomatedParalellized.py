@@ -64,14 +64,14 @@ packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # and queries it to the resolver IP.
 # Example query: <ip_addr>-<counter>-<packetloss_rate>.packetloss.syssec-research.mmci.uni-saarland.de
 # Each call for this function runs at least (counter_max - counter_min) + (resolution time) seconds.
-# Input is a list of these values: (ip_addr, packetloss_rate, counter_min, counter_max, sleep_time):
+# Input is a list of these values: (ip_addr, packetloss_rate, counter_min, counter_max, sleep_time_between_counters):
 def build_and_send_query_mp(args_list):
     # Read the parameters from the args_list
     ip_addr = args_list[0]
     packetloss_rate = str(args_list[1])
     counter_min = int(args_list[2])
     counter_max = int(args_list[3])
-    sleep_between_counter = int(args_list[4])  # sleep_time variable from line 12
+    sleep_between_counter = int(args_list[4])  # sleep_time_between_counters variable from line 12
     # Build the query with its current counter value from the given resolver ip address
     for c in range(counter_min, counter_max):
         ip_addr_with_dashes = ip_addr.replace(".", "-")

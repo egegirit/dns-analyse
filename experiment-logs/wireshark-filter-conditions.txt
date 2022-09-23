@@ -129,7 +129,12 @@ INDEX/Packetloss rate: 9
     !! Latency = -3.038459
 
 
+is_success:
+True
+True
+response:
+{'measurements': [45187138]}
+{'measurements': [45187138]}
 
 
-
-
+sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_pl0.pcap -nnn -i ens160

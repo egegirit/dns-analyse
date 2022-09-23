@@ -116,9 +116,9 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
 
 
 # The function that sends the domain name queries to the defined resolver IP addresses execute_count times
-# def send_queries(sleep_time, execute_count, resolver_ip_addresses):
-#    if sleep_time < 0:
-#        print(f"    Invalid sleep time! {sleep_time}")
+# def send_queries(sleep_time_between_counters, execute_count, resolver_ip_addresses):
+#    if sleep_time_between_counters < 0:
+#        print(f"    Invalid sleep time! {sleep_time_between_counters}")
 #        return
 #    if execute_count < 0:
 #        print(f"    Invalid execution count! {execute_count}")
@@ -158,8 +158,8 @@ def send_queries2(sleep_time, execute_count, resolver_ip_addresses, current_pack
 #                        print(answers.rrset)
 #                # time.sleep(1)  # Sleep after every query
 #            print(f"    Finished sending current query to all resolver IP Addresses.")
-#            print(f"    Sleeping for {sleep_time} seconds to continue with the next domain name.")
-#            time.sleep(sleep_time)  # Sleep after one domain name is sent to all resolver IP's
+#            print(f"    Sleeping for {sleep_time_between_counters} seconds to continue with the next domain name.")
+#            time.sleep(sleep_time_between_counters)  # Sleep after one domain name is sent to all resolver IP's
 #    print(f"    send_queries() function finished")
 
 

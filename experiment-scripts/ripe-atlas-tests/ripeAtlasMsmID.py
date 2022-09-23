@@ -2,15 +2,17 @@ import subprocess
 import time
 import os
 import signal
-from datetime import datetime
-from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
+from datetime import datetime, timedelta
+from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest
 # from ripe.atlas.sagan import DnsResult
 
-# Execute this script as root user
+####################################
+# Execute this script as root user #
+####################################
 
 # Time to wait after one domain query is sent to all resolver IP Addresses
 # (Sleeping time between counters)
-sleep_time = 2
+sleep_time_between_counters = 2
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
@@ -183,7 +185,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
-        prepend_probe_id=True,
+        prepend_probe_id=False,
 
         # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
         use_probe_resolver=True,
@@ -203,14 +205,24 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
+        requested=9999,
         type='msm',
         value=measurement_id
     )
 
     print(f"  Creating request from source")
+
+    seconds_to_add = 5
+    print(f"Current time: {datetime.utcnow()}")
+
+    past_time = datetime.utcnow()
+    scheduled_time = past_time + timedelta(seconds=seconds_to_add)
+
+    print(f"Request scheduled for: {scheduled_time}")
+
     # Create request from given probe ID
     atlas_request = AtlasCreateRequest(
-        start_time=datetime.utcnow(),
+        start_time=scheduled_time,
         key=ATLAS_API_KEY,
         measurements=[dns],
         sources=[source1],
@@ -222,6 +234,15 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Starting measurement")
     # Start the measurement
     (is_success, response) = atlas_request.create()
+    # return is_success, response
+
+    time.sleep(1)
+    print(f"\n    Results of Counter: {counter_value}, Packetloss rate: {packetloss_rate}\n")
+    try:
+        print(f"      is_success: {is_success}")
+        print(f"      Response: {response}")
+    except Exception:
+        print("      Error while fetching results")
 
 
 # Create directory to store the packet capture log files
@@ -259,8 +280,6 @@ for current_packetloss_rate in packetloss_rates:
 
     # Ripe atlas
     # Measurement ID to get the same Probes as the first experiment
-    global msm_id
-
     # Build a source with the measurement ID, build the query name for each probe with a counter value,
     # send a query from all probes, do this for counter_max times
     # Make sure the domain name is valid (A records are in authoritative server) for the given counter values.
@@ -269,7 +288,7 @@ for current_packetloss_rate in packetloss_rates:
     for counter in range(counter_min, counter_max):
         send_query_from_probe(msm_id, counter, current_packetloss_rate)
         # Sleep a while after sending queries from Probes
-        sleep_for_seconds(sleep_time)
+        sleep_for_seconds(sleep_time_between_counters)
 
     # If there is packetloss simulation, disable simulation on the authoritative server
     if current_packetloss_rate != 0:

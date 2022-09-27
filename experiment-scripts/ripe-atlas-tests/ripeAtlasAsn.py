@@ -3,7 +3,7 @@ import time
 import os
 import sys
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest, AtlasResultsRequest
 from ripe.atlas.sagan import DnsResult
 
@@ -97,19 +97,17 @@ def send_query_from_asn(counter_value, packetloss_rate):
 
     print(f"  Creating request from source")
 
-    seconds_to_add = 10
-
+    seconds_to_add = 5
     print(f"Current time: {datetime.utcnow()}")
 
-    past_time = datetime.now()
-    new_second = seconds_to_add + int(past_time.second)
-    new_date_time = past_time.replace(second=new_second)
+    past_time = datetime.utcnow()
+    scheduled_time = past_time + timedelta(seconds=seconds_to_add)
 
-    print(f"Request scheduled for: {new_date_time}")
+    print(f"Request scheduled for: {scheduled_time}")
 
     # Create request from given probe ID
     atlas_request = AtlasCreateRequest(
-        start_time=new_date_time,
+        start_time=scheduled_time,
         key=ATLAS_API_KEY,
         measurements=[dns],
         # All probes with the selected asn_id's

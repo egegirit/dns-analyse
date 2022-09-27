@@ -32,6 +32,8 @@ interface_name = "bond0"  # The interface of authoritative server without the pa
 
 directory_name_of_logs = "packet_capture_logs"
 
+file_name_of_msm_logs = "measurement-logs.txt"
+
 # Packetloss rates to be simulated on the authoritative server
 # packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # packetloss_rates = [0, 10, 20, 30, 50, 85]
@@ -50,7 +52,6 @@ ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 # This allows us to use the same probes again that are selected in the first experiment
 # But some probes might be unstable, expect unresponsive probes.
 msm_id = ?
-
 
 # Disables packetloss simulation
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
@@ -211,7 +212,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Creating source from given measurement id: {measurement_id}")
     # Probe ID as parameter
     source1 = AtlasSource(
-        requested=9999,
+        requested=830,
         type='msm',
         value=measurement_id
     )
@@ -247,8 +248,28 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     try:
         print(f"      is_success: {is_success}")
         print(f"      Response: {response}")
+        msm_ids_of_experiment = (is_success, response)
+        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
+
     except Exception:
         print("      Error while fetching results")
+
+
+def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
+    save_path = "/" + directory_name
+    file_path = os.path.join(save_path, file_name_to_save)
+    f = open(file_path, "a")
+
+    f.write(str(measurement_tuple) + "\n")
+
+    # global msm_ids_of_experiment
+    # i = 1
+    # for log in msm_ids_of_experiment:
+    #     f.write(str(i) + ". Measurement: \n  ")
+    #     f.write(str(log) + "\n")
+    #     i += 1
+
+    f.close()
 
 
 # Create directory to store the packet capture log files
@@ -296,6 +317,16 @@ for current_packetloss_rate in packetloss_rates:
         # Sleep a while after sending queries from Probes
         sleep_for_seconds(sleep_time_between_counters)
 
+    # Sleep for 10 minutes between packetloss configurations
+    print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
+
+    # If we are in the last iteration, no need to wait
+    if current_packetloss_rate != last_packetloss_rate:
+        print(
+            f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
+        )
+        sleep_for_seconds(sleep_time_between_packetloss_config)
+
     # If there is packetloss simulation, disable simulation on the authoritative server
     if current_packetloss_rate != 0:
         # Output of disable_packetloss_simulation():
@@ -314,16 +345,6 @@ for current_packetloss_rate in packetloss_rates:
                 print(f"    Exception while terminating tcpdump")
         print(f"    Sleeping for 1 seconds for tcpdump to terminate")
         sleep_for_seconds(1)
-
-    # Sleep for 10 minutes between packetloss configurations
-    print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
-
-    # If we are in the last iteration, no need to wait
-    if current_packetloss_rate != last_packetloss_rate:
-        print(
-            f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
-        )
-        sleep_for_seconds(sleep_time_between_packetloss_config)
 
 print("\n==== Experiment ended ====\n")
 

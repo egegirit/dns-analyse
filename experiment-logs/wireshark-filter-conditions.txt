@@ -127,14 +127,3 @@ INDEX/Packetloss rate: 9
   !! Negative Latency for:156-154-70-1-1-pl85.packetloss.syssec-research.mmci.uni-saarland.de
     !! Latency calculation: 3.813921 - 6.85238
     !! Latency = -3.038459
-
-
-is_success:
-True
-True
-response:
-{'measurements': [45187138]}
-{'measurements': [45187138]}
-
-
-sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_pl0.pcap -nnn -i ens160

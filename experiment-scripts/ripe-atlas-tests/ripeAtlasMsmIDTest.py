@@ -46,7 +46,7 @@ else:
     print("Invalid packetloss rates")
     sys.exit()
 
-ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
+ATLAS_API_KEY = ""  # "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # The measurement ID (integer) from the first experiment
 # This allows us to use the same probes again that are selected in the first experiment
@@ -57,8 +57,8 @@ msm_id = ?
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
 def disable_packetloss_simulation(packetloss_rate, interface_name_for_capture):
     print(f"  Disabling packetloss on {interface_name_for_capture} interface with following commands:")
-    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_1 = f'sudo iptables -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_2 = f'sudo iptables -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
 
     print("    " + disable_packetloss_1)
     print("    " + disable_packetloss_2)
@@ -105,8 +105,8 @@ def compress_log_files(directory_name):
 # Use `run()` with `check=True` when setting and deleting packetloss
 # Otherwise process might not have finished before the next code runs
 def simulate_packetloss(packetloss_rate, interface_name_for_capture):
-    packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    packetloss_filter_command_1 = f'sudo iptables -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    packetloss_filter_command_2 = f'sudo iptables -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
     print(
         f"  Simulating {packetloss_rate}% packetloss on interface {interface_name_for_capture} with the following command:"
     )
@@ -133,7 +133,7 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name}/tcpdump_log_auth1_{interface_name}_{current_pl_rate}.pcap -nnn -i {interface_name_for_capture} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name}/tcpdump_log_auth1_{interface_name}_{current_pl_rate}.pcap -nnn -i {interface_name_for_capture}'
     print(
         f"  (1) Running packet capture on {interface_name} interface with the following command:"
     )
@@ -220,6 +220,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     print(f"  Creating request from source")
 
     seconds_to_add = 5
+
     print(f"Current time: {datetime.utcnow()}")
     past_time = datetime.utcnow()
     scheduled_time = past_time + timedelta(seconds=seconds_to_add)
@@ -255,6 +256,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
 
 
 def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
+
     currrent_working_path = os.path.dirname(os.path.realpath(__file__))
     print(f"Working path {currrent_working_path}")
     save_path = "\\" + directory_name

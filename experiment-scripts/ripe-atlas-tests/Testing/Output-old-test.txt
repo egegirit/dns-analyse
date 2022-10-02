@@ -1,0 +1,352 @@
+
+==== Experiment starting ====
+
+### Current packetloss rate: 0 ###
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_0.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl0-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 13:33:16.230430
+Request scheduled for: 2022-09-23 16:33:26.230930
+  Starting measurement
+
+ Sleeping 10 for result upload 
+
+  Remaining time:
+                             
+ Results: 
+
+is_success:
+True
+True
+response:
+{'measurements': [45187770]}
+{'measurements': [45187770]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl0-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 13:33:37.250309
+Request scheduled for: 2022-09-23 16:33:47.250406
+  Starting measurement
+
+ Sleeping 10 for result upload 
+
+  Remaining time:
+                             
+ Results: 
+
+is_success:
+True
+True
+response:
+{'measurements': [45187772]}
+{'measurements': [45187772]}
+  Remaining time:
+  Stopping packet capture    
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+992 packets captured
+1004 packets received by filter
+  0% Packetloss Configuration Finished
+  Sleeping for 10 seconds for the next packetloss iteration.
+  Remaining time:
+### Current packetloss rate: 95 ###
+  Simulating 95% packetloss on interface ens160 with the following command:
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  95% Packetloss simulation successful
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_95.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl95-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 13:34:04.388019
+Request scheduled for: 2022-09-23 16:34:14.388049
+  Starting measurement
+
+ Sleeping 10 for result upload 
+
+  Remaining time:
+                             
+ Results: 
+
+is_success:
+True
+True
+response:
+{'measurements': [45187779]}
+{'measurements': [45187779]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl95-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 13:34:19.579719
+Request scheduled for: 2022-09-23 16:34:29.579810
+  Starting measurement
+
+ Sleeping 10 for result upload 
+
+  Remaining time:
+                             
+ Results: 
+
+is_success:
+True
+True
+response:
+{'measurements': [45187783]}
+{'measurements': [45187783]}
+  Remaining time:
+  Disabling packetloss on ens160 interface with following commands:
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  Stopping packet capture
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+686 packets captured
+686 packets received by filter
+  95% Packetloss Configuration Finished
+
+==== Experiment ended ====
+
+Compressing all log files into a logs.zip file with the following command:
+  zip -r logs.zip packet_capture_logs
+[root@clientcent8 Desktop]# rm -rf packet_capture_logs/
+[root@clientcent8 Desktop]# rm -rf logs.zip 
+[root@clientcent8 Desktop]#  
+[root@clientcent8 Desktop]#  
+[root@clientcent8 Desktop]#  
+[root@clientcent8 Desktop]#   
+[root@clientcent8 Desktop]# python3 ./ripeAtlasProbeID.py 
+Creating a folder named packet_capture_logs with the following command:
+  mkdir packet_capture_logs
+Folder packet_capture_logs created.
+
+==== Experiment starting ====
+
+### Current packetloss rate: 0 ###
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_0.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl0-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:01:28.619962
+Request scheduled for: 2022-09-23 14:01:38.620081
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188197]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl0-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:01:40.491947
+Request scheduled for: 2022-09-23 14:01:50.492034
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188201]}
+  Remaining time:
+  Stopping packet capture    
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+301 packets captured
+301 packets received by filter
+  0% Packetloss Configuration Finished
+  Sleeping for 10 seconds for the next packetloss iteration.
+  Remaining time:
+### Current packetloss rate: 95 ###
+  Simulating 95% packetloss on interface ens160 with the following command:
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  95% Packetloss simulation successful
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_95.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl95-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:01:59.500727
+Request scheduled for: 2022-09-23 14:02:09.500754
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188208]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl95-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:02:06.743574
+Request scheduled for: 2022-09-23 14:02:16.743617
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188212]}
+  Remaining time:
+  Disabling packetloss on ens160 interface with following commands:
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  Stopping packet capture
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+191 packets captured
+208 packets received by filter
+  95% Packetloss Configuration Finished
+
+==== Experiment ended ====
+
+Compressing all log files into a logs.zip file with the following command:
+  zip -r logs.zip packet_capture_logs
+[root@clientcent8 Desktop]# ^C
+[root@clientcent8 Desktop]# python3 ./ripeAtlasProbeID.py 
+Creating a folder named packet_capture_logs with the following command:
+  mkdir packet_capture_logs
+mkdir: cannot create directory ‘packet_capture_logs’: File exists
+Folder not created.
+
+==== Experiment starting ====
+
+### Current packetloss rate: 0 ###
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_0.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl0-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:09:59.428518
+Request scheduled for: 2022-09-23 14:10:09.428547
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188317]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl0-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:10:08.997350
+Request scheduled for: 2022-09-23 14:10:18.997375
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188320]}
+  Remaining time:
+  Stopping packet capture    
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+246 packets captured
+247 packets received by filter
+  0% Packetloss Configuration Finished
+  Sleeping for 10 seconds for the next packetloss iteration.
+  Remaining time:
+### Current packetloss rate: 95 ###
+  Simulating 95% packetloss on interface ens160 with the following command:
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  95% Packetloss simulation successful
+  (1) Running packet capture on ens160 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs/tcpdump_log_auth1_ens160_95.pcap -nnn -i ens160
+  Sleeping 1 second to let the packet capture start
+dropped privs to tcpdump
+tcpdump: listening on ens160, link-type EN10MB (Ethernet), capture size 262144 bytes
+  Building query name from current counter value: 0
+    Built query name: $p-$t.ripeatlas-pl95-0.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:10:29.003796
+Request scheduled for: 2022-09-23 14:10:39.003826
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188330]}
+  Remaining time:
+  Building query name from current counter value: 1
+    Built query name: $p-$t.ripeatlas-pl95-1.packetloss.syssec-research.mmci.uni-saarland.de
+  Creating DNS Query
+  Creating source from given measurement id: 45187138
+  Creating request from source
+Current time: 2022-09-23 14:10:41.393678
+Request scheduled for: 2022-09-23 14:10:51.393701
+  Starting measurement
+
+ Results: 
+
+is_success: True
+Response: {'measurements': [45188333]}
+  Remaining time:
+  Disabling packetloss on ens160 interface with following commands:
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 0.95 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  Stopping packet capture
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+272 packets captured
+272 packets received by filter
+  95% Packetloss Configuration Finished
+
+==== Experiment ended ====
+
+Compressing all log files into a logs.zip file with the following command:
+  zip -r logs.zip packet_capture_logs
+[root@clientcent8 Desktop]# tcpdump: pcap_loop: The interface went down
+114421 packets captured
+114440 packets received by filter
+0 packets dropped by kernel
+tcpdump: pcap_loop: The interface went down
+96801 packets captured
+96820 packets received by filter

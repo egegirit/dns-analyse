@@ -132,7 +132,7 @@ def send_query_from_asn(counter_value, packetloss_rate):
         msm_ids_of_experiment = (is_success, response)
         create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
     except Exception:
-        print("      Error while fetching results")
+        print("      Error while fetching/logging results")
 
     # return is_success, response
 

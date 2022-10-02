@@ -31,7 +31,7 @@ counter_max = 2  # Exclusive
 requested_probe_count = 1
 
 # Set the interface names for packet capture with tcpdump
-interface_name = "ens33"  # The interface of authoritative server without the packetloss filter
+interface_name = "ens160"  # The interface of authoritative server without the packetloss filter
 directory_name_of_logs = "packet_capture_logs"
 file_name_of_msm_logs = "measurement-logs.txt"
 
@@ -53,7 +53,7 @@ ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 # The measurement ID (integer) from the first experiment
 # This allows us to use the same probes again that are selected in the first experiment
 # But some probes might be unstable, expect unresponsive probes.
-msm_id = 1
+msm_id = 45543927
 
 
 # Disables packetloss simulation
@@ -254,13 +254,14 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
         print(f"      is_success: {is_success}")
         print(f"      Response: {response}")
         msm_ids_of_experiment = (is_success, response)
-        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
+        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment, counter_value,
+                                   packetloss_rate)
 
     except Exception:
-        print("      Error while fetching results")
+        print("      Error while fetching/logging results")
 
 
-def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
+def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple, counter_value, packetloss_rate):
     currrent_working_path = os.path.dirname(os.path.realpath(__file__))
     print(f"Working path: {currrent_working_path}")
     save_path = "/" + directory_name
@@ -278,8 +279,10 @@ def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tu
     # Open/Create the log file in the given directory
     f = open(file_path + "/" + file_name_to_save, "a")
 
-    f.write(str(measurement_tuple) + "\n")
-    print(f"Wrote to file: {str(measurement_tuple)}")
+    f.write("Packetloss rate: " + str(packetloss_rate) + ", Counter: " + str(counter_value) + " -> "
+            + str(measurement_tuple) + "\n")
+    print(f"Wrote to file: \n  Packetloss rate: " + str(packetloss_rate) + ", Counter: " + str(counter_value) + " -> "
+          + str(measurement_tuple))
 
     f.close()
 

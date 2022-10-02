@@ -252,13 +252,13 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
         print(f"      is_success: {is_success}")
         print(f"      Response: {response}")
         msm_ids_of_experiment = (is_success, response)
-        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
+        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment, counter_value, packetloss_rate)
 
     except Exception:
-        print("      Error while fetching results")
+        print("      Error while fetching/logging results")
 
 
-def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
+def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple, counter_value, packetloss_rate):
     currrent_working_path = os.path.dirname(os.path.realpath(__file__))
     print(f"Working path: {currrent_working_path}")
     save_path = "/" + directory_name
@@ -276,8 +276,10 @@ def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tu
     # Open/Create the log file in the given directory
     f = open(file_path + "/" + file_name_to_save, "a")
 
-    f.write(str(measurement_tuple) + "\n")
-    print(f"Wrote to file: {str(measurement_tuple)}")
+    f.write("Packetloss rate: " + str(packetloss_rate) + ", Counter: " + str(counter_value) + " -> "
+            + str(measurement_tuple) + "\n")
+    print(f"Wrote to file: \n  Packetloss rate: " + str(packetloss_rate) + ", Counter: " + str(counter_value) + " -> "
+            + str(measurement_tuple))
 
     f.close()
 

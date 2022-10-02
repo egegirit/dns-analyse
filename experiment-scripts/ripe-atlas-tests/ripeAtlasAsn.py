@@ -10,7 +10,7 @@ from ripe.atlas.sagan import DnsResult
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
-asn_file_name = "830-probes-atlas-API.txt"
+asn_file_name = "1000-probes-atlas-API.txt"
 
 directory_name_of_logs = "packet_capture_logs"
 file_name_of_msm_logs = "selected-probes-logs.txt"
@@ -132,7 +132,7 @@ def send_query_from_asn(counter_value, packetloss_rate):
         msm_ids_of_experiment = (is_success, response)
         create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
     except Exception:
-        print("      Error while fetching results")
+        print("      Error while fetching/logging results")
 
     # return is_success, response
 

@@ -1,52 +1,681 @@
+Layout:
+setxkbmap -layout tr
+
+# Resolver: 192.168.1.33
+# Auth:     192.168.1.32
+# TLD:      192.168.1.31
+# Root:     192.168.1.30
+# Client:   192.168.1.9
+
+New setup:
+
+# Resolver: 192.168.1.43
+# Auth:     192.168.1.42
+# TLD:      192.168.1.41
+# Root:     192.168.1.40
+# Client:   192.168.1.21
+
+
+By default, RHEL (centos8) performs no DNS caching at all.
+
+
+By default, Bind DNS package is available in the Ubuntu 20.04 default repository. 
+You can easily install it by just running the following command:
+sudo apt-get install bind9 bind9utils bind9-dnsutils bind9-doc bind9-host -y
+sudo apt-get install bind9 bind9utils bind9-doc bind9-host -y
+
+verify the Bind 9 version using the following command:  
+(debian 8 supports 9.9.5.9, debian 9 supports 9.10.3, debian 10 supports 9.11.5, debian 11 supports 9.16.27)
+named -v
+
 Bind 9 service is managed by systemd. 
 You can start the Bind DNS service and enable it to start at system reboot using the following command:
 systemctl start named
 systemctl enable named
 
-Check the status of the Bind:
+You can check the status of the Bind using the following command:
 systemctl status named
 
-Verify the configuration files in bind9 for any error using the following command:
+
+DNS config files are in /etc and /var/named directories.
+Main config file is /etc/named.conf
+var/named/named.ca has the 13 root server addresses
+zone files in var/named/
+
+
+======= Bind 9 ========
+https://cloudinfrastructureservices.co.uk/how-to-install-bind-dns-on-ubuntu-20-04-server-setup-configure/
+Bind DNS server’s configuration files are located inside /etc/bind directory. 
+First, you will need to edit /etc/bind/named.conf.options file and add forwarders. 
+DNS query will be forwarded to the forwarders when your local DNS server is unable to resolve the query.
+sudo vim /etc/bind/named.conf.options
+
+Uncomment and change the following lines:
+forwarders {
+       8.8.8.8;
+};
+
+Save and close the file when you are finished. Next, edit the /etc/bind/named.conf.local file to define the zone for your domain.
+sudo vim /etc/bind/named.conf.local
+
+Add the following lines:
+
+zone "mydomain.com" {
+ type master;
+ file "https://net.cloudinfrastructureservices.co.uk/etc/bind/forward.mydomain.com";
+};
+zone "0.16.172.in-addr.arpa" {
+ type master;
+ file "https://net.cloudinfrastructureservices.co.uk/etc/bind/reverse.mydomain.com";
+};
+
+Save and close the file, when you are finished. Then, verify the configuration file for any error using the following command:
 named-checkconf
 
-Verify zone files:
-named-checkzone
 
+CentOS / RHEL / Fedora Linux:
+
+Type the following command to start BIND server:
+# service named start
+
+Type the following command to stop BIND server:
+# service named stop
+
+Type the following command to restart BIND server:
+# service named restart
+
+Type the following command to reload BIND server to reload zone file or config file changes:
+# service named reload
+
+Type the following command to see the current status of BIND server:
+# service named status
+
+You can also use the following syntax too:
+
+/etc/init.d/named start
+/etc/init.d/named stop
+/etc/init.d/named restart
+
+
+To remove bind9:
+get root access;
+apt-get remove bind9 -y
+
+
+max-ncache-ttl sets the maximum time (in seconds) for which the server will cache negative (NXDOMAIN) 
+answers (positives are defined by max-cache-ttl ). The default max-ncache-ttl is 10800 seconds (3 hours). 
+max-ncache-ttl cannot exceed 7 days and will be silently truncated to 7 days if set to a greater value. 
+This statement may be used in view or a global options clause. 
+
+
+Compile bind9 on debian 8: (https://kb.isc.org/docs/aa-00768)
+download current stable bind9 version from here: https://www.isc.org/download/
+
+To Build it, unpack the tarball(Debian/Ubuntu Linux users need "apt install xz-utils" first):
+tar -zxvf <name of BIND tarball, e.g. bind-9.18.5.tar.xz>  // Or use: tar -xf bind-9.18.5.tar.xz
+Navigate to the top level directory of the new source code directory.  :
+cd bind-9.18.5
+Make sure that you have OpenSSL installed (if you'd like to implement DNSSEC signing/validation):
+Check version with: dpkg -l 'openssl'
+ANSI C compiler:
+	The default Debian repositories contain a meta-package named build-essential 
+	that contains the GCC compiler and other libraries and utilities required for compiling software.
+	apt update
+	apt install build-essential
+	apt-get install manpages-dev
+	gcc --version
+
+	In order to avoid Debian to search for packages on a non-existent CDROM, 
+	which is most likely not present on a Linux VPS, you should change a simple parameter on the /etc/apt/sources.list file:
+	https://my.velocihost.net/knowledgebase/29/Fix-the-apt-get-install-error-Media-change-please-insert-the-disc-labeled-...-on-your-Linux-VPS.html
+
+	If error: (https://unix.stackexchange.com/questions/359252/problem-installing-build-essential-in-debian)
+
+	The following error E: Package 'build-essential' has no installation candidate mean that you don't have the main repo on your sources.list
+	The build-essential package is available on the main repository.
+	Firdt, you should edit your sources.list :
+
+	sudo apt edit-sources
+
+	add the following lines ( sample sources.list with main and contrib component):
+
+	deb http://httpredir.debian.org/debian jessie main contrib
+	deb-src http://httpredir.debian.org/debian jessie main contrib
+
+	deb http://httpredir.debian.org/debian jessie-updates main contrib
+	deb-src http://httpredir.debian.org/debian jessie-updates main contrib
+
+	deb http://security.debian.org/ jessie/updates main contrib
+	deb-src http://security.debian.org/ jessie/updates main contrib 
+
+	Save and run the following commands to install the build-essential package:
+
+	sudo apt update
+	sudo apt upgrade
+	sudo apt install build-essential
+
+	If sudo command not found error: apt install sudo -y
+	
+At this point you need to think about where you'd like the installation to place the new binaries 
+and which directory you want to be the default/base location for the configuration files. 
+By default (i.e. if you don't specify anything different to the ./configure script), 
+the binaries will be located in /usr/local/bin and /usr/local/sbin. Also by default, 
+the binaries will 'look for' their configuration files in /etc. If you want any of these to be 
+different, then check the options that you can supply to ./configure:
+
+./configure --help
+	
+The example below is ensuring that the build will be multi-threaded, uses OpenSSL, and also includes links to libxml2 so that XML-based statistics can be configured and generated:
+
+	Needed: current versions of openssl and libxml2. You will most likely also need libssl-dev and libxml2-dev.
+	sudo apt-get install libxml2-dev
+	sudo apt-get install libssl-dev	
+	
+	Also this?: https://stackoverflow.com/questions/23202146/pkg-config-script-could-not-be-found-on-osx
+	apt-get install -y pkg-config
+	
+	libuv not found error:
+	apt-cache search libuv
+	sudo apt-get install (found package names about libuv)
+
+$ ./configure --with-openssl --enable-threads --with-libxml2
+
+Next, test that the build step completes successfully, but without installing the binaries:
+
+$ make
+
+
+======= Bind 9 Documentation ========
+
+BIND 9 uses a single configuration file called named.conf. named.conf is typically located in either /etc/namedb or /usr/local/etc/namedb.
+    Note
+    If rndc is being used locally (on the same host as BIND 9) then an additional file rndc.conf may be present, 
+	though rndc operates without this file. If rndc is being run from a remote host then an rndc.conf file must be 
+	present as it defines the link characteristics and properties.
+
+Depending on the functionality of the system, one or more zone files is required.
+The samples given throughout this and subsequent chapters use a standard base format for both 
+the named.conf and the zone files for example.com.
+
+All end-user systems are shipped with a hosts file (usually located in /etc). This file is normally configured to map 
+the name localhost (the name used by applications when they run locally) to the loopback address. It is argued, reasonably, 
+that a forward-mapped zone file for localhost is therefore not strictly required. This manual does use the BIND 9 distribution 
+file localhost-forward.db
+
+The zone (domain) name is localhost:
+
+$TTL 3h
+localhost.  SOA      localhost.  nobody.localhost. 42  1d  12h  1w  3h
+            NS       localhost.
+            A        127.0.0.1
+            AAAA     ::1
+
+An authoritative name server may support one or many zones.
+
+Each zone may be defined as either a primary or a secondary. 
+A primary zone reads its zone data directly from a file system. A secondary zone obtains its zone data 
+from the primary zone using a process called zone transfer. Both the primary and the secondary zones provide 
+authoritative data for their zone; there is no difference in the answer to a query from a primary or a secondary zone. 
+
+Resolvers (name servers that provide the complete answers to user queries) are not aware of (and cannot find out) whether 
+an authoritative answer comes from the primary or secondary name server. Instead, the resolver uses the list of authoritative 
+servers for the zone (there must be at least two) and maintains a Round Trip Time (RTT) - the time taken to respond to the query - 
+for each server in the list. The resolver uses the lowest-value server (the fastest) as its preferred server for the zone and 
+continues to do so until its RTT becomes higher than the next slowest in its list, at which time that one becomes the preferred server.
+
+For reasons of backward compatibility BIND 9 treats “primary” and “master” as synonyms, as well as “secondary” and “slave.”
+
+    The secondary name server for the zone reads (3 and 4) the SOA RR periodically. 
+	The interval is defined by the refresh parameter of the Start of Authority (SOA) RR.
+
+    The secondary compares the serial number parameter of the SOA RR received from the primary with the serial 
+	number in the SOA RR of its current zone data.
+
+    If the received serial number is arithmetically greater (higher) than the current one, the secondary initiates 
+	a zone transfer (5) using AXFR or IXFR (depending on the primary and secondary configuration), using TCP over port 53 (6).
+
+The optional NOTIFY (RFC 1996) feature (2) is automatically configured; use the notify statement to turn off the feature. 
+Whenever the primary loads or reloads a zone, it sends a NOTIFY message to the configured secondary (or secondaries) and may 
+optionally be configured to send the NOTIFY message to other hosts using the also-notify statement. The NOTIFY message simply 
+indicates to the secondary that the primary has loaded or reloaded the zone. On receipt of the NOTIFY message, the secondary 
+respons to indicate it has received the NOTIFY and immediately reads the SOA RR from the primary (as described in section 2 a. above). 
+If the zone file has changed, propagation is practically immediate.
+
+3.3. Resolver
+
+Subsequent user requests for the same query will be answered from the resolver’s cache until 
+the TTL of the cached answer has expired, when it will be flushed from the cache; the next user query 
+that requests the same information results in a new series of queries to the DNS hierarchy.
+ 
+Resolvers are frequently referred to by a bewildering variety of names, including caching name servers, 
+recursive name servers, forwarding resolvers, area resolvers, and full-service resolvers.
+
+======== chroot ========  https://bind9.readthedocs.io/en/v9_18_4
+
+A chroot is an operation that changes the apparent root directory for the current running process and their children. 
+A program that is run in such a modified environment cannot access files and commands outside that environmental directory tree.
+This modified environment is called a chroot jail. 
+
+Requirements
+
+    Root privilege.
+    Another Linux environment, e.g. a LiveCD or USB flash media, or from another existing Linux distribution.
+    Matching architecture environments; i.e. the chroot from and chroot to. The architecture of the current 
+	  environment can be discovered with: uname -m (e.g. i686 or x86_64).
+    Kernel modules loaded that are needed in the chroot environment.
+    Swap enabled if needed:
+
+    # swapon /dev/sdxY
+
+    Internet connection established if needed.
+
+    Note:
+
+      Some systemd tools such as hostnamectl, localectl and timedatectl can not be used inside a chroot, 
+	  as they require an active dbus connection. [1]
+      The file system that will serve as the new root (/) of your chroot must be accessible (i.e., decrypted, mounted).
+
+Example of chroot:
+sudo mkdir jail
+sudo chroot jail  // this will fail bcs the directory is empty and has no /bin/bash
+cd jail
+// copy directories by installing an OS in that directory:
+sudo mkdir bin
+sudo mkdir lib
+sudo mkdir lib64
+// copy only programs from bin
+sudo cp -r /bin/* bin
+sudo cp -r /lib/* lib
+sudo cp -r /lib64/* lib64
+// to check if they are copied
+cd bin
+ls  
+cd .. 
+ls
+cd lib
+ls
+cd ..
+cd lib64
+ls
+cd ..
+cd .. // go to outside of jail
+sudo chroot jail  // now it works and the promp will change
+
+type "exit" to return to your OS.
+
+ifconfig and sudo is not an accessable program (command not found)
+how a host OS can give some selected access to selected resources:
+mount bind
+You can create a shell script inside chroot, make it executable with chmod +x ... and (exit from chroot)
+execute it in your host OS with this in a jail: sudo chroot jail /test.sh
+
+-------- other video ----------
+mkdir chroot
+
+debootstrap --include linux-image-amd64,grub-pc,locales \
+> --arch amd64 unstable /hom/chroot/ http://ftp.us.debian.org/debian
+
+cd jail
+
+ls -l
+
+chroot /home/jail/   // changes prompt
+
+
+
+
+
+================
+
+Update ubuntu:
+sudo apt update
+sudo apt upgrade
+
+
+Set static IP on Ubuntu 20 Server: (/etc/netplan/***.yaml)
+https://linuxize.com/post/how-to-configure-static-ip-address-on-ubuntu-20-04/
+
+
+On Linux systems with 2.2 or later kernels, an interface argument of ``any'' can be used to capture packets from all interfaces. 
+Note that captures on the ``any'' device will not be done in promiscuous mode. 
+Tcpdump continues to capture packets until it receives an interrupt signal (CTRL + C). 
 Packet capture with tcpdump, listens for packets on port 53, save the logs in tcpdump_log.pcap:
+
 sudo tcpdump -w tcpdump_log.pcap -nni any port 53
+
+sudo tcpdump -w tcpdump_log_00.pcap -nnn -i ifb0 "src port 53"
+
+Better: (nc 192.168.122.1 9876)
+sudo tcpdump -nnn -i eth0 "src port 9876"
+sudo tcpdump -nnn -i ifb0 "src port 9876"
 
 read the output of tcpdump in a more human readable format (too much output!):
 tcpdump -r dump.out 
 
-Output wireshark logs in command line:
-sudo tshark -r <file> -T fields -e ip.src -e ip.dst -e dns.time -e dns.id
+Restart the services after making changes to the config files (or just reboot):
 
-File transfer from windows to linux:
-scp <FilePathInWindows> username@server_IP_Addr:<LinuxPathToSave>
-Example:
-scp C:\Users\egegirit\Desktop\script.py egegirit@192.168.***:/home/egegirit/Desktop  
+sudo apt install resolvconf
+$ sudo systemctl start resolvconf.service 
+$ sudo systemctl enable resolvconf.service 
+$ sudo systemctl status resolvconf.service
+
+Adjust caching in global options (co-serv):
+max-cache-ttl seconds;
+max-ncache-ttl seconds;
+
+
+To check the syntax changes, if no output, its valid:
+sudo named-checkconf named.conf
+
+The command named-checkzone checks BIND9 zone files in the server to avoid DNS errors.
+Example: named-checkzone nixcraft.com /var/named/zone.nixcraft.com
+
+restart the service:
+sudo systemctl restart bind9
+confirm status, should output running:
+sudo systemctl status bind9
+
+
+systemctl restart bind9
+systemctl reload bind9
+sudo systemctl status bind9
+
+sudo rndc reload
+
+
+Run python script in terminal:
+If the script is python3, use python3 in the terminal command:
+python3 SCRIPTNAME.py
+
+
+To shut down, use any one of the following commands:
+sudo poweroff
+sudo shutdown -h now 
+
+This will perform a system shutdown in a proper way. You can also specify a timer (in seconds), 
+instead of the word "now", for example: shutdown -h -t 30. This will bring the computer down in 30 seconds.
+
+sudo halt is another way to shutdown.
+sudo init 0
+
+
+Vim install:
+sudo apt install vim
+
+Install wireshark on centos:
+dnf install wireshark
+tshark --version
+
+Output wireshark (either in GUI or this):
+You can export all the displayed columns, for specific trace records or for all records, 
+by selecting File | Export Packet Dissections | and then select the export format you prefer (.csv, .txt, etc)
+
+Filter for columns like dns.time:
+tshark -r <file> -d dns.id<100,dns -T fields -e ip.src -e ip.dst -e dns.time -e dns.id
+
+sudo tshark -r wireTest.pcapng -T fields -e ip.src -e ip.dst -e dns.time -e dns.id
+
+
+Packetloss 90 percent:
+sudo tc qdisc add dev ens33:1 root netem loss 90% 
+
+to disable:
+sudo tc qdisc del dev ens33:1 root
+sudo tc -s qdisc ls dev ens33:1
+
+
+-----------------
+
+sudo tc qdisc add dev ifb0 root netem loss 90% 
+
+sudo tc qdisc change dev ens160 root netem loss 90%   (???? Gives error)
+
+to disable:
+sudo tc qdisc del dev ens33 root
+sudo tc -s qdisc ls dev ens33
+
+sudo tcpdump -i ifb0 -w tcpdump_ifb0.pcap -nni any port 53
+
+dig +trace @192.168.1.33 nameserver1.intranet.lol A
+
+----------------
+
+ip -s link show ens33:1
+
+
+cat /sys/class/power_supply/BAT1/capacity
+cat /sys/class/power_supply/BAT1/status
+
+dig hostname DNS-addr
+
+Install pip:
+sudo apt-get install python3-pip
+update python pip (ubuntu):
+sudo -H pip3 install --upgrade pip
+sudo -H pip2 install --upgrade pip
+
+
+Download scapy on console(windows):
+python3 -m pip install --pre scapy[complete]
+Linux(You can also install Scapy using Pip):
+sudo apt install python3-scapy   
+
+Install matplotlib:
+sudo pip3 install matplotlib
+
+DNS Python:
+pip install dnspython
+
+
+IP(dst=dns_request_dest_ip)/UDP(sport=dns_request_src_port, dns_request_dest_port=53)/
+DNS(id=dns_trans_id, rd=dns_request_rd, qr=dns_request_qr, qd=DNSQR(qname=dns_request_qname))
+
+systemctl stop firewalld
+systemctl disable firewalld
+
+
+dig +trace @192.168.1.33 nameserver1.intranet.lol A
+
+
+Resolver: 192.168.1.33
+Auth:     192.168.1.32
+TLD:      192.168.1.31
+Root:     192.168.1.30
+Client:   192.168.1.9
+
+***********************************
+
+File transfer between windows/linux:
+sudo yum install openssh-server 
+sudo ufw allow 22
+sudo service ssh status
+sudo systemctl status ssh
+sudo systemctl start ssh
+
+Windows to Linux:
+Execute this command in windows:
+scp Filepathinwindows username@ubuntuserverip:linuxserverpath
+Example
+scp C:\Users\egegi\Desktop\ns1.zonefilev2 debian@192.168.1.30:/home/debian/Desktop  
+
+scp C:\Users\egegi\Desktop\ripeAtlasProbeID.py domeras@192.168.1.21:/home/domeras/Desktop  
 
 From Linux to windows:
 pscp.exe linux-username@linux-server-ipaddress: [source-DIR-inLinux] [destination-DIR-inWin]
 Example
-pscp.exe egegirit@192.168.1.***:/home/egegirit/Desktop/*** "C:\Users\***"
+pscp.exe domeras@192.168.1.13:/home/domeras/Desktop/logs.zip "C:\Users\egegi\Desktop"
+
+pscp.exe debian@192.168.1.30:/home/debian/config_v2.zip "C:\Users\egegi\Desktop"
+
+pscp.exe domeras@192.168.1.9:/home/domeras/Desktop/capture_logs "C:\Users\egegi\Desktop"
+
+***********************************
+
+zip -r logs.zip capture_logs
+
+// Copy /etc/named and /var/named into zip file
+cp -R /etc/named /home/domeras/Desktop/etc-named-backup-Resolver
+cp -R /var/named /home/domeras/Desktop/var-named-backup-Resolver
+chown -R domeras tcpdump-auth 
+zip -r /home/domeras/Desktop/named-Resolver.zip /home/domeras/Desktop/etc-named-backup-Resolver /home/domeras/Desktop/var-named-backup-Resolver
+chown -R domeras /home/domeras/Desktop/named-Resolver.zip
+pscp.exe domeras@192.168.1.33:/home/domeras/Desktop/named-Resolver.zip "C:\Users\egegi\Desktop\Linux\Resolver"
+
+// copy resolv.conf
+cp named.conf /home/domeras/Desktop/named.conf.resolver
+chown domeras /home/domeras/Desktop/named.conf.resolver
 
 
-Simulate x percent Packetloss:
-sudo tc qdisc add dev enp0s3 root netem loss x%
+// Copy named.conf from /etc
+su -
+cd /etc
+cp /etc/named.conf /home/domeras/Desktop/named.conf.root
+chown -R domeras /home/domeras/Desktop/named.conf.root
+Windows:  pscp.exe domeras@192.168.1.30:/home/domeras/Desktop/named.conf.root "C:\Users\egegi\Desktop"
 
-to reset the packetloss:
-sudo tc qdisc del dev enp0s3 root
-sudo tc -s qdisc ls dev enp0s3
+
+chown -R domeras capture_logs
+
+********************
+
+// Install CentOS:
+
+// Enable dekstop on Centos 8:
+sudo yum search tweak
+$ sudo yum install -y gnome-tweaks.noarch
+$ gnome-tweaks  // go to extensions -> Desktop icons -> enable
+
+disable screen sleep
+sudo yum check-update
+sudo yum update
+sudo yum upgrade
+sudo reboot
+// OR?
+sudo dnf makecache
+sudo yum check-update
+sudo dnf upgrade
+//
+
+sudo yum update kernel
+sudo yum update && yum upgrade
+
+sudo yum install mlocate
+
+sudo yum install openssh-server  
+sudo apt-get -y install tcpdump
+
+sudo apt install zip
+
+sudo yum install wireshark  (make sure it works)
+sudo yum install wireshark-cli
+sudo yum install net-tools
+sudo yum install python3-pip
+sudo -H pip3 install --upgrade pip
+sudo pip3 install matplotlib
+sudo python3 -m pip install --pre scapy[complete]
+sudo yum install python3-scapy  
+pip install dnspython  // or   sudo python3 -m pip install dnspython
+
+sudo yum install -y elinks wget git curl 
+sudo yum install -y httpd
+
+sudo yum install p7zip
+sudo yum install gcc
+sudo yum install vim nano
+
+sudo yum install java
+sudo yum install php
+
+// Disable firewall etc:
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl disable NetworkManager
+sudo vi /etc/sysconfig/selinux
+// Change to this value:
+SELINUX=disabled
+
+iptables -F
+sudo yum install iptables-services
+iptables -F
+iptables -F -t nat
+service iptables save
+
+-----------
+
+Configure the static ip on the server:
+
+The first thing we will do is to configure Static IP address, Route and DNS to the CentOS Server. We will be using ip command the replacement of ifconfig command.
+
+Edit the interface file under /etc/sysconfig/network-scripts/ directory:  
+
+# vi /etc/sysconfig/network-scripts/ifcfg-eth016
+IPADDR = “[Enter your static IP here]”
+GATEWAY = “[Enter your Default Gateway]”
+DNS1 = “[Your Domain Name System 1]”
+DNS2 = “[Your Domain Name System 2]”
+
+# systemctl stop NetworkManager        --------->stop NetworkManager
+# systemctl disable NetworkManager        --------->not needed on server
+# service network restart            --------->restart network service
+
+// OR??
+nmtui-edit  // a gui will open, set automatic to manual (ipv4)
+nmtui-connect  // restarts the network to save changes
+ip a  // to check the changes
 
 
-Assign static IP on CentOS 8:
-$ sudo nmcli connection modify <interface-name> IPv4.address <IPv4-Addr>
+# Resolver: 192.168.1.43
+# Auth:     192.168.1.42
+# TLD:      192.168.1.41
+# Root:     192.168.1.40
+# Client:   192.168.1.21
 
-To change the gateway and the dns settings:
-$ sudo nmcli connection modify <interface-name> IPv4.gateway <Gateway-Addr>
-$ sudo nmcli connection modify <interface-name> IPv4.dns <DNS-Addr>
++++++++++++++++++++++++++++
+// ORR???
+To change the IP address of the “ens160” interface with a direct nmcli command, we run:
+$ sudo nmcli connection modify ens160 IPv4.address 192.168.1.43/24
+
+We use a similar syntax to change the gateway and the dns settings:
+$ sudo nmcli connection modify ens160 IPv4.gateway 192.168.1.1
+$ sudo nmcli connection modify ens160 IPv4.dns 192.168.122.1
 
 Finally, we set the method to manual to avoid using any other boot protocol for the interface. 
 This command sets the BOOTPROTO option to none in the interface configuration file:
-$ sudo nmcli connection modify <interface-name> IPv4.method manual
+
+$ sudo nmcli connection modify ens160 IPv4.method manual
++++++++++++++++++++++++++++
+
+set a Hostname for our server:
+
+# echo $HOSTNAME --------->check current HOSTNAME
+# vi /etc/hostname ` --------->edit and replace old
+hostname with your own # echo $HOSTNAME --------->logout and login again  
+// OR???
+$ nmtui-hostname    // a gui will open
+
+
+------------
+
+********************
+
+TCPDUMP on any port:
+cd /home/domeras/Desktop
+sudo tcpdump -w tcpdump_log00.pcap -nni any port 53
+
+
+
+======= IFB =======
+
+ # modprobe ifb
+ # ip link add ifb0 type ifb
+ # ip link set dev ifb0 up
+ 
+ # tc qdisc add dev ifb0 root sfq
+ # tc qdisc add dev eth0 handle ffff: ingress
+ 
+ # tc qdisc add dev eth0 ingress
+ # tc filter add dev eth0 parent ffff: protocol ip u32 match u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0
+ 
+Die tc netem Filter wendest du dann auf ifb0 an.
+Wenn ich den output von tcpdump Vergleiche, sehe ich mehr Pakete auf
+dem eth0 Interface als auf dem ifb0 Interface.

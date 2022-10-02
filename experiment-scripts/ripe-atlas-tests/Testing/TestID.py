@@ -5,6 +5,7 @@ import os
 import signal
 from datetime import datetime, timedelta
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest
+
 # from ripe.atlas.sagan import DnsResult
 
 ####################################
@@ -13,9 +14,9 @@ from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest
 
 # Time to wait after one domain query is sent to all resolver IP Addresses
 # (Sleeping time between counters)
-sleep_time_between_counters = 2
+sleep_time_between_counters = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
-sleep_time_between_packetloss_config = 600
+sleep_time_between_packetloss_config = 2
 
 # 1 Million daily ripe atlas kredit limit
 # 1 DNS Query (UDP) = 10 Kredits, 1 DNS Query (TCP) = 20 Kredits
@@ -25,33 +26,35 @@ sleep_time_between_packetloss_config = 600
 
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
-counter_max = 21  # Exclusive
+counter_max = 2  # Exclusive
+
+requested_probe_count = 1
 
 # Set the interface names for packet capture with tcpdump
-interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
-
+interface_name = "ens33"  # The interface of authoritative server without the packetloss filter
 directory_name_of_logs = "packet_capture_logs"
-
 file_name_of_msm_logs = "measurement-logs.txt"
 
 # Packetloss rates to be simulated on the authoritative server
 # packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # packetloss_rates = [0, 10, 20, 30, 50, 85]
-packetloss_rates = [40, 60, 70, 80, 90, 95]
+packetloss_rates = [0, 95]
 # Used to identify the end of an experiment and save time not to wait for 10 minutes at the end
 last_index = len(packetloss_rates) - 1
+last_packetloss_rate = 95
 if last_index >= 0:
     last_packetloss_rate = packetloss_rates[len(packetloss_rates) - 1]
 else:
     print("Invalid packetloss rates")
     sys.exit()
 
-ATLAS_API_KEY = ""  # "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
+ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # The measurement ID (integer) from the first experiment
 # This allows us to use the same probes again that are selected in the first experiment
 # But some probes might be unstable, expect unresponsive probes.
-msm_id = ?
+msm_id = 1
+
 
 # Disables packetloss simulation
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
@@ -163,7 +166,8 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
 # Query structure: *.ripeatlas-<plrate>-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
 # Example: *.ripeatlas-pl95-15.packetloss.syssec-research.mmci.uni-saarland.de
 def build_query_name_from_counter_and_pl(current_counter, packetloss_rate):
-    return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(current_counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+    return "$p-$t.ripeatlas-" + "pl" + str(packetloss_rate) + "-" + str(
+        current_counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
 
 
 # Create a source from measurement ID msm_ID
@@ -210,15 +214,16 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     )
 
     print(f"  Creating source from given measurement id: {measurement_id}")
+
+    global requested_probe_count
     # Probe ID as parameter
     source1 = AtlasSource(
-        requested=830,
+        requested=requested_probe_count,
         type='msm',
         value=measurement_id
     )
 
     print(f"  Creating request from source")
-
     seconds_to_add = 5
 
     print(f"Current time: {datetime.utcnow()}")
@@ -256,23 +261,25 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
 
 
 def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
-
     currrent_working_path = os.path.dirname(os.path.realpath(__file__))
-    print(f"Working path {currrent_working_path}")
-    save_path = "\\" + directory_name
+    print(f"Working path: {currrent_working_path}")
+    save_path = "/" + directory_name
+
+    # Get the full path of the directory that we will save the log file into
     file_path = currrent_working_path + save_path
     #  os.path.join(currrent_working_path, save_path, file_name_to_save)
     print(f"Save: {save_path}")
-    print(f"File {file_path}")
+    print(f"Full path of log directory: {file_path}")
 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-        print(f"Creating {file_path}")
+        print(f"Creating directory {file_path}")
 
-    f = open(file_path + "\\" + file_name_to_save, "a")
+    # Open/Create the log file in the given directory
+    f = open(file_path + "/" + file_name_to_save, "a")
 
     f.write(str(measurement_tuple) + "\n")
-    print(f"Wrote {str(measurement_tuple)}")
+    print(f"Wrote to file: {str(measurement_tuple)}")
 
     f.close()
 
@@ -323,6 +330,8 @@ for current_packetloss_rate in packetloss_rates:
         sleep_for_seconds(sleep_time_between_counters)
 
     # Sleep for 10 minutes between packetloss configurations
+    # Note: Packetloss simulation will be disabled after the waiting phase
+    # so that the incoming late packets still have the simulation
     print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
 
     # If we are in the last iteration, no need to wait

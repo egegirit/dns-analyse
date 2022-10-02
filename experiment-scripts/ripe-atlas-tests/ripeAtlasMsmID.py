@@ -27,11 +27,11 @@ sleep_time_between_packetloss_config = 600
 counter_min = 0  # Inclusive
 counter_max = 21  # Exclusive
 
+requested_probe_count = 830
+
 # Set the interface names for packet capture with tcpdump
 interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
-
 directory_name_of_logs = "packet_capture_logs"
-
 file_name_of_msm_logs = "measurement-logs.txt"
 
 # Packetloss rates to be simulated on the authoritative server
@@ -40,6 +40,7 @@ file_name_of_msm_logs = "measurement-logs.txt"
 packetloss_rates = [40, 60, 70, 80, 90, 95]
 # Used to identify the end of an experiment and save time not to wait for 10 minutes at the end
 last_index = len(packetloss_rates) - 1
+last_packetloss_rate = 95
 if last_index >= 0:
     last_packetloss_rate = packetloss_rates[len(packetloss_rates) - 1]
 else:
@@ -210,16 +211,19 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     )
 
     print(f"  Creating source from given measurement id: {measurement_id}")
+
+    global requested_probe_count
+
     # Probe ID as parameter
     source1 = AtlasSource(
-        requested=830,
+        requested=requested_probe_count,
         type='msm',
         value=measurement_id
     )
 
     print(f"  Creating request from source")
-
     seconds_to_add = 5
+
     print(f"Current time: {datetime.utcnow()}")
     past_time = datetime.utcnow()
     scheduled_time = past_time + timedelta(seconds=seconds_to_add)
@@ -256,21 +260,24 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
 
 def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
     currrent_working_path = os.path.dirname(os.path.realpath(__file__))
-    print(f"Working path {currrent_working_path}")
-    save_path = "\\" + directory_name
+    print(f"Working path: {currrent_working_path}")
+    save_path = "/" + directory_name
+
+    # Get the full path of the directory that we will save the log file into
     file_path = currrent_working_path + save_path
     #  os.path.join(currrent_working_path, save_path, file_name_to_save)
     print(f"Save: {save_path}")
-    print(f"File {file_path}")
+    print(f"Full path of log directory: {file_path}")
 
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-        print(f"Creating {file_path}")
+        print(f"Creating directory {file_path}")
 
-    f = open(file_path + "\\" + file_name_to_save, "a")
+    # Open/Create the log file in the given directory
+    f = open(file_path + "/" + file_name_to_save, "a")
 
     f.write(str(measurement_tuple) + "\n")
-    print(f"Wrote {str(measurement_tuple)}")
+    print(f"Wrote to file: {str(measurement_tuple)}")
 
     f.close()
 
@@ -321,6 +328,7 @@ for current_packetloss_rate in packetloss_rates:
         sleep_for_seconds(sleep_time_between_counters)
 
     # Sleep for 10 minutes between packetloss configurations
+    # Note: Packetloss simulation will be disabled after the waiting phase
     print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
 
     # If we are in the last iteration, no need to wait

@@ -10,7 +10,7 @@ from ripe.atlas.sagan import DnsResult
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
-asn_file_name = "830-probes-atlas-API.txt"
+asn_file_name = "Test-probes-atlas-API.txt"
 
 directory_name_of_logs = "packet_capture_logs"
 file_name_of_msm_logs = "selected-probes-logs.txt"
@@ -159,6 +159,7 @@ def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tu
     print(f"Wrote to file: {str(measurement_tuple)}")
 
     f.close()
+
 
 # Extract the asn values from the global probe_dict variable
 # and store them in the global list as_ids

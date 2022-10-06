@@ -222,7 +222,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
     )
 
     print(f"  Creating request from source")
-    seconds_to_add = 5
+    seconds_to_add = 2
 
     print(f"Current time: {datetime.utcnow()}")
     past_time = datetime.utcnow()
@@ -333,12 +333,10 @@ for current_packetloss_rate in packetloss_rates:
     # Note: Packetloss simulation will be disabled after the waiting phase
     print(f"  {current_packetloss_rate}% Packetloss Configuration Finished")
 
-    # If we are in the last iteration, no need to wait
-    if current_packetloss_rate != last_packetloss_rate:
-        print(
-            f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
-        )
-        sleep_for_seconds(sleep_time_between_packetloss_config)
+    print(
+        f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
+    )
+    sleep_for_seconds(sleep_time_between_packetloss_config)
 
     # If there is packetloss simulation, disable simulation on the authoritative server
     if current_packetloss_rate != 0:

@@ -285,7 +285,7 @@ for current_packetloss_rate in packetloss_rates:
         start = time.perf_counter()
         # Context manager
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            # Using list comprehention to build the results list
+            # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a 
             # future object representing the execution of the callable.
             results = [executor.submit(build_and_send_query_mp, [current_resolver_ip,

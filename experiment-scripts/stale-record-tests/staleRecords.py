@@ -14,14 +14,18 @@ import dns.reversename
 # (Sleeping time between counters)
 sleep_time_between_counters = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
-sleep_time_between_packetloss_config = 2
+sleep_time_between_packetloss_config = 600
+# Time to sleep in order the answer to become stale on the resolver
+sleep_time_until_stale = 10
 
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
-counter_max = 2  # Exclusive
+counter_max = 50  # Exclusive
 
 # Set the interface names for packet capture with tcpdump
-interface_name = "ens160"  # The interface of authoritative server without the packetloss filter
+auth_interface_name = "bond0"  # The interface of authoritative server
+client_interface_name = "bond0"  # The interface of client
+
 directory_name_of_logs = "packet_capture_logs"
 
 # DNS Open Resolver IP Addresses
@@ -67,7 +71,8 @@ def simulate_packetloss(packetloss_rate, interface_name):
         print(
             f"  Exception occurred while simulating {packetloss_rate}% packetloss on interface {interface_name} !!"
         )
-        print(f"  Removing packetloss rule by calling disable_packetloss_simulation({packetloss_rate}, {interface_name})")
+        print(
+            f"  Removing packetloss rule by calling disable_packetloss_simulation({packetloss_rate}, {interface_name})")
         disable_packetloss_simulation(packetloss_rate, interface_name)
         print(f"  Skipping {packetloss_rate}% packetloss configuration")
         return False
@@ -98,7 +103,7 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
 
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
-def start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_1, interface_2, interface_3):
+def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface):
     # DF (don't fragment) bit set (IP)
     # Example filter:
     # 'ip[6] & 64 != 64'
@@ -106,42 +111,31 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, inter
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{interface_1}_{current_packetloss_rate}.pcap -nnn -i {interface_1} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{auth_interface}_{current_packetloss_rate}.pcap -nnn -i {auth_interface} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
-        f"  (1) Running packet capture on {interface_1} interface with the following command:"
+        f"  (1) Running packet capture on {auth_interface} interface with the following command:"
     )
     print("    " + packet_capture_command_1)
 
-    # Packet capture on authoritative server interface with the packetloss filter applied
-    # packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth2_{interface_2}_{current_packetloss_rate}.pcap -nnn -i {interface_2} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
-    # print(
-    #     f"  (2) Running packet capture on {interface_2} interface with the following command:"
-    # )
-    # print("    " + packet_capture_command_2)
-
     # Packet capture on client interface
-    packet_capture_command_3 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{interface_3}_{current_packetloss_rate}.pcap -nnn -i {interface_3} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{client_interface}_{current_packetloss_rate}.pcap -nnn -i {client_interface} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
-        f"  (2) Running packet capture on {interface_3} interface with the following command:"
+        f"  (2) Running packet capture on {client_interface} interface with the following command:"
     )
-    print("    " + packet_capture_command_3)
+    print("    " + packet_capture_command_2)
 
     # Store the process objects here and return it as output
     result_processes = []
 
     try:
-        process_2 = subprocess.Popen(
+        process_1 = subprocess.Popen(
             packet_capture_command_1, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
         )
-        # process_3 = subprocess.Popen(
-        #     packet_capture_command_2, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
-        # )
-        process_4 = subprocess.Popen(
-            packet_capture_command_3, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
+        process_2 = subprocess.Popen(
+            packet_capture_command_2, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid
         )
+        result_processes.append(process_1)
         result_processes.append(process_2)
-        # result_processes.append(process_3)
-        result_processes.append(process_4)
     except Exception:
         print("    Packet capture failed!")
         return result_processes  # Empty list
@@ -187,3 +181,49 @@ def create_folder(directory_name):
         print(f"Folder {directory_name} created.")
     except Exception:
         print(f"Folder not created.")
+
+
+def send_queries_to_resolvers(counter):
+    pass
+
+# Create log folder
+create_folder(directory_name_of_logs)
+
+# Start packet capture
+capture_processes = start_packet_captures(directory_name_of_logs, 0, auth_interface_name, client_interface_name)
+
+print("\n==== Experiment starting ====\n")
+
+# TODO: Multithreading for each resolver IP Address we have
+for c in range(counter_min, counter_max):
+    print(f"Current counter value: {c}")
+    pass
+    # Send queries to resolvers to allow them to store the answer
+    send_queries_to_resolvers(c)
+
+    # Simulate 100% packetloss on authoritative Server
+    simulate_packetloss(100, auth_interface_name)
+
+    # Wait until we are certain that the answer which is stored in the resolver is stale
+    sleep_for_seconds(sleep_time_until_stale)
+
+    # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
+    send_queries_to_resolvers(c)
+
+# Terminate packet captures / all created processes
+print(f"  Stopping packet capture")
+# Using .terminate() doesn't stop the packet capture
+if len(capture_processes) > 0:
+    for process in capture_processes:
+        try:
+            # Send the SIGTERM signal to all the process groups
+            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+        except Exception:
+            print(f"    Exception while terminating tcpdump")
+    print(f"    Sleeping for 1 seconds for tcpdump to terminate")
+    sleep_for_seconds(1)
+
+print("\n==== Experiment ended ====\n")
+
+# Compress all the packet capture logs into a logs.zip file
+compress_log_files(directory_name_of_logs)

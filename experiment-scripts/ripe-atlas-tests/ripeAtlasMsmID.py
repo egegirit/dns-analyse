@@ -25,7 +25,7 @@ sleep_time_between_packetloss_config = 600
 
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
-counter_max = 21  # Exclusive
+counter_max = 20  # Exclusive
 
 requested_probe_count = 830
 

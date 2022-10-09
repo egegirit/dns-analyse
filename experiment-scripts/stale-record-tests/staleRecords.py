@@ -246,12 +246,32 @@ def build_query_from_pl_rate(packetloss_rate):
 
 # TODO
 # Switch to the zone file of the corresponding packetloss rate
-def switch_zone_file(packetloss_rate, zone_type):
-    print(f"  Switching zone file to packetloss rate: {packetloss_rate}, zone type: {zone_type}")
+def switch_zone_file(zone_type):
+    print(f"  Switching zone file to {zone_type}")
+
+    # load prefetch.zone
     if zone_type == "prefetch":
         pass
+    # load stale.zone
     if zone_type == "postfetch":
         pass
+
+    # Reload bind/dns services
+    # sudo systemctl restart bind9
+    # (sudo systemctl reload bind9)
+    # (sudo rndc reload)
+    reload_command_1 = f"sudo systemctl restart bind9"
+    print(
+        f"  Reloading bind9 with the following command:"
+    )
+    print("    " + reload_command_1)
+
+    try:
+        subprocess.run(reload_command_1, shell=True, stdout=subprocess.PIPE, check=True)
+    except Exception:
+        print(
+            f"  Exception occurred while reloading bind !!"
+        )
 
 
 # Create log folder
@@ -269,7 +289,7 @@ for current_packetloss_rate in packetloss_rates:
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name, client_interface_name)
 
     # Set the right zone file for the prefetching phase
-    switch_zone_file(current_packetloss_rate, "prefetch")
+    switch_zone_file("prefetch")
 
     # Send queries to resolvers to allow them to store the answer
     query_name_to_send = build_query_from_pl_rate(current_packetloss_rate)
@@ -283,7 +303,7 @@ for current_packetloss_rate in packetloss_rates:
     simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
     # Set the right zone file for the phase after the answer is stale
-    switch_zone_file(current_packetloss_rate, "postfetch")
+    switch_zone_file("postfetch")
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
     send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)

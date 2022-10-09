@@ -244,23 +244,37 @@ def build_query_from_pl_rate(packetloss_rate):
     return query
 
 
-# TODO
+# TODO: rename zone to active-zone?
 # Switch to the zone file of the corresponding packetloss rate
 def switch_zone_file(zone_type):
     print(f"  Switching zone file to {zone_type}")
 
-    # load prefetch.zone
-    if zone_type == "prefetch":
-        pass
-    # load stale.zone
-    if zone_type == "postfetch":
-        pass
+    # TODO
+    # service bind9 stop
+    zone_file_path = ""
+
+    # Rename prefetch.zone to temp
+    old_file = os.path.join(zone_file_path, "prefetch.zone")
+    new_file = os.path.join(zone_file_path, "temp")
+    os.rename(old_file, new_file)
+
+    # Rename stale.zone to prefetch.zone
+    old_file = os.path.join(zone_file_path, "stale.zone")
+    new_file = os.path.join(zone_file_path, "prefetch.zone")
+    os.rename(old_file, new_file)
+
+    # Rename temp to stale.zone
+    old_file = os.path.join(zone_file_path, "temp")
+    new_file = os.path.join(zone_file_path, "stale.zone")
+    os.rename(old_file, new_file)
 
     # Reload bind/dns services
     # sudo systemctl restart bind9
     # (sudo systemctl reload bind9)
     # (sudo rndc reload)
-    reload_command_1 = f"sudo systemctl restart bind9"
+    # (service bind9 start)
+    # (service bind9 restart)
+    reload_command_1 = f"sudo service bind9 reload"
     print(
         f"  Reloading bind9 with the following command:"
     )
@@ -303,7 +317,7 @@ for current_packetloss_rate in packetloss_rates:
     simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
     # Set the right zone file for the phase after the answer is stale
-    switch_zone_file("postfetch")
+    switch_zone_file("stale zone")
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
     send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)

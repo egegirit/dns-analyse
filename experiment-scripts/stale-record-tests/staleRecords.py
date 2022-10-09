@@ -28,6 +28,15 @@ client_interface_name = "bond0"  # The interface of client
 
 directory_name_of_logs = "packet_capture_logs"
 
+# The amount of the query we will send to the resolver to
+# make the resolver cache the answer to this query
+count_of_prefetch_queries = 15
+
+# The zone that will be active before the experiment
+zone_file_A_name = "zone-A"
+# The zone that will be active after the records are stale
+zone_file_B_name = "zone-B"
+
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
     "94.140.14.14",  # AdGuard 1  (dns.adguard.com)
@@ -183,8 +192,12 @@ def create_folder(directory_name):
         print(f"Folder not created.")
 
 
-def send_queries_to_resolvers(counter):
+# Prefetch phase, send queries to resolvers to make them cache the entries
+def send_queries_to_resolvers(query_count, query_name, ip_list_of_resolvers):
     pass
+
+
+
 
 # Create log folder
 create_folder(directory_name_of_logs)

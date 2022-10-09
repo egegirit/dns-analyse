@@ -28,6 +28,9 @@ client_interface_name = "bond0"  # The interface of client
 
 directory_name_of_logs = "packet_capture_logs"
 
+# Packetloss rates to be simulated on the authoritative server
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+
 # The amount of the query we will send to the resolver to
 # make the resolver cache the answer to this query
 count_of_prefetch_queries = 15
@@ -193,48 +196,113 @@ def create_folder(directory_name):
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
-def send_queries_to_resolvers(query_count, query_name, ip_list_of_resolvers):
-    pass
+# Todo: multithreading, send queries to resolvers parallel
+def send_queries_to_resolvers(query_count, query_name, ip_list_of_resolvers, sleep_time_after_send):
+    print(f"   Query Amount to send to a resolver: {query_count}")
+    print(f"   Query name: {query_name}")
+    print(f"   IP Addresses to send: {ip_list_of_resolvers}\n")
+
+    for ip_addr in ip_list_of_resolvers:
+        print(f"     Sending query to IP: {ip_addr}\n")
+        for counter in range(query_count):
+            resolver = dns.resolver.Resolver()
+            # Set the resolver IP Address
+            resolver.nameservers = [ip_addr]
+            # Set the timeout of the query
+            resolver.timeout = 5
+            resolver.lifetime = 5
+            # Measure the time of the DNS response (Optional)
+            start_time = time.time()
+            # Note: if multiple prints are used, other processes might print in between them
+            print(f"      ({counter}) Sending Query")
+            try:
+                answers = resolver.resolve(query_name, "A")
+            except Exception:
+                print(f"      ({counter}) Exception or timeout occurred for {query_name} ")
+                answers = None
+            measured_time = time.time() - start_time
+            print(f"      ({counter}) Response time of {query_name}: {measured_time}")
+
+            # Show the DNS response
+            # if answers is not None:
+            #     for answer in answers:
+            #         print("        ", end="")
+            #         print(answer)
+            #     print(f"      RRset of {query_prefix}:")
+            #     if answers.rrset is not None:
+            #         print("        ", end="")
+            #         print(answers.rrset)
+
+            # Sleep after sending a query to the same resolver to not spam the resolver
+            time.sleep(sleep_time_after_send)
 
 
+# Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
+def build_query_from_pl_rate(packetloss_rate):
+    query = "stale-test-" + str(packetloss_rate) + ".syssec-research.mmci.uni-saarland.de"
+    print(f"  Built query: {query}")
+    return query
+
+
+# TODO
+# Switch to the zone file of the corresponding packetloss rate
+def switch_zone_file(packetloss_rate, zone_type):
+    print(f"  Switching zone file to packetloss rate: {packetloss_rate}, zone type: {zone_type}")
+    if zone_type == "prefetch":
+        pass
+    if zone_type == "postfetch":
+        pass
 
 
 # Create log folder
 create_folder(directory_name_of_logs)
 
-# Start packet capture
-capture_processes = start_packet_captures(directory_name_of_logs, 0, auth_interface_name, client_interface_name)
-
 print("\n==== Experiment starting ====\n")
 
 # TODO: Multithreading for each resolver IP Address we have
-for c in range(counter_min, counter_max):
-    print(f"Current counter value: {c}")
-    pass
-    # Send queries to resolvers to allow them to store the answer
-    send_queries_to_resolvers(c)
 
-    # Simulate 100% packetloss on authoritative Server
-    simulate_packetloss(100, auth_interface_name)
+for current_packetloss_rate in packetloss_rates:
+
+    print(f"Current Packetloss Rate: {current_packetloss_rate}")
+
+    # Start packet capture
+    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name, client_interface_name)
+
+    # Set the right zone file for the prefetching phase
+    switch_zone_file(current_packetloss_rate, "prefetch")
+
+    # Send queries to resolvers to allow them to store the answer
+    query_name_to_send = build_query_from_pl_rate(current_packetloss_rate)
+    sleep_time_after_every_send = 0
+    send_queries_to_resolvers(count_of_prefetch_queries, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
 
     # Wait until we are certain that the answer which is stored in the resolver is stale
     sleep_for_seconds(sleep_time_until_stale)
 
-    # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-    send_queries_to_resolvers(c)
+    # Simulate packetloss on authoritative Server
+    simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
-# Terminate packet captures / all created processes
-print(f"  Stopping packet capture")
-# Using .terminate() doesn't stop the packet capture
-if len(capture_processes) > 0:
-    for process in capture_processes:
-        try:
-            # Send the SIGTERM signal to all the process groups
-            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-        except Exception:
-            print(f"    Exception while terminating tcpdump")
-    print(f"    Sleeping for 1 seconds for tcpdump to terminate")
-    sleep_for_seconds(1)
+    # Set the right zone file for the phase after the answer is stale
+    switch_zone_file(current_packetloss_rate, "postfetch")
+
+    # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
+    send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
+
+    # Cooldown between packetloss configurations
+    sleep_for_seconds(sleep_time_between_packetloss_config)
+
+    # Terminate packet captures / all created processes
+    print(f"  Stopping packet capture")
+    # Using .terminate() doesn't stop the packet capture
+    if len(capture_processes) > 0:
+        for process in capture_processes:
+            try:
+                # Send the SIGTERM signal to all the process groups
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+            except Exception:
+                print(f"    Exception while terminating tcpdump")
+        print(f"    Sleeping for 1 seconds for tcpdump to terminate")
+        sleep_for_seconds(1)
 
 print("\n==== Experiment ended ====\n")
 

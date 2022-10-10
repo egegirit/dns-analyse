@@ -30,17 +30,14 @@ def show_results(msm_id_list):
 
         is_success, results = AtlasResultsRequest(**kwargs).create()
 
-        print(f"  All measurements with probes:")
-        f.write("  All measurements with probes:\n")
-
         counter = 0
         for result in results:
-            print(f"\n**** {counter}. Probe of the measurement ****")
-            f.write(f"\n**** {counter}. Probe of the measurement ****\n")
+            print(f"\n{counter}. Probe of the measurement:\n")
+            f.write(f"\n{counter}. Probe of the measurement:\n\n")
             print(DnsResult.get(result))
             f.write(str(DnsResult.get(result)) + "\n")
-            print(f"  Built response:\n{DnsResult.get(result).build_responses()}")
-            f.write(f"  Built response:\n{DnsResult.get(result).build_responses()}\n")
+            print(f"Built response:\n{DnsResult.get(result).build_responses()}\n")
+            f.write(f"Built response:\n{DnsResult.get(result).build_responses()}\n\n")
             counter += 1
 
     f.close()

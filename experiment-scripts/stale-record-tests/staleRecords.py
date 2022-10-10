@@ -326,6 +326,18 @@ for current_packetloss_rate in packetloss_rates:
     # Send queries to resolvers to allow them to store the answer
     query_name_to_send = build_query_from_pl_rate(current_packetloss_rate)
     sleep_time_after_every_send = 0
+
+    # Context manager
+    #with concurrent.futures.ProcessPoolExecutor() as executor:
+    #    # Using list comprehension to build the results list
+    #    # submit() schedules the callable to be executed and returns a
+    #    # future object representing the execution of the callable.
+    #    results = [executor.submit(send_queries_to_resolvers, [count_of_prefetch_queries,
+    #                                                         query_name_to_send,
+    #                                                         current_resolver_ip,
+    #                                                         sleep_time_after_every_send])
+    #               for current_resolver_ip in resolver_ip_addresses]
+
     send_queries_to_resolvers(count_of_prefetch_queries, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
 
     # Wait until we are certain that the answer which is stored in the resolver is stale
@@ -339,6 +351,17 @@ for current_packetloss_rate in packetloss_rates:
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
     send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
+
+    # Context manager
+    # with concurrent.futures.ProcessPoolExecutor() as executor:
+    #    # Using list comprehension to build the results list
+    #    # submit() schedules the callable to be executed and returns a
+    #    # future object representing the execution of the callable.
+    #    results = [executor.submit(send_queries_to_resolvers, [1,
+    #                                                         query_name_to_send,
+    #                                                         current_resolver_ip,
+    #                                                         sleep_time_after_every_send])
+    #               for current_resolver_ip in resolver_ip_addresses]
 
     # Cooldown between packetloss configurations
     sleep_for_seconds(sleep_time_between_packetloss_config)

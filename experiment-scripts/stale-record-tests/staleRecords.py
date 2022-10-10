@@ -1,5 +1,6 @@
 import subprocess
 import concurrent.futures
+import sys
 import time
 import os
 import signal
@@ -239,34 +240,51 @@ def send_queries_to_resolvers(query_count, query_name, ip_list_of_resolvers, sle
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
 def build_query_from_pl_rate(packetloss_rate):
-    query = "stale-test-" + str(packetloss_rate) + ".syssec-research.mmci.uni-saarland.de"
+    query = "stale-test-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
     print(f"  Built query: {query}")
     return query
 
 
-# TODO: rename zone to active-zone?
 # Switch to the zone file of the corresponding packetloss rate
 def switch_zone_file(zone_type):
     print(f"  Switching zone file to {zone_type}")
 
     # TODO
     # service bind9 stop
+
     zone_file_path = ""
+    zone_file_to_copy = ""
+
+    if zone_type == "prefetch":
+        zone_file_to_copy = "prefetch.zone"
+    elif zone_type == "stale":
+        zone_file_to_copy = "stale.zone"
+    else:
+        print("Undefined zone type!")
+        sys.exit()
+
+    # Write the contents of the desired zone file to the active.zone file
+    # Opening the file with "w" mode erases the previous content of the file
+    with open(zone_file_to_copy, 'r') as first_file, open('active.zone', 'w') as second_file:
+        # Read content from first zone file
+        for line in first_file:
+            # Append content to active zone file line by line
+            second_file.write(line)
 
     # Rename prefetch.zone to temp
-    old_file = os.path.join(zone_file_path, "prefetch.zone")
-    new_file = os.path.join(zone_file_path, "temp")
-    os.rename(old_file, new_file)
+    # old_file = os.path.join(zone_file_path, "prefetch.zone")
+    # new_file = os.path.join(zone_file_path, "temp")
+    # os.rename(old_file, new_file)
 
     # Rename stale.zone to prefetch.zone
-    old_file = os.path.join(zone_file_path, "stale.zone")
-    new_file = os.path.join(zone_file_path, "prefetch.zone")
-    os.rename(old_file, new_file)
+    # old_file = os.path.join(zone_file_path, "stale.zone")
+    # new_file = os.path.join(zone_file_path, "prefetch.zone")
+    # os.rename(old_file, new_file)
 
     # Rename temp to stale.zone
-    old_file = os.path.join(zone_file_path, "temp")
-    new_file = os.path.join(zone_file_path, "stale.zone")
-    os.rename(old_file, new_file)
+    # old_file = os.path.join(zone_file_path, "temp")
+    # new_file = os.path.join(zone_file_path, "stale.zone")
+    # os.rename(old_file, new_file)
 
     # Reload bind/dns services
     # sudo systemctl restart bind9
@@ -317,7 +335,7 @@ for current_packetloss_rate in packetloss_rates:
     simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
     # Set the right zone file for the phase after the answer is stale
-    switch_zone_file("stale zone")
+    switch_zone_file("stale")
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
     send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)

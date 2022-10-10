@@ -1,0 +1,21 @@
+acl clients {
+    139.19.117.11;
+	127.0.0.1;
+};
+
+options {
+
+	directory "/var/cache/bind";
+
+	listen-on port 53 { clients; };
+	allow-query { any; };
+
+	// dnssec-validation auto;
+
+	listen-on-v6 { any; };
+};
+
+zone "packetloss.syssec-research.mmci.uni-saarland.de" IN {
+	type master;
+	file "/etc/bind/active.zone";
+};

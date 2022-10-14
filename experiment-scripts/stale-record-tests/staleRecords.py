@@ -8,6 +8,7 @@ import dns.resolver
 import dns.reversename
 import string
 import random
+from datetime import datetime
 
 ####################################
 # Execute this script as root user #
@@ -233,15 +234,14 @@ def send_queries_to_resolvers(ip_list_of_resolvers, sleep_time_after_send, pl_ra
             measured_time = time.time() - start_time
             print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
-            # Show the DNS response
-            # if answers is not None:
-            #     for answer in answers:
-            #         print("        ", end="")
-            #         print(answer)
-            #     print(f"      RRset of {query_prefix}:")
-            #     if answers.rrset is not None:
-            #         print("        ", end="")
-            #         print(answers.rrset)
+            print(f"Current time: {datetime.utcnow()}")
+            # Show the DNS response annd TTL time
+            if answers is not None:
+                print(f"TTL of Answer: {answer.rrset.ttl}")
+                print(f"RRset:")
+                if answers.rrset is not None:
+                    print("        ", end="")
+                    print(answers.rrset)
 
             # Sleep after sending a query to the same resolver to not spam the resolver
             time.sleep(sleep_time_after_send)
@@ -337,6 +337,7 @@ print("\n==== Experiment starting ====\n")
 # TODO: Multithreading for each resolver IP Address we have
 
 generated_chars = generate_random_characters(3)
+print(f"Current time: {datetime.utcnow()}")
 
 for current_packetloss_rate in packetloss_rates:
 

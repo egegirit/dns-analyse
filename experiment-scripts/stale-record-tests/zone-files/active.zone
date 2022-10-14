@@ -1,5 +1,5 @@
 ; base zone file for packetloss.syssec-research.mmci.uni-saarland.de
-$TTL 300 ; TTL for zone
+$TTL 10 ; TTL for zone
 $ORIGIN packetloss.syssec-research.mmci.uni-saarland.de. ; base domain-name
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
@@ -8,7 +8,7 @@ $ORIGIN packetloss.syssec-research.mmci.uni-saarland.de. ; base domain-name
 			1800 ; refresh (in seconds) time that secondary servers should wait before asking primarys for SOA record to see if its updated
 			900 ; update retry is the time a server should wait for asking an unresponsive primary nameserver for an update again
 			806400 ; expiry, if secondary doesn't get a response from primary for this amount of time, it should stop responding to queries for the zone
-			300 ; minimum negative response caching TTL, inform other servers how long they should keep the data in the cache
+			10 ; minimum negative response caching TTL, inform other servers how long they should keep the data in the cache
 			)
 			
 ; name server RR for the domain			

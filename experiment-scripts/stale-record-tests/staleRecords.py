@@ -6,6 +6,8 @@ import os
 import signal
 import dns.resolver
 import dns.reversename
+import string
+import random
 
 ####################################
 # Execute this script as root user #
@@ -35,11 +37,6 @@ packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 # The amount of the query we will send to the resolver to
 # make the resolver cache the answer to this query
 count_of_prefetch_queries = 15
-
-# The zone that will be active before the experiment
-zone_file_A_name = "zone-A"
-# The zone that will be active after the records are stale
-zone_file_B_name = "zone-B"
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
@@ -109,7 +106,7 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
         return True
     except Exception:
         print(
-            f"  Exception occured while removing {packetloss_rate}% packetloss rule on interface {interface_name} !!"
+            f"  Exception occurred while removing {packetloss_rate}% packetloss rule on interface {interface_name} !!"
         )
         return False
 
@@ -198,20 +195,23 @@ def create_folder(directory_name):
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
 # Todo: multithreading, send queries to resolvers parallel
-def send_queries_to_resolvers(query_count, query_name, ip_list_of_resolvers, sleep_time_after_send):
+def send_queries_to_resolvers(query_count, ip_list_of_resolvers, sleep_time_after_send, pl_rate, generated_tokens):
     print(f"   Query Amount to send to a resolver: {query_count}")
-    print(f"   Query name: {query_name}")
     print(f"   IP Addresses to send: {ip_list_of_resolvers}\n")
 
     for ip_addr in ip_list_of_resolvers:
         print(f"     Sending query to IP: {ip_addr}\n")
         for counter in range(query_count):
+
+            query_name = build_query(pl_rate, ip_addr, generated_tokens)
+            print(f"   Query name: {query_name}")
+
             resolver = dns.resolver.Resolver()
             # Set the resolver IP Address
             resolver.nameservers = [ip_addr]
             # Set the timeout of the query
-            resolver.timeout = 5
-            resolver.lifetime = 5
+            resolver.timeout = 10
+            resolver.lifetime = 10
             # Measure the time of the DNS response (Optional)
             start_time = time.time()
             # Note: if multiple prints are used, other processes might print in between them
@@ -245,46 +245,52 @@ def build_query_from_pl_rate(packetloss_rate):
     return query
 
 
+# Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
+def build_query(packetloss_rate, ip_addr, generated_tokens):
+
+    ip_addr_with_dashes = ip_addr.replace(".", "-")
+    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+    print(f"  Built query: {query}")
+    return query
+
+
 # Switch to the zone file of the corresponding packetloss rate
-def switch_zone_file(zone_type):
-    print(f"  Switching zone file to {zone_type}")
+def switch_zone_file(zone_type, generated_tokens, pl_rate):
 
-    # TODO
-    # service bind9 stop
+    print(f"  Creating {zone_type} zone file with generated chars {generated_tokens} and packetloss rate {pl_rate}")
 
-    zone_file_path = ""
-    zone_file_to_copy = ""
+    a_record_ip_addr = ""
 
     if zone_type == "prefetch":
-        zone_file_to_copy = "prefetch.zone"
+        a_record_ip_addr = str(pl_rate)
     elif zone_type == "stale":
-        zone_file_to_copy = "stale.zone"
+        a_record_ip_addr = str(pl_rate + 1)
     else:
         print("Undefined zone type!")
         sys.exit()
 
+    a_record_end = a_record_ip_addr + "." + a_record_ip_addr + "." + a_record_ip_addr
+
+    # TODO: Add boilerplate
     # Write the contents of the desired zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
-    with open(zone_file_to_copy, 'r') as first_file, open('active.zone', 'w') as second_file:
+    with open('boilerplate.zone', 'r') as first_file, open('active.zone', 'w') as second_file:
         # Read content from first zone file
         for line in first_file:
             # Append content to active zone file line by line
             second_file.write(line)
 
-    # Rename prefetch.zone to temp
-    # old_file = os.path.join(zone_file_path, "prefetch.zone")
-    # new_file = os.path.join(zone_file_path, "temp")
-    # os.rename(old_file, new_file)
+    a_records = ""
 
-    # Rename stale.zone to prefetch.zone
-    # old_file = os.path.join(zone_file_path, "stale.zone")
-    # new_file = os.path.join(zone_file_path, "prefetch.zone")
-    # os.rename(old_file, new_file)
+    f = open('active.zone', 'a')
 
-    # Rename temp to stale.zone
-    # old_file = os.path.join(zone_file_path, "temp")
-    # new_file = os.path.join(zone_file_path, "stale.zone")
-    # os.rename(old_file, new_file)
+    for ip_addr in resolver_ip_addresses:
+        ip_addr_with_dashes = ip_addr.replace(".", "-")
+
+        a_records += "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
+            generated_tokens) + "\tIN\tA\t139." + a_record_end + "\n"
+        f.write(a_records)
+    f.close()
 
     # Reload bind/dns services
     # sudo systemctl restart bind9
@@ -292,7 +298,7 @@ def switch_zone_file(zone_type):
     # (sudo rndc reload)
     # (service bind9 start)
     # (service bind9 restart)
-    reload_command_1 = f"sudo service bind9 reload"
+    reload_command_1 = f"sudo rndc reload"
     print(
         f"  Reloading bind9 with the following command:"
     )
@@ -302,8 +308,16 @@ def switch_zone_file(zone_type):
         subprocess.run(reload_command_1, shell=True, stdout=subprocess.PIPE, check=True)
     except Exception:
         print(
-            f"  Exception occurred while reloading bind !!"
+            f"  Exception occurred while reloading bind !"
         )
+
+
+# Generate x random characters to add it at the end of the query names in the zone file
+def generate_random_characters(length):
+    result = ""
+    for _ in range(length):
+        result += random.choice(string.ascii_letters)
+    return result
 
 
 # Create log folder
@@ -313,6 +327,8 @@ print("\n==== Experiment starting ====\n")
 
 # TODO: Multithreading for each resolver IP Address we have
 
+generated_chars = generate_random_characters(3)
+
 for current_packetloss_rate in packetloss_rates:
 
     print(f"Current Packetloss Rate: {current_packetloss_rate}")
@@ -321,10 +337,9 @@ for current_packetloss_rate in packetloss_rates:
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name, client_interface_name)
 
     # Set the right zone file for the prefetching phase
-    switch_zone_file("prefetch")
+    switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
 
     # Send queries to resolvers to allow them to store the answer
-    query_name_to_send = build_query_from_pl_rate(current_packetloss_rate)
     sleep_time_after_every_send = 0
 
     # Context manager
@@ -338,7 +353,8 @@ for current_packetloss_rate in packetloss_rates:
     #                                                         sleep_time_after_every_send])
     #               for current_resolver_ip in resolver_ip_addresses]
 
-    send_queries_to_resolvers(count_of_prefetch_queries, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
+    send_queries_to_resolvers(count_of_prefetch_queries, resolver_ip_addresses,
+                              sleep_time_after_every_send, current_packetloss_rate, generated_chars)
 
     # Wait until we are certain that the answer which is stored in the resolver is stale
     sleep_for_seconds(sleep_time_until_stale)
@@ -347,10 +363,11 @@ for current_packetloss_rate in packetloss_rates:
     simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
     # Set the right zone file for the phase after the answer is stale
-    switch_zone_file("stale")
+    switch_zone_file("stale", generated_chars, current_packetloss_rate)
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-    send_queries_to_resolvers(1, query_name_to_send, resolver_ip_addresses, sleep_time_after_every_send)
+    send_queries_to_resolvers(1, resolver_ip_addresses,
+                              sleep_time_after_every_send, current_packetloss_rate, generated_chars)
 
     # Context manager
     # with concurrent.futures.ProcessPoolExecutor() as executor:

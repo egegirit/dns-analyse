@@ -167,12 +167,12 @@ def add_dummy_value_to_empty_dictionary_list_value(dictionary, dummy_value):
 
 
 # Get the packetloss string of the json packet
+# *-*.ripeatlas-plrate-counter.packetloss.syssec-research.mmci.uni-saarland.de
 def get_packetloss_rate_of_packet(packet):
     query_name = extract_query_name_from_packet(packet)
     if query_name is not None:
-        query_ab_pl_rate = query_name.split("-")[5]
-        pl_rate = query_ab_pl_rate.split(".")[0]
-        return pl_rate  # <ipnr>-<ipnr>-<ipnr>-<ipnr>-<counter>-pl*.
+        query_ab_pl_rate = query_name.split("-")[2]
+        return query_ab_pl_rate
     else:
         return None
 
@@ -677,11 +677,6 @@ def find_the_response_packets(packet_list, file_name):
     responses = []
 
     for packet in packet_list:
-        # Filter responses of client, response must have destination IP of client
-        if file_name == "client":
-            if not dst_ip_match(packet, client_only_dest_ips):
-                # print(f"    SKIPPED  CLIENT PACKET BCS NO DST IP MATCH")
-                continue
 
         response = packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response']
         # print(f"@@ Response: {response}")
@@ -695,11 +690,6 @@ def find_the_query_packets(packet_list, file_name):
     queries = []
 
     for packet in packet_list:
-        # Filter queries of client, query must have source IP of client
-        if file_name == "client":
-            if not src_ip_match(packet, client_only_source_ips):
-                continue
-
         if packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.response'] == "0":
             queries.append(packet)
     return queries
@@ -776,15 +766,6 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
     # Continue with the calculation because we filtered others
     elif "valid+servfails" == rcode_filter:
         pass
-
-    # Filter the source and destination Addresses for client
-    if file_name == "client":
-        # debug = True
-        src_match = src_ip_match(current_packet, client_only_source_ips)
-        dst_match = dst_ip_match(current_packet, client_only_dest_ips)
-        if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
-            # print(" Source-Destination Ip not match: None!")
-            return None
 
     latency = 0
 
@@ -975,13 +956,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
             calculated_failure_queries.append(query_name_of_packet)
             return
 
-    # Filter the source and destination Addresses for client
-    if file_name == "client":
-        src_match = src_ip_match(current_packet, client_only_source_ips)
-        dst_match = dst_ip_match(current_packet, client_only_dest_ips)
-        if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
-            return
-
     rcode_is_error = False
     current_rcode = "-"
 
@@ -1060,13 +1034,6 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
 
 # Set the global list of retransmission data
 def calculate_retransmission_of_query_overall(current_packet, packetloss_index, file_name):
-    # print("Calculating retransmission of query")
-    # Filter the source and destination Addresses for client
-    if file_name == "client":
-        src_match = src_ip_match(current_packet, client_only_source_ips)
-        dst_match = dst_ip_match(current_packet, client_only_dest_ips)
-        if not src_match and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
-            return
 
     # If already calculated, skip
     query_name_of_packet = extract_query_name_from_packet(current_packet)
@@ -1077,15 +1044,6 @@ def calculate_retransmission_of_query_overall(current_packet, packetloss_index, 
     # Get all json packets that have the same query name
     # Slow runtime
     packets = find_all_packets_with_query_name(query_name_of_packet)
-
-    # For the client, after getting all the packets with the query name
-    # Filter again by the source IP
-    packets_with_client_src_ip = []
-    if file_name == "client":
-        for packet in packets:
-            if src_ip_match(packet, client_only_source_ips):
-                packets_with_client_src_ip.append(packet)
-        packets = packets_with_client_src_ip
 
     packets_with_auth_dst_ip = []
     # For auth, get all the queries, that has a destination IP of our auth server
@@ -1122,18 +1080,10 @@ def calculate_retransmission_of_query_overall(current_packet, packetloss_index, 
 
 # Set the global list of retransmission data
 def calculate_retransmission_of_query_resolver(current_packet, packetloss_index, file_name):
-    # For client, get all the queries with source IP of client
-    if file_name == "client":
-        src_match = src_ip_match(current_packet, client_only_source_ips)
-        # No need to filter for destination for client since each resolver has different IP
-        # dst_match = dst_ip_match(current_packet, client_only_dest_ips)
-        if not src_match:  # and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
-            return
 
     # For auth, get all the queries, that has a destination IP of our auth server
     if file_name == "auth":
         # No need to filter for source for auth since each resolver has different IP
-        # src_match = src_ip_match(current_packet, client_only_source_ips)
         dst_match = dst_ip_match(current_packet, auth_only_dest_ips)
         if not dst_match:  # and not dst_match:  # if src_match or dst_match -> Calculate latency of packet
             return
@@ -1154,15 +1104,6 @@ def calculate_retransmission_of_query_resolver(current_packet, packetloss_index,
     # Get all json packets that have the same query name
     # Slow runtime
     packets = find_all_packets_with_query_name(query_name_of_packet)
-
-    # For the client, after getting all the packets with the query name
-    # Filter again by the source IP
-    packets_with_client_src_ip = []
-    if file_name == "client":
-        for packet in packets:
-            if src_ip_match(packet, client_only_source_ips):
-                packets_with_client_src_ip.append(packet)
-        packets = packets_with_client_src_ip
 
     packets_with_auth_dst_ip = []
     # For auth, get all the queries, that has a destination IP of our auth server
@@ -1209,9 +1150,9 @@ def calculate_retransmission_of_query_resolver(current_packet, packetloss_index,
 # Filter the source and destination IP's of client for only the client packet capture
 def initialize_packet_lists(file_prefix):
     index = 0
-    # There are 12 packetloss rates and 12 JSON files for each packetloss rate
+    # Iterate over all the packetloss rates, all JSON files
     for current_packetloss_rate in packetloss_rates:
-        filename = file_prefix + "_" + str(current_packetloss_rate) + ".json"
+        filename = file_prefix + str(current_packetloss_rate) + ".json"
         print(f"Reading file: {filename}")
         if not os.path.exists("./" + filename):
             print(f"File not found: {filename}")
@@ -1221,7 +1162,6 @@ def initialize_packet_lists(file_prefix):
         json_data = json.load(file)
         packet_count = len(json_data)
         print(f"  Number of packets in JSON file: {packet_count}")
-        # print(f"  Current packetloss rate: {current_packetloss_rate}")
 
         # Examine all the packets in the JSON file
         for i in range(0, packet_count):
@@ -1238,18 +1178,13 @@ def initialize_packet_lists(file_prefix):
 
                 # DNS is case-insensitive, some resolvers might send queries with different cases,
                 # use case insensitivity with re.IGNORECASE
-                query_match = re.search(".*-.*-.*-.*-.*-pl.*.packetloss.syssec-research.mmci.uni-saarland.de",
+                query_match = re.search(".*.ripeatlas-pl*-*.packetloss.syssec-research.mmci.uni-saarland.de",
                                         query_name, re.IGNORECASE)
-                # Query doesn't match our experiment stucture, ignore it and
+                # Query doesn't match our experiment structure, ignore it and
                 # continue with the next packet
                 if query_match is None:
-                    # print(f"Skipping invalid domain name: {query_name}")
+                    print(f"Skipping invalid domain name: {query_name}")
                     continue
-
-                # Filter specific resolver packets by the query's IP Address
-                splitted_domain = query_name.split("-")
-                ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
-                                      splitted_domain[2] + "-" + splitted_domain[3]
 
                 # Store the packet in various lists
                 global allPacketsOfPL
@@ -1257,13 +1192,8 @@ def initialize_packet_lists(file_prefix):
                 append_item_to_nth_value_of_dict(allPacketsOfPL, index, json_data[i])
                 all_packets.append(json_data[i])
 
-                global allPacketsOfClient
                 global allPacketsOfAuth
-                if file_prefix == "client":
-                    allPacketsOfClient.append(json_data[i])
-                elif file_prefix == "auth1":
-                    # print(f"Added: {query_name}")
-                    allPacketsOfAuth.append(json_data[i])
+                allPacketsOfAuth.append(json_data[i])
 
         # Continue reading packets with the next packetloss rate JSON file
         index = index + 1
@@ -1388,60 +1318,36 @@ def get_rcode_of_packet(packet):
         return packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
 
 
-# Input: "pl0" Output 0
 def get_index_of_packetloss_rate(pl_rate):
-    if pl_rate == "pl0":
-        return 0
-    if pl_rate == "pl10":
-        return 1
-    if pl_rate == "pl20":
-        return 2
-    if pl_rate == "pl30":
-        return 3
     if pl_rate == "pl40":
-        return 4
-    if pl_rate == "pl50":
-        return 5
+        return 0
     if pl_rate == "pl60":
-        return 6
+        return 1
     if pl_rate == "pl70":
-        return 7
+        return 2
     if pl_rate == "pl80":
-        return 8
-    if pl_rate == "pl85":
-        return 9
+        return 3
     if pl_rate == "pl90":
-        return 10
+        return 4
     if pl_rate == "pl95":
-        return 11
+        return 5
     return None
 
 
-def loop_all_packets_get_all_query_names(file_name):
-    global client_query_names
+def loop_all_packets_get_all_query_names():
     global auth_query_names
     global all_packets
     global allPacketsOfClient
     global allPacketsOfAuth
 
-    if file_name == "client":
-        print(f"       Filling client_query_names")
-        for packet in allPacketsOfClient:
-            qry_name = extract_query_name_from_packet(packet)
-            pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
-            pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
-            list_of_client_query_names_with_pl = get_nth_value_of_dict(client_query_names, pl_index)
-            if qry_name not in list_of_client_query_names_with_pl:
-                append_item_to_nth_value_of_dict(client_query_names, pl_index, qry_name)
-    elif file_name == "auth1":
-        print(f"       Filling auth_query_names")
-        for packet in allPacketsOfAuth:
-            qry_name = extract_query_name_from_packet(packet)
-            pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
-            pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
-            list_of_auth_query_names_with_pl = get_nth_value_of_dict(auth_query_names, pl_index)
-            if qry_name not in list_of_auth_query_names_with_pl:
-                append_item_to_nth_value_of_dict(auth_query_names, pl_index, qry_name)
+    print(f"       Filling auth_query_names")
+    for packet in allPacketsOfAuth:
+        qry_name = extract_query_name_from_packet(packet)
+        pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
+        pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
+        list_of_auth_query_names_with_pl = get_nth_value_of_dict(auth_query_names, pl_index)
+        if qry_name not in list_of_auth_query_names_with_pl:
+            append_item_to_nth_value_of_dict(auth_query_names, pl_index, qry_name)
 
 
 # Create a bar plot showing how many queries are not sent to the auth server
@@ -1453,10 +1359,9 @@ def create_missing_query_bar_plot_for_auth(filter_name, directory_name):
 
     # Create bar plot for failure rate
     # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-    missing_query_data_dict = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
-                               '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
+    missing_query_data_dict = {'40': 0, '60': 0, '70': 0, '80': 0, '90': 0, '95': 0}
 
-    failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+    failure_rates = [40, 60, 70, 80, 90, 95]
 
     # The bar plot accepts a dictionary like above.
     # This for loop extracts the saved RCODE counts and converts them to a dictionary
@@ -1521,79 +1426,60 @@ def get_unique_src_ips_of_packets(packet_list):
     return src_ips_of_packets
 
 
-def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_client,
-                                        bottom_limit_auth, upper_limit_auth, directory_name):
-    # Directory name to be created
+def create_overall_plots_for_one_filter(rcode, bottom_limit, upper_limit, directory_name):
+
+    # Create directory to store logs into it
     if not os.path.exists(directory_name):
         os.makedirs(directory_name)
 
-    print(f" @@@@ Creating Resolver plots with Filter: {rcode} @@@@")
-    x = 0
-    for file_name in file_names:
+    print(f" @@@@ Creating Ripe atlas plots with Filter: {rcode} @@@@")
 
-        # Read and store all the matching JSON packets
-        # with the applied filters
-        initialize_packet_lists(file_name)
+    # File name prefix of the JSON files before the packetloss rate
+    file_name = "ripe_auth1_"
 
-        # Loop all packets of client, get all the unique query names of the queries, store in
-        # client_query_names, and also get all the unique query names of responses,
-        # store in client_responses_query_names
-        loop_all_packets_get_all_query_names(file_name)
+    # Read and store all the matching JSON packets
+    # with the applied filters
+    initialize_packet_lists(file_name)
 
-        # file_name as argument because latency calculation needs to know if its client or auth capture
-        # RCODE Filtering is here
-        loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode)
+    # Loop all packets of client, get all the unique query names of the queries, store in
+    # client_query_names, and also get all the unique query names of responses,
+    # store in client_responses_query_names
+    loop_all_packets_get_all_query_names()
 
-        # Add the filtering options to the file name of the plots
-        filter_names_on_filename = "_"
+    # file_name as argument because latency calculation needs to know if its client or auth capture
+    # RCODE Filtering is here
+    loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode)
 
-        # Set the lower-upper limits of the plots
-        # Since the client and authoritative plots are very different,
-        # set different limits for each
+    # Add the filtering options to the file name of the plots
+    filter_names_on_filename = "_"
 
-        if file_name != "client":
-            bottom_limit = bottom_limit_auth
-            upper_limit = upper_limit_auth
-        else:
-            bottom_limit = bottom_limit_client
-            upper_limit = upper_limit_client
+    # Set the lower-upper limits of the plots
+    # Since the client and authoritative plots are very different,
+    # set different limits for each
 
-        # If rcode is applied, add the filter to the file name
-        filter_names_on_filename += "_"
-        filter_names_on_filename += str(rcode)
+    # If rcode is applied, add the filter to the file name
+    filter_names_on_filename += "_"
+    filter_names_on_filename += str(rcode)
 
-        if log_scale_y_axis:
-            filter_names_on_filename += "_LogScaledY-"
+    if log_scale_y_axis:
+        filter_names_on_filename += "_LogScaledY-"
 
-        filter_names_on_filename += "Lim[" + str(bottom_limit) + "," + str(upper_limit) + "]"
+    filter_names_on_filename += "Lim[" + str(bottom_limit) + "," + str(upper_limit) + "]"
 
-        if file_name == "client":
-            if len(client_only_source_ips) > 0:
-                filter_names_on_filename += "_Src-IP"
-                filter_names_on_filename += str(client_only_source_ips) + ""
-                # for ip in client_only_source_ips:
-                #     filter_names_on_filename += ip + "_"
-            if len(client_only_dest_ips) > 0:
-                filter_names_on_filename += "_Dst-IP"
-                filter_names_on_filename += str(client_only_dest_ips) + ""
-                # for ip in client_only_dest_ips:
-                #     filter_names_on_filename += ip + "_"
+    file_name += filter_names_on_filename
 
-        file_name += filter_names_on_filename
+    # Create plots
+    create_overall_box_plot(directory_name, file_name, bottom_limit, upper_limit,
+                            log_scale_y_axis)
+    create_overall_latency_violin_plot(directory_name, file_name, bottom_limit, upper_limit,
+                                       log_scale_y_axis)
+    create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, 100)
+    create_overall_bar_plot_total_retransmission(directory_name, file_name, bottom_limit, upper_limit,
+                                                 use_limits=False)
 
-        # Create plots
-        create_overall_box_plot(directory_name, file_name, bottom_limit, upper_limit,
-                                log_scale_y_axis)
-        create_overall_latency_violin_plot(directory_name, file_name, bottom_limit, upper_limit,
-                                           log_scale_y_axis)
-        create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, 100)
-        create_overall_bar_plot_total_retransmission(directory_name, file_name, bottom_limit, upper_limit,
-                                                     use_limits=False)
+    create_overall_violin_plot_retransmission(directory_name, file_name)
 
-        create_overall_violin_plot_retransmission(directory_name, file_name)
-
-        prepare_for_next_iteration()
-        x += 1
+    prepare_for_next_iteration()
 
     filters = ""
 
@@ -1602,12 +1488,6 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit_client, upper_limit_
     if filters == "":
         filters = "NoFilter"
 
-    # Calculate, how many client queries are not redirected to the auth server
-    # by the resolver suing client_query_names and auth_query_names
-    # Create the plot only after client and auth packet initializations are done
-    if x == 2:
-        create_missing_query_bar_plot_for_auth(filters, directory_name)
-        clear_missing_query_lists()
 
 
 # List that store unique query names for each packetloss rate
@@ -1623,8 +1503,6 @@ auth_query_names = {"auth_query_names_pl40": [],
 # File prefixes of JSON files
 file_names = ["auth1"]
 
-client_only_source_ips = []
-client_only_dest_ips = []
 auth_only_dest_ips = []
 
 log_scale_y_axis = False
@@ -1632,9 +1510,6 @@ log_scale_y_axis = False
 # Write text onto plots using this coordinates
 x_axis_for_text = 0
 y_axis_for_text = 0
-
-# rcode, bottom_limit_client, upper_limit_client,
-#                                         bottom_limit_auth, upper_limit_auth, filtered_resolvers, directory_name
 
 # Filtering options
 # rcodes_to_get = ["0", "2"]
@@ -1647,13 +1522,10 @@ rcodes_to_get = "valid+servfails"
 # "valid+servfails" -> Calculate latencies of valid answers AND ServFails
 # "servfails"" -> Calculate latencies of ONLY ServFails
 
-client_bottom_limit = 0
-client_upper_limit = 30
-auth_bottom_limit = 0
-auth_upper_limit = 30
+bottom_limit = 0
+upper_limit = 30
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-create_overall_plots_for_one_filter(rcodes_to_get, client_bottom_limit, client_upper_limit,
-                                    auth_bottom_limit, auth_upper_limit, overall_directory_name)
+create_overall_plots_for_one_filter(rcodes_to_get, bottom_limit, upper_limit, overall_directory_name)
 

@@ -46,7 +46,7 @@ def show_results(msm_id_list, directory_name):
     if not os.path.exists(directory_name):
         os.makedirs(directory_name)
 
-    file_name_of_reports = "ripeAtlasReport.txt"
+    file_name_of_reports = "ripeAtlasHumanReadableReport.txt"
     file_name_of_all_jsons = "ripeAtlasAllJSONs.txt"
     file_name_of_json_by_pl_rate = "ripeAtlasJSON-pl"
 

@@ -37,7 +37,7 @@ packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
 # The amount of the query we will send to the resolver to
 # make the resolver cache the answer to this query
-count_of_prefetch_queries = 15
+count_of_prefetch_queries = 30
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [

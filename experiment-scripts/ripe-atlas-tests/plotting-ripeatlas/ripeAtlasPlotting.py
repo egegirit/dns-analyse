@@ -169,12 +169,25 @@ def add_dummy_value_to_empty_dictionary_list_value(dictionary, dummy_value):
 # Get the packetloss string of the json packet
 # *-*.ripeatlas-plrate-counter.packetloss.syssec-research.mmci.uni-saarland.de
 def get_packetloss_rate_of_packet(packet):
-    query_name = extract_query_name_from_packet(packet)
-    if query_name is not None:
-        query_ab_pl_rate = query_name.split("-")[2]
-        return query_ab_pl_rate
-    else:
-        return None
+    query_name = extract_query_name_from_packet(packet).lower()
+    # print(f"  get_packetloss_rate_of_packet() Query: {query_name}")
+    if "pl" in query_name.lower():
+        result = "pl" + query_name.split("pl")[1][:2]
+        # print(f"  get_packetloss_rate_of_packet() returning {result} @@@@@@@@@@@@@@@@@@@@@@")
+        return result
+
+    #if query_name is not None:
+    #    # _.ripeatlas-pl40-6.packetloss.syssec-research.mmci.uni-saarland.de
+    #    if "_.ripeatlas" in query_name:
+    #        query_ab_pl_rate = query_name.split("-")[1]
+    #        print(f"  _ query_ab_pl_rate: {query_ab_pl_rate}")
+    #        return query_ab_pl_rate
+    #    else:
+    #        query_ab_pl_rate = query_name.split("-")[2]
+    #        print(f"  query_ab_pl_rate: {query_ab_pl_rate}")
+    #        return query_ab_pl_rate
+    print(f"  get_packetloss_rate_of_packet() Returning none")
+    return None
 
 
 # Create box plot for the calculated latencies
@@ -615,34 +628,22 @@ def find_all_packets_with_query_name(query_name):
     # Check the packetloss rate of the query name
     list_to_search = []
     global allPacketsOfPL
-    if "pl0" in query_name:
+    if "pl40" in query_name:
         list_to_search = get_nth_value_of_dict(allPacketsOfPL, 0)
-    elif "pl10" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 1)
-    elif "pl20" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 2)
-    elif "pl30" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 3)
-    elif "pl40" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 4)
-    elif "pl50" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 5)
     elif "pl60" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 6)
+        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 1)
     elif "pl70" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 7)
+        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 2)
     elif "pl80" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 8)
-    elif "pl85" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 9)
+        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 3)
     elif "pl90" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 10)
+        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 4)
     elif "pl95" in query_name:
-        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 11)
+        list_to_search = get_nth_value_of_dict(allPacketsOfPL, 5)
 
     packets_with_query_name = []
     for packet in list_to_search:
-        if extract_query_name_from_packet(packet) == query_name:
+        if extract_query_name_from_packet(packet).lower() == query_name:
             # print(f"      Match: {query_name}")
             # print(f"      Frame time of Match: {get_frame_time_relative_of_packet(packet)}")
             # print(f"        Added to list")
@@ -659,7 +660,7 @@ def extract_query_name_from_packet(packet):
         splitted2 = str(splitted_json1[1])
         query_name = splitted2.split("'")[1]
         # print(f"Extracted query name: {query_name}")
-        return query_name
+        return query_name.lower()
     else:
         return None
 
@@ -719,7 +720,7 @@ def find_lowest_frame_no(packet_list):
 # than you have duplicates, find the first query (using frame relative time of all of the queries),
 # calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
 def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
-    query_name_of_packet = extract_query_name_from_packet(current_packet)
+    query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
 
     debug = False
 
@@ -920,7 +921,7 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
 # Count as fail if no answer with RCODE != 0
 def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name, rcode_filter):
     # If already calculated, skip
-    query_name_of_packet = extract_query_name_from_packet(current_packet)
+    query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
 
     if query_name_of_packet is not None:
         if query_name_of_packet in calculated_failure_queries:
@@ -1036,7 +1037,7 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
 def calculate_retransmission_of_query_overall(current_packet, packetloss_index, file_name):
 
     # If already calculated, skip
-    query_name_of_packet = extract_query_name_from_packet(current_packet)
+    query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
     if query_name_of_packet is not None:
         if query_name_of_packet in calculated_retransmission_queries:
             return
@@ -1089,7 +1090,7 @@ def calculate_retransmission_of_query_resolver(current_packet, packetloss_index,
             return
 
     # If already calculated, skip
-    query_name_of_packet = extract_query_name_from_packet(current_packet)
+    query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
     debug = False
     if file_name == "client":
         debug = True
@@ -1170,30 +1171,55 @@ def initialize_packet_lists(file_prefix):
             if 'dns' in json_data[i]['_source']['layers']:
                 # Check if the dns packet is generated by our experiment
                 # by checking query syntax, filter dns packets that is not related to the experiment
-                json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
-                splitted_json1 = json_string.split("'dns.qry.name': ")
-                splitted2 = str(splitted_json1[1])
-                query_name = splitted2.split("'")[1]
-                # print(f"Current query name: {query_name}")
 
-                # DNS is case-insensitive, some resolvers might send queries with different cases,
-                # use case insensitivity with re.IGNORECASE
-                query_match = re.search(".*.ripeatlas-pl*-*.packetloss.syssec-research.mmci.uni-saarland.de",
-                                        query_name, re.IGNORECASE)
-                # Query doesn't match our experiment structure, ignore it and
-                # continue with the next packet
-                if query_match is None:
-                    print(f"Skipping invalid domain name: {query_name}")
-                    continue
+                if 'Queries' in json_data[i]['_source']['layers']['dns']:
 
-                # Store the packet in various lists
-                global allPacketsOfPL
-                global all_packets
-                append_item_to_nth_value_of_dict(allPacketsOfPL, index, json_data[i])
-                all_packets.append(json_data[i])
+                    json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
 
-                global allPacketsOfAuth
-                allPacketsOfAuth.append(json_data[i])
+                    if "Unknown" in json_string:
+                        print(f"Unknown DNS JSON:")
+                        print(f"  {json_data[i]['_source']['layers']['dns']}")
+                        continue
+
+                    splitted_json1 = json_string.split("'dns.qry.name': ")
+
+                    if str(splitted_json1) == "['']":
+                        print(f"Skipping empty query")
+                        continue
+
+                    splitted2 = str(splitted_json1[1])
+                    query_name = splitted2.split("'")[1]
+                    # print(f"Current query name: {query_name}")
+
+                    if query_name.lower() == "ns1.packetloss.syssec-research.mmci.uni-saarland.de":
+                        print(f"Skipping ns1: {query_name}")
+                        continue
+                    # "_.packetloss.syssec-research.mmci.uni-saarland.de"
+                    if "_" in query_name.lower():
+                        print(f"Skipping _: {query_name}")
+                        continue
+
+
+                    # DNS is case-insensitive, some resolvers might send queries with different cases,
+                    # use case insensitivity with re.IGNORECASE
+                    query_match = re.search("\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$",
+                                            query_name, re.IGNORECASE)
+                    # Query doesn't match our experiment structure, ignore it and
+                    # continue with the next packet
+                    if query_match is None:
+                        print(f"Skipping invalid domain name: {query_name}")
+                        continue
+                    # else:
+                    #     print(f"    MATCH: {query_name}")
+
+                    # Store the packet in various lists
+                    global allPacketsOfPL
+                    global all_packets
+                    append_item_to_nth_value_of_dict(allPacketsOfPL, index, json_data[i])
+                    all_packets.append(json_data[i])
+
+                    global allPacketsOfAuth
+                    allPacketsOfAuth.append(json_data[i])
 
         # Continue reading packets with the next packetloss rate JSON file
         index = index + 1
@@ -1331,6 +1357,10 @@ def get_index_of_packetloss_rate(pl_rate):
         return 4
     if pl_rate == "pl95":
         return 5
+    if pl_rate == "pl0-":
+        print(f"get_index_of_packetloss_rate() has pl0- as input")
+        return 5
+    print(f"get_index_of_packetloss_rate() returning None for input: {pl_rate}")
     return None
 
 
@@ -1342,7 +1372,7 @@ def loop_all_packets_get_all_query_names():
 
     print(f"       Filling auth_query_names")
     for packet in allPacketsOfAuth:
-        qry_name = extract_query_name_from_packet(packet)
+        qry_name = extract_query_name_from_packet(packet).lower()
         pl_rate_of_pkt = get_packetloss_rate_of_packet(packet)
         pl_index = get_index_of_packetloss_rate(pl_rate_of_pkt)
         list_of_auth_query_names_with_pl = get_nth_value_of_dict(auth_query_names, pl_index)

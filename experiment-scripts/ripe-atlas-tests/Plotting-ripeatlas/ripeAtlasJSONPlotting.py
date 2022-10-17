@@ -23,6 +23,43 @@ latencies_with_pl = {
 }
 
 
+query_names_with_pl = {
+    "query_names_40": [],
+    "query_names_60": [],
+    "query_names_70": [],
+    "query_names_80": [],
+    "query_names_90": [],
+    "query_names_95": [],
+}
+
+answer_names_with_pl = {
+    "answer_names_40": [],
+    "answer_names_60": [],
+    "answer_names_70": [],
+    "answer_names_80": [],
+    "answer_names_90": [],
+    "answer_names_95": [],
+}
+
+global duplicate_query_count_with_pl
+duplicate_query_count_with_pl = {
+    "duplicate_query_count_40": 0,
+    "duplicate_query_count_60": 0,
+    "duplicate_query_count_70": 0,
+    "duplicate_query_count_80": 0,
+    "duplicate_query_count_90": 0,
+    "duplicate_query_count_95": 0,
+}
+global duplicate_answer_count_with_pl
+duplicate_answer_count_with_pl = {
+    "duplicate_answer_count_40": 0,
+    "duplicate_answer_count_60": 0,
+    "duplicate_answer_count_70": 0,
+    "duplicate_answer_count_80": 0,
+    "duplicate_answer_count_90": 0,
+    "duplicate_answer_count_95": 0,
+}
+
 def get_packetloss_index(pl_rate):
     if pl_rate == "40":
         return 0
@@ -53,9 +90,33 @@ def get_pl_rate_of_index(index):
         return "95"
     return None
 
+
 def get_desired_attribute(string_to_search, attribute_string):
     if attribute_string in string_to_search:
         return string_to_search.split(attribute_string)[1].split(",")[0]
+
+
+def extract_attribute_from_buf(attr, buf):
+    if attr in buf:
+        return buf.split(attr)[1].split("\n")[0]
+
+
+def extract_field_from_buf(attr, buf):
+    if attr in buf:
+        return buf.split(attr)[1].split("\n")[1]
+    else:
+        print(f"{attr} not in the string")
+
+
+def extract_query_name(string):
+    if string == "" or string is None:
+        return ""
+    try:
+        last_index_of_dot = string.rindex(".")
+    except ValueError:
+        return ""
+    result = string[0:last_index_of_dot]
+    return result
 
 
 def getIndex(s, i):
@@ -103,7 +164,7 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
 
     # Print on the plot if the plot is for client or auth (user variable)
     user = file_name_prefix.split("_")[0]
-    ax.set_title(f"Response Latency for {user}")
+    ax.set_title(f"Response latency for {user} probes")
 
     # y-axis labels
     # Set the X axis labels/positions
@@ -175,7 +236,7 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
 
     # Print on the plot if the plot is for client or auth (user variable)
     user = file_name_prefix.split("_")[0]
-    ax.set_title(f"Response Failure Rate for {user}")
+    ax.set_title(f"Response latency for {user} probes")
 
     if log_scale:
         ax.set_yscale('log', base=2)
@@ -297,8 +358,24 @@ for pl_rate in packetloss_rates:
 
             qbuf = get_desired_attribute(report, "'qbuf': ")
             if qbuf is not None:
-                qbuf_decoded = dns.message.from_wire(base64.b64decode(qbuf))
+                qbuf_decoded = str(dns.message.from_wire(base64.b64decode(qbuf)))
                 # print(f"\nQBUF:\n{qbuf_decoded}")
+
+                qbuf_rcode = extract_attribute_from_buf("rcode ", qbuf_decoded)
+                qbuf_opcode = extract_attribute_from_buf("opcode ", qbuf_decoded)
+                qbuf_question = extract_field_from_buf(';QUESTION', qbuf_decoded)
+                # print(f"qbuf_question: {qbuf_question}")
+
+                qbuf_query_name = extract_query_name(qbuf_question).lower()
+                # print(f"qbuf_query_name: {qbuf_query_name}")
+
+                # Count duplicates
+                if qbuf_query_name in query_names_with_pl["query_names_" + str(pl_rate)]:
+                    print("Dup")
+                    duplicate_query_count_with_pl["duplicate_query_count_" + str(pl_rate)] += 1
+
+                if qbuf_query_name != "" and qbuf_query_name not in query_names_with_pl["query_names_" + str(pl_rate)]:
+                    query_names_with_pl["query_names_" + str(pl_rate)].append(qbuf_query_name)
 
             if "'result':" in report:
                 # print(f"Packet has result")
@@ -311,8 +388,27 @@ for pl_rate in packetloss_rates:
 
                 abuf = get_desired_attribute(report, "'abuf': ")
                 if abuf is not None:
-                    abuf_decoded = dns.message.from_wire(base64.b64decode(abuf))
+                    abuf_decoded = str(dns.message.from_wire(base64.b64decode(abuf)))
                     # print(f"\nABUF:\n{abuf_decoded}")
+                    abuf_opcode = extract_attribute_from_buf("opcode ", abuf_decoded)
+                    abuf_rcode = extract_attribute_from_buf("rcode ", abuf_decoded)
+                    abuf_question = extract_field_from_buf(';QUESTION', abuf_decoded)
+                    # print(f"abuf_question: {abuf_question}")
+
+                    abuf_answer = extract_field_from_buf(';ANSWER', abuf_decoded)
+                    # print(f"abuf_question: {abuf_question}")
+
+                    abuf_query_name = extract_query_name(abuf_question).lower()
+
+                    # Count duplicates
+                    if abuf_query_name in answer_names_with_pl["answer_names_" + str(pl_rate)]:
+                        print("Dup A")
+                        duplicate_answer_count_with_pl["duplicate_answer_count_" + str(pl_rate)] += 1
+
+                    # print(f"abuf_query_name: {abuf_query_name}")
+                    if abuf_query_name != "" and abuf_query_name not in answer_names_with_pl["answer_names_" + str(pl_rate)]:
+                        answer_names_with_pl["answer_names_" + str(pl_rate)].append(abuf_query_name)
+
             report_count += 1
 
         # print(f"\n")
@@ -324,6 +420,48 @@ index = 0
 for latencies_of_pl in latencies_with_pl:
     pl_rate = get_pl_rate_of_index(index)
     print(f"Length of {pl_rate} Packetloss rate latencies: {len(latencies_of_pl)}")
+    index += 1
+
+print(f"\n")
+
+index = 0
+for answer_names_of_pl in answer_names_with_pl:
+    values = list(answer_names_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of answer_names_of_pl {pl_rate}: {len(values)}")
+    # index2 = 0
+    # for query in values:
+    #     print(f"  {index2}. Query: {query}")
+    #     index2 += 1
+    index += 1
+
+index = 0
+for query_names_of_pl in query_names_with_pl:
+    values = list(query_names_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of query_names_of_pl {pl_rate}: {len(values)}")
+    # index2 = 0
+    # for query in values:
+    #     print(f"  {index2}. Query: {query}")
+    #     index2 += 1
+    index += 1
+
+print(f"\n")
+
+index = 0
+for elem in duplicate_answer_count_with_pl:
+    value = list(duplicate_answer_count_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of duplicate answer count for PL {pl_rate}: {value}")
+    index += 1
+
+print(f"\n")
+
+index = 0
+for elem in duplicate_query_count_with_pl:
+    value = list(duplicate_query_count_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of duplicate query count for PL {pl_rate}: {value}")
     index += 1
 
 create_overall_latency_violin_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)

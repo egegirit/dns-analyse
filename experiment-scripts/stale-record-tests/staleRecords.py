@@ -206,9 +206,9 @@ def calculate_prefetch_query_count(ip_addr):
 # Prefetch phase, send queries to resolvers to make them cache the entries
 # Todo: multithreading, send queries to resolvers parallel
 def send_queries_to_resolvers(ip_list_of_resolvers, sleep_time_after_send, pl_rate, generated_tokens):
-    print(f"   IP Addresses to send: {ip_list_of_resolvers}\n")
+    # print(f"   IP Addresses to send: {ip_list_of_resolvers}\n")
     for ip_addr in ip_list_of_resolvers:
-        print(f"\n   Sending query to IP: {ip_addr}")
+        print(f"\n  Sending query to IP: {ip_addr}")
         query_count = calculate_prefetch_query_count(ip_addr)
         print(f"  Query Amount to send to the resolver: {query_count}")
 
@@ -249,23 +249,22 @@ def send_queries_to_resolvers(ip_list_of_resolvers, sleep_time_after_send, pl_ra
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
 def build_query_from_pl_rate(packetloss_rate):
-    query = "stale-test-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+    query = "stale-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
     print(f"  Built query: {query}")
     return query
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
 def build_query(packetloss_rate, ip_addr, generated_tokens):
-
     ip_addr_with_dashes = ip_addr.replace(".", "-")
-    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + \
+            ".packetloss.syssec-research.mmci.uni-saarland.de"
     print(f"  Built query: {query}")
     return query
 
 
 # Switch to the zone file of the corresponding packetloss rate
 def switch_zone_file(zone_type, generated_tokens, pl_rate):
-
     print(f"  Creating {zone_type} zone file with generated chars {generated_tokens} and packetloss rate {pl_rate}")
 
     a_record_ip_addr = ""
@@ -280,7 +279,6 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
 
     a_record_end = a_record_ip_addr + "." + a_record_ip_addr + "." + a_record_ip_addr
 
-    # TODO: Add boilerplate
     # Write the contents of the desired zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
     with open('boilerplate.zone', 'r') as first_file, open('active.zone', 'w') as second_file:
@@ -290,23 +288,23 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
             second_file.write(line)
 
     a_records = ""
+    created_A_record = ""  # DEBUG
 
     f = open('active.zone', 'a')
 
     for ip_addr in resolver_ip_addresses:
         ip_addr_with_dashes = ip_addr.replace(".", "-")
 
-        a_records += "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
+        a_records = "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
             generated_tokens) + "\tIN\tA\t139." + a_record_end + "\n"
+        created_A_record += a_records
         f.write(a_records)
     f.close()
 
+    print(f"Created A record for {zone_type}, {pl_rate} Packetloss rate:\n")
+    print(created_A_record)
+
     # Reload bind/dns services
-    # sudo systemctl restart bind9
-    # (sudo systemctl reload bind9)
-    # (sudo rndc reload)
-    # (service bind9 start)
-    # (service bind9 restart)
     reload_command_1 = f"sudo rndc reload"
     print(
         f"  Reloading bind9 with the following command:"

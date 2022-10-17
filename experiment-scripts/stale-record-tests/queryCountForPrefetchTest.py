@@ -1,12 +1,12 @@
 from random import randrange
 
 caches = []
-max_cache_count = 5
+max_cache_count = 10
 for i in range(max_cache_count):
     caches.append(0)
 
 experiment_count = 100
-query_count = 30
+query_count = 50
 min_value = 1
 max_value = len(caches)
 

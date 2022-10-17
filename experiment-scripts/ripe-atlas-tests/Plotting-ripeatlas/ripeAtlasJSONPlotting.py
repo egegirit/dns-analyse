@@ -103,7 +103,7 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
 
     # Print on the plot if the plot is for client or auth (user variable)
     user = file_name_prefix.split("_")[0]
-    ax.set_title(f"Response Failure Rate for {user}")
+    ax.set_title(f"Response Latency for {user}")
 
     # y-axis labels
     # Set the X axis labels/positions

@@ -1,0 +1,23 @@
+Length of query_names_of_pl 40: 15639
+Length of query_names_of_pl 60: 15643
+Length of query_names_of_pl 70: 15621
+Length of query_names_of_pl 80: 15652
+Length of query_names_of_pl 90: 15649
+Length of query_names_of_pl 95: 15646
+
+Length of answer_names_of_pl 40: 14838
+Length of answer_names_of_pl 60: 14372
+Length of answer_names_of_pl 70: 13736
+Length of answer_names_of_pl 80: 12675
+Length of answer_names_of_pl 90: 11169
+Length of answer_names_of_pl 95: 10077
+
+Unanswered query count for 40: 801
+Unanswered query count for 60: 1271
+Unanswered query count for 70: 1885
+Unanswered query count for 80: 2977
+Unanswered query count for 90: 4480
+Unanswered query count for 95: 5569
+
+No duplicate Queries on JSONS
+No duplicate Answers on JSONS

@@ -207,19 +207,18 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
 
     # Print on the plot if the plot is for client or auth (user variable)
     user = file_name_prefix.split("_")[0]
-    ax.set_title(f"Response Failure Rate for {user}")
+    ax.set_title(f"Response Latency for {user}")
 
     # y-axis labels
     # Set the X axis labels/positions
-    ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
-    ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+    ax.set_xticks([40, 60, 70, 80, 90, 95])
+    ax.set_xticklabels([40, 60, 70, 80, 90, 95])
 
     if log_scale:
         ax.set_yscale('log', base=2)
     # else: ax.set_yscale('linear')
 
     # Add the data counts onto the plot as text
-    # TODO: do this as a second bar in the plot
     data_count_string = ""
     for i in range(len(get_values_of_dict(latencyData))):
         data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
@@ -229,10 +228,19 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
     text.set_alpha(.4)
     # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
 
+    left, width = .25, .5
+    bottom, height = .25, .5
+    right = left + width
+    top = bottom + height
+    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes, color='red')
+
     plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # Creating plot
-    ax.boxplot(get_values_of_dict(latencyData), positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95], widths=4.4)
+    ax.boxplot(get_values_of_dict(latencyData), positions=[40, 60, 70, 80, 90, 95], widths=4.4)
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name_prefix + '_boxPlotLatency.png'), bbox_inches='tight')
@@ -258,15 +266,15 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     ax = fig2.add_axes([0, 0, 1, 1])
 
     # Set the X axis labels/positions
-    ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
-    ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+    ax.set_xticks([40, 60, 70, 80, 90, 95])
+    ax.set_xticklabels([40, 60, 70, 80, 90, 95])
 
     ax.set_ylabel('Latency in seconds')
     ax.set_xlabel('Packetloss in percentage')
 
     # Print on the plot if the plot is for client or auth (user variable)
     user = file_name_prefix.split("_")[0]
-    ax.set_title(f"Response Failure Rate for {user}")
+    ax.set_title(f"Response Latency for {user}")
 
     # IF a packetloss latency list is empty, add negative dummy value so that violinplot doesn't crash
     # Since the plots bottom limit is, it won't be visible in graph
@@ -288,7 +296,7 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=get_values_of_dict(latencyData), showmeans=True, showmedians=True,
-                       showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+                       showextrema=True, widths=4.4, positions=[40, 60, 70, 80, 90, 95])
 
     # Add the data counts onto plot
     # But if the list was empty and we added a dummy value, subtract it from the plot text
@@ -311,6 +319,15 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     # Make it transparent
     text.set_alpha(.5)
     # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+
+    left, width = .25, .5
+    bottom, height = .25, .5
+    right = left + width
+    top = bottom + height
+    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes, color='red')
 
     # Mean is blue
     bp['cmeans'].set_color('b')
@@ -343,10 +360,10 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
 
     # Create bar plot for failure rate
     # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-    failure_rate_data_dict = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
-                              '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
+    failure_rate_data_dict = {'40': 0, '50': 0,
+                              '60': 0, '70': 0, '80': 0, '90': 0, '95': 0}
 
-    failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+    failure_rates = [40, 60, 70, 80, 90, 95]
 
     # Write the failure count on the plot
     # TODO: As dictionary
@@ -356,23 +373,13 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
     fail_4 = []
     fail_5 = []
     fail_6 = []
-    fail_7 = []
-    fail_8 = []
-    fail_9 = []
-    fail_10 = []
-    fail_11 = []
-    fail_12 = []
+
     failure_counts = [fail_1, fail_2,
                       fail_3,
                       fail_4,
                       fail_5,
                       fail_6,
-                      fail_7,
-                      fail_8,
-                      fail_9,
-                      fail_10,
-                      fail_11,
-                      fail_12]
+                      ]
 
     # The bar plot accepts a dictionary like above.
     # This for loop extracts the saved RCODE counts and converts them to a dictionary
@@ -390,6 +397,7 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
         if fail_count != 0:
             # Divide by 900 because we send 900 queries from client pro packetloss config (18 Resolver * 50 counter),
             # when you filter by an IP, you need to adjust the query_count_per_pl_rate like so:
+            # TODO
             query_count_per_pl_rate = 900 - (0 * 50)
             # print(f"query_count_per_pl_rate: {query_count_per_pl_rate}")
             # Label auf plot
@@ -432,175 +440,6 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
     # shot plot
     # plt.show()
     print(f" Created bar plot: {file_name}")
-    # Clear plots
-    plt.cla()
-    plt.close()
-
-
-# Create bar plot to show the DNS restransmission counts
-def create_overall_bar_plot_total_retransmission(directory_name, file_name, bottom_limit, upper_limit,
-                                                 use_limits=False):
-    print(f" Creating total retransmission plot: {file_name}")
-    print(f"   Inside the folder: {directory_name}")
-
-    # Create bar plot for failure rate
-    # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-    failure_rate_data_dict = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
-                              '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
-
-    failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
-
-    retransmis_values = get_values_of_dict(retransmissionData)
-    print(f"  retransmissionData values= {retransmis_values}")
-
-    # The bar plot accepts a dictionary like above.
-    # This for loop extracts the saved RCODE counts and converts them to a dictionary
-    max_transmission_count_for_upper_limit = 0
-    index = 0
-    for current_packetloss_rate in packetloss_rates:
-        current_retransmission_data = get_values_of_dict(retransmissionData)[index]
-        if current_retransmission_data != 0:
-            failure_rate_data_dict[str(current_packetloss_rate)] = current_retransmission_data
-            if max_transmission_count_for_upper_limit < current_retransmission_data:
-                max_transmission_count_for_upper_limit = current_retransmission_data
-        else:
-            failure_rate_data_dict[str(current_packetloss_rate)] = 0
-        index = index + 1
-
-    keys = list(failure_rate_data_dict.keys())
-    values = list(failure_rate_data_dict.values())
-    print(f"Retransmission rates: {keys}")
-    # f.write(f"Failure rates: {keys}\n")
-    print(f"Retransmission counts: {values}")
-    # f.write(f"Failure ratio: {values}\n")
-
-    plt.figure(figsize=(10, 5))
-    # fig = plt.figure(figsize=(10, 5))
-
-    # creating the bar plot
-    plt.bar(failure_rates, values, color='blue', width=4)
-
-    # Adding text inside the plot
-    data_count_string = ""
-    for i in range(len(get_values_of_dict(latencyData))):
-        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            failure_rate_data_dict[str(packetloss_rates[i])]) + "\n"
-    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
-    text.set_alpha(0.5)
-
-    # Set labels
-    plt.xlabel("Packetloss Rate")
-    plt.ylabel("Total DNS Retransmission Count")
-    plt.title(f"Overall Retransmission Count")
-
-    # If there is no data to plot, the y-axis will show the negative values
-    if max_transmission_count_for_upper_limit != 0:
-        plt.ylim(bottom=0, top=max_transmission_count_for_upper_limit)
-    else:
-        plt.ylim(bottom=0)
-
-    # Save plot as png
-    plt.savefig(directory_name + "/" + (file_name + '_barPlotTotalRetransmissionCount.png'), bbox_inches='tight')
-    # Show plot
-    # plt.show()
-    print(f" Created total retransmission plot: {file_name}")
-    # f.write(f" Created retransmission plot: {file_name}\n")
-    # Clear plots
-    plt.cla()
-    plt.close()
-
-
-# Create bar plot to show the DNS restransmission counts
-def create_overall_violin_plot_retransmission(directory_name, file_name):
-    print(f" Creating retransmission violin plot: {file_name}")
-    print(f"   Inside the folder: {directory_name}")
-
-    # Create violin plot
-    fig2 = plt.figure(figsize=(10, 7))
-
-    # Creating axes instance
-    ax = fig2.add_axes([0, 0, 1, 1])
-
-    # Set the X axis labels/positions
-    ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
-    ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
-
-    # Set labels
-    plt.xlabel("Packetloss Rate")
-    plt.ylabel("DNS Retransmissions for each query")
-    user = file_name.split("_")[0]
-    plt.title(f"DNS Retransmission for {user}")
-
-    # IF a packetloss latency list is empty, add negative dummy value so that violinplot doesn't crash
-    # Since the plots bottom limit is, it won't be visible in graph
-    # But when you add this, you need to subtract it from the count on the plot text
-
-    global retransmission_counts_for_all_pl
-    all_retransmission_counts_lists = get_values_of_dict(retransmission_counts_for_all_pl)
-    # add_dummy_value_to_empty_dictionary_list_value(retransmissionData, 0)
-
-    # Add dummy value if a list is empty
-    index_of_dummy = 0
-    dummy_indexes = []
-
-    # Fill empty lists with dummy value 0
-    for pl_list_with_retransmission_counts in all_retransmission_counts_lists:
-        # print(f"  packet: {packet}")
-        if len(pl_list_with_retransmission_counts) == 0:
-            append_item_to_nth_value_of_dict(retransmission_counts_for_all_pl, index_of_dummy, 0)
-            # packets_with_pl.append(float(-0.2))
-            dummy_indexes.append(index_of_dummy)
-        index_of_dummy += 1
-
-    # Debug
-    # retransmission_values = get_values_of_dict(retransmission_counts_for_all_pl)
-    # print(f"Retransmission values = {str(retransmission_values)}")
-
-    # Create and save Violinplot
-    bp = ax.violinplot(dataset=get_values_of_dict(retransmission_counts_for_all_pl), showmeans=True, showmedians=True,
-                       showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
-
-    # Add the data counts onto plot
-    # But if the list was empty and we added a dummy value, subtract it from the plot text
-    data_count_string = ""
-    if len(dummy_indexes) > 0:
-        for i in range(len(get_values_of_dict(retransmission_counts_for_all_pl))):
-            # if the index length was 0 so that we added a dummy value, subtract it from the count
-            if i in dummy_indexes:
-                data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-                    len(get_values_of_dict(retransmission_counts_for_all_pl)[i]) - 1) + "\n"
-            # Index was not 0, write the actual length
-            else:
-                data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-                    len(get_values_of_dict(retransmission_counts_for_all_pl)[i])) + "\n"
-    else:
-        for i in range(len(get_values_of_dict(retransmission_counts_for_all_pl))):
-            data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-                len(get_values_of_dict(retransmission_counts_for_all_pl)[i])) + "\n"
-    text = ax.annotate(data_count_string, xy=(.5, .5), xytext=(x_axis_for_text, y_axis_for_text), color='red')
-    # Make it transparent
-    text.set_alpha(.5)
-    # plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
-
-    # Mean is blue
-    bp['cmeans'].set_color('b')
-    # Median is red
-    bp['cmedians'].set_color('r')
-
-    plt.ylim(bottom=0)
-
-    # Add legend for mean and median
-    blue_line = mlines.Line2D([], [], color='blue', marker='',
-                              markersize=15, label='mean')
-    red_line = mlines.Line2D([], [], color='red', marker='',
-                             markersize=15, label='median')
-    ax.legend(handles=[blue_line, red_line], loc='upper left')
-
-    # save plot as png
-    plt.savefig(directory_name + "/" + (file_name + '_violinPlotRetransmission.png'), bbox_inches='tight')
-    # show plot
-    # plt.show()
-    print(f" Created retransmission violin plot: {file_name}")
     # Clear plots
     plt.cla()
     plt.close()
@@ -714,12 +553,26 @@ def find_lowest_frame_no(packet_list):
     return min(frame_numbers)
 
 
+def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
+    latency = 0
+    # Get the dns.time if it exists, packets with dns.time are Responses with either No error or Servfail
+    # All query packets are ignored after here
+    if 'dns.time' in current_packet['_source']['layers']['dns']:
+        # and "Answers" in current_packet['_source']['layers']['dns']:  # New and condition
+        dns_time = float(current_packet['_source']['layers']['dns']['dns.time'])
+        latency = dns_time
+        # print(f"   DNS.TIME SET: {latency}")
+    else:
+        latency = None
+
+    return latency
+
 # Latency (between first query and answer) algorithm 2
 # "Zeit bis zur ersten Antwort (unabhängig von RCODE)"
 # if packet has dns.time, get the packets query name, if there are more than 2 (query + answer) queries with that query name,
 # than you have duplicates, find the first query (using frame relative time of all of the queries),
 # calculate the new latency with: dns.time + (time between first query and last query) = dns.time + (rel(last)-rel(first))
-def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
+def calculate_latency_of_packet_old(current_packet, file_name, rcode_filter):
     query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
 
     debug = False
@@ -916,10 +769,24 @@ def calculate_latency_of_packet(current_packet, file_name, rcode_filter):
             # print(f"   RETURNED LATENCY {latency} FOR: {query_name_of_packet}")
             return latency
 
-
 # Failure rate of client: Count of rcode != 0 for each query name + unanswered unique query count
 # Count as fail if no answer with RCODE != 0
 def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name, rcode_filter):
+
+    rcode_is_error = False
+    current_rcode = "-"
+    # If the packet is a response with no error, don't examine it, count as success
+    if 'dns.flags.rcode' in current_packet['_source']['layers']['dns']['dns.flags_tree']:
+        current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+        if current_rcode == "0":
+            append_item_to_nth_value_of_dict(failure_rate_data, packetloss_index, "0")
+            return
+    return
+
+
+# Failure rate of client: Count of rcode != 0 for each query name + unanswered unique query count
+# Count as fail if no answer with RCODE != 0
+def calculate_failure_rate_of_packet_old(current_packet, packetloss_index, file_name, rcode_filter):
     # If already calculated, skip
     query_name_of_packet = extract_query_name_from_packet(current_packet).lower()
 
@@ -1199,7 +1066,6 @@ def initialize_packet_lists(file_prefix):
                         print(f"Skipping _: {query_name}")
                         continue
 
-
                     # DNS is case-insensitive, some resolvers might send queries with different cases,
                     # use case insensitivity with re.IGNORECASE
                     query_match = re.search("\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$",
@@ -1254,17 +1120,17 @@ def loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode
         print(f"  INDEX/Packetloss rate: {index}")
         for packet in packets:
             latency = calculate_latency_of_packet(packet, file_name, rcode_filter)
-            calculate_failure_rate_of_packet(packet, index, file_name, rcode_filter)
+            # calculate_failure_rate_of_packet(packet, index, file_name, rcode_filter)
             if latency is not None:
                 append_item_to_nth_value_of_dict(latencyData, index, latency)
 
-            current_retransmission_count = calculate_retransmission_of_query_overall(packet, index, file_name)
+            # current_retransmission_count = calculate_retransmission_of_query_overall(packet, index, file_name)
             # current_max = get_nth_value_of_dict(max_retransmission_count_for_all_pl, index)
             # if current_retransmission_count > current_max:
             #     set_nth_value_of_dict(max_retransmission_count_for_all_pl, index, current_retransmission_count)
-            if current_retransmission_count is not None:
-                # Store retransmission count in the global dictionary with all packetloss rates
-                append_item_to_nth_value_of_dict(retransmission_counts_for_all_pl, index, current_retransmission_count)
+            # if current_retransmission_count is not None:
+            #     # Store retransmission count in the global dictionary with all packetloss rates
+            #     append_item_to_nth_value_of_dict(retransmission_counts_for_all_pl, index, current_retransmission_count)
 
         index += 1
 
@@ -1300,8 +1166,8 @@ def dst_ip_match(packet, ip_list):
 # Clears all the lists etc. so that the next plotting
 # doesn't read info from the previous json files
 def prepare_for_next_iteration():
-    global retransmission_counts_of_resolver_pl
-    reset_multi_dict_to_item(retransmission_counts_of_resolver_pl, [])
+    #global retransmission_counts_of_resolver_pl
+    #reset_multi_dict_to_item(retransmission_counts_of_resolver_pl, [])
 
     global retransmission_counts_for_all_pl
     reset_values_of_dict_to_empty_list(retransmission_counts_for_all_pl)
@@ -1367,7 +1233,6 @@ def get_index_of_packetloss_rate(pl_rate):
 def loop_all_packets_get_all_query_names():
     global auth_query_names
     global all_packets
-    global allPacketsOfClient
     global allPacketsOfAuth
 
     print(f"       Filling auth_query_names")
@@ -1378,6 +1243,7 @@ def loop_all_packets_get_all_query_names():
         list_of_auth_query_names_with_pl = get_nth_value_of_dict(auth_query_names, pl_index)
         if qry_name not in list_of_auth_query_names_with_pl:
             append_item_to_nth_value_of_dict(auth_query_names, pl_index, qry_name)
+    print(f"       Done Filling auth_query_names")
 
 
 # Create a bar plot showing how many queries are not sent to the auth server
@@ -1503,21 +1369,9 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit, upper_limit, direct
                             log_scale_y_axis)
     create_overall_latency_violin_plot(directory_name, file_name, bottom_limit, upper_limit,
                                        log_scale_y_axis)
-    create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, 100)
-    create_overall_bar_plot_total_retransmission(directory_name, file_name, bottom_limit, upper_limit,
-                                                 use_limits=False)
-
-    create_overall_violin_plot_retransmission(directory_name, file_name)
+    # create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, 100)
 
     prepare_for_next_iteration()
-
-    filters = ""
-
-    filters += ("_" + str(rcode))
-
-    if filters == "":
-        filters = "NoFilter"
-
 
 
 # List that store unique query names for each packetloss rate
@@ -1553,7 +1407,7 @@ rcodes_to_get = "valid+servfails"
 # "servfails"" -> Calculate latencies of ONLY ServFails
 
 bottom_limit = 0
-upper_limit = 30
+upper_limit = 20
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 

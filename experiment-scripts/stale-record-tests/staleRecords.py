@@ -223,25 +223,28 @@ def send_queries_to_resolvers(ip_list_of_resolvers, sleep_time_after_send, pl_ra
             resolver.timeout = 10
             resolver.lifetime = 10
             # Measure the time of the DNS response (Optional)
-            start_time = time.time()
+            # start_time = time.time()
             # Note: if multiple prints are used, other processes might print in between them
-            print(f"      ({counter +1 }) Sending Query")
+            print(f"      ({counter + 1}) Sending Query")
             try:
                 answers = resolver.resolve(query_name, "A")
             except Exception:
-                print(f"      ({counter}) Exception or timeout occurred for {query_name} ")
+                print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
                 answers = None
-            measured_time = time.time() - start_time
-            print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
+            # measured_time = time.time() - start_time
+            # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
-            print(f"Current time: {datetime.utcnow()}")
-            # Show the DNS response annd TTL time
-            if answers is not None:
-                print(f"TTL of Answer: {answer.rrset.ttl}")
-                print(f"RRset:")
-                if answers.rrset is not None:
-                    print("        ", end="")
-                    print(answers.rrset)
+            # print(f"Query sent at: {datetime.utcnow()}")
+            # try:
+            #     # Show the DNS response and TTL time
+            #     if answers is not None:
+            #         print(f"TTL of Answer: {answers.rrset.ttl}")
+            #         print(f"RRset:")
+            #         if answers.rrset is not None:
+            #             print("        ", end="")
+            #             print(answers.rrset)
+            # except Exception:
+            #     print(f"Error when showing results")
 
             # Sleep after sending a query to the same resolver to not spam the resolver
             time.sleep(sleep_time_after_send)

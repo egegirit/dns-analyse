@@ -249,13 +249,6 @@ def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
-def build_query_from_pl_rate(packetloss_rate):
-    query = "stale-" + str(packetloss_rate) + ".packetloss.syssec-research.mmci.uni-saarland.de"
-    print(f"  Built query: {query}")
-    return query
-
-
-# Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
 def build_query(packetloss_rate, ip_addr, generated_tokens):
     ip_addr_with_dashes = ip_addr.replace(".", "-")
     query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + \

@@ -33,6 +33,7 @@ requested_probe_count = 830
 interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
 directory_name_of_logs = "packet_capture_logs"
 file_name_of_msm_logs = "measurement-logs.txt"
+timeout_value = 30000
 
 # Packetloss rates to be simulated on the authoritative server
 # packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
@@ -203,7 +204,7 @@ def send_query_from_probe(measurement_id, counter_value, packetloss_rate):
         set_do_bit=True,
 
         # Timeout in milliseconds
-        timeout=10000,
+        timeout=timeout_value,
         # How often to retry the measurement
         retry=0,
 

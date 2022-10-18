@@ -352,6 +352,8 @@ for current_packetloss_rate in packetloss_rates:
     # Send queries to resolvers to allow them to store the answer
     sleep_time_after_every_send = 0
 
+    print(f"PREFETCH PHASE BEGIN, SENDING QUERIES")
+
     # Context manager
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # Using list comprehension to build the results list
@@ -365,9 +367,13 @@ for current_packetloss_rate in packetloss_rates:
                                    "prefetch")
                    for current_resolver_ip in resolver_ip_addresses]
 
+    print(f"PREFETCH PHASE DONE")
+
     # Non-multithreading code
     # send_queries_to_resolvers(resolver_ip_addresses,
     #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "prefetch")
+
+    print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
 
     # Wait until we are certain that the answer which is stored in the resolver is stale
     sleep_for_seconds(sleep_time_until_stale)
@@ -383,6 +389,8 @@ for current_packetloss_rate in packetloss_rates:
     # send_queries_to_resolvers(resolver_ip_addresses,
     #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "stale")
 
+    print(f"STALE PHASE BEGIN, SENDING QUERIES")
+
     # Context manager
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # Using list comprehension to build the results list
@@ -395,6 +403,9 @@ for current_packetloss_rate in packetloss_rates:
                                    generated_chars,
                                    "stale")
                    for current_resolver_ip in resolver_ip_addresses]
+
+    print(f"STALE PHASE DONE")
+    print(f"Sleeping for {sleep_time_until_stale} seconds between packetloss rate configs (Cooldown)")
 
     # Cooldown between packetloss configurations
     sleep_for_seconds(sleep_time_between_packetloss_config)

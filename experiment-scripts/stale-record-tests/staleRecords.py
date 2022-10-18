@@ -295,7 +295,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
         f.write(a_records)
     f.close()
 
-    print(f"Created A record for {zone_type}, {pl_rate} Packetloss rate:\n")
+    print(f"\nCreated A record for {zone_type}, {pl_rate} Packetloss rate:")
     print(created_A_record)
 
     # Reload bind/dns services
@@ -333,7 +333,7 @@ print(f"Current time: {datetime.utcnow()}")
 
 for current_packetloss_rate in packetloss_rates:
 
-    print(f"Current Packetloss Rate: {current_packetloss_rate}")
+    print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}")
 
     # Start packet capture
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
@@ -345,7 +345,7 @@ for current_packetloss_rate in packetloss_rates:
     # Send queries to resolvers to allow them to store the answer
     sleep_time_after_every_send = 0
 
-    print(f"PREFETCH PHASE BEGIN, SENDING QUERIES")
+    print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
     # Context manager
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -360,7 +360,7 @@ for current_packetloss_rate in packetloss_rates:
                                    "prefetch")
                    for current_resolver_ip in resolver_ip_addresses]
 
-    print(f"PREFETCH PHASE DONE")
+    print(f"\nPREFETCH PHASE DONE\n")
 
     # Non-multithreading code
     # send_queries_to_resolvers(resolver_ip_addresses,
@@ -382,7 +382,7 @@ for current_packetloss_rate in packetloss_rates:
     # send_queries_to_resolvers(resolver_ip_addresses,
     #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "stale")
 
-    print(f"STALE PHASE BEGIN, SENDING QUERIES")
+    print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
     # Context manager
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -397,7 +397,7 @@ for current_packetloss_rate in packetloss_rates:
                                    "stale")
                    for current_resolver_ip in resolver_ip_addresses]
 
-    print(f"STALE PHASE DONE")
+    print(f"\nSTALE PHASE DONE\n")
     print(f"Sleeping for {sleep_time_until_stale} seconds between packetloss rate configs (Cooldown)")
 
     # Cooldown between packetloss configurations

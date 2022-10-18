@@ -195,59 +195,57 @@ def create_folder(directory_name):
 
 
 # TODO
-def calculate_prefetch_query_count(ip_addr):
-    query_count = 15
-    if ip_addr == "8.8.8.8" or ip_addr == "8.8.4.4":
-        query_count = 20
-
-    return query_count
+def calculate_prefetch_query_count(ip_addr, phase):
+    global count_of_prefetch_queries
+    if phase == "prefetch":
+        return count_of_prefetch_queries
+    elif phase == "stale":
+        return 1
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
 # Todo: multithreading, send queries to resolvers parallel
-def send_queries_to_resolvers(ip_list_of_resolvers, sleep_time_after_send, pl_rate, generated_tokens):
-    # print(f"   IP Addresses to send: {ip_list_of_resolvers}\n")
-    for ip_addr in ip_list_of_resolvers:
-        print(f"\n  Sending query to IP: {ip_addr}")
-        query_count = calculate_prefetch_query_count(ip_addr)
-        print(f"  Query Amount to send to the resolver: {query_count}")
+def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase):
+    print(f"\n  Sending query to IP: {ip_addr}")
+    query_count = calculate_prefetch_query_count(ip_addr, phase)
+    print(f"  Query Amount to send to the resolver: {query_count}")
 
-        for counter in range(query_count):
-            query_name = build_query(pl_rate, ip_addr, generated_tokens)
-            print(f"   Query name: {query_name}")
+    for counter in range(query_count):
+        query_name = build_query(pl_rate, ip_addr, generated_tokens)
+        print(f"   Query name: {query_name}")
 
-            resolver = dns.resolver.Resolver()
-            # Set the resolver IP Address
-            resolver.nameservers = [ip_addr]
-            # Set the timeout of the query
-            resolver.timeout = 10
-            resolver.lifetime = 10
-            # Measure the time of the DNS response (Optional)
-            # start_time = time.time()
-            # Note: if multiple prints are used, other processes might print in between them
-            print(f"      ({counter + 1}) Sending Query")
-            try:
-                answers = resolver.resolve(query_name, "A")
-            except Exception:
-                print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
-                answers = None
-            # measured_time = time.time() - start_time
-            # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
+        resolver = dns.resolver.Resolver()
+        # Set the resolver IP Address
+        resolver.nameservers = [ip_addr]
+        # Set the timeout of the query
+        resolver.timeout = 10
+        resolver.lifetime = 10
+        # Measure the time of the DNS response (Optional)
+        # start_time = time.time()
+        # Note: if multiple prints are used, other processes might print in between them
+        print(f"      ({counter + 1}) Sending Query")
+        try:
+            answers = resolver.resolve(query_name, "A")
+        except Exception:
+            print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
+            answers = None
+        # measured_time = time.time() - start_time
+        # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
-            # print(f"Query sent at: {datetime.utcnow()}")
-            # try:
-            #     # Show the DNS response and TTL time
-            #     if answers is not None:
-            #         print(f"TTL of Answer: {answers.rrset.ttl}")
-            #         print(f"RRset:")
-            #         if answers.rrset is not None:
-            #             print("        ", end="")
-            #             print(answers.rrset)
-            # except Exception:
-            #     print(f"Error when showing results")
+        # print(f"Query sent at: {datetime.utcnow()}")
+        # try:
+        #     # Show the DNS response and TTL time
+        #     if answers is not None:
+        #         print(f"TTL of Answer: {answers.rrset.ttl}")
+        #         print(f"RRset:")
+        #         if answers.rrset is not None:
+        #             print("        ", end="")
+        #             print(answers.rrset)
+        # except Exception:
+        #     print(f"Error when showing results")
 
-            # Sleep after sending a query to the same resolver to not spam the resolver
-            time.sleep(sleep_time_after_send)
+        # Sleep after sending a query to the same resolver to not spam the resolver
+        time.sleep(sleep_time_after_send)
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
@@ -345,7 +343,8 @@ for current_packetloss_rate in packetloss_rates:
     print(f"Current Packetloss Rate: {current_packetloss_rate}")
 
     # Start packet capture
-    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name, client_interface_name)
+    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
+                                              client_interface_name)
 
     # Set the right zone file for the prefetching phase
     switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
@@ -354,18 +353,21 @@ for current_packetloss_rate in packetloss_rates:
     sleep_time_after_every_send = 0
 
     # Context manager
-    #with concurrent.futures.ProcessPoolExecutor() as executor:
-    #    # Using list comprehension to build the results list
-    #    # submit() schedules the callable to be executed and returns a
-    #    # future object representing the execution of the callable.
-    #    results = [executor.submit(send_queries_to_resolvers, [count_of_prefetch_queries,
-    #                                                         query_name_to_send,
-    #                                                         current_resolver_ip,
-    #                                                         sleep_time_after_every_send])
-    #               for current_resolver_ip in resolver_ip_addresses]
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Using list comprehension to build the results list
+        # submit() schedules the callable to be executed and returns a
+        # future object representing the execution of the callable.
+        results = [executor.submit(send_queries_to_resolvers,
+                                   current_resolver_ip,
+                                   sleep_time_after_every_send,
+                                   current_packetloss_rate,
+                                   generated_chars,
+                                   "prefetch")
+                   for current_resolver_ip in resolver_ip_addresses]
 
-    send_queries_to_resolvers(resolver_ip_addresses,
-                              sleep_time_after_every_send, current_packetloss_rate, generated_chars)
+    # Non-multithreading code
+    # send_queries_to_resolvers(resolver_ip_addresses,
+    #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "prefetch")
 
     # Wait until we are certain that the answer which is stored in the resolver is stale
     sleep_for_seconds(sleep_time_until_stale)
@@ -377,19 +379,22 @@ for current_packetloss_rate in packetloss_rates:
     switch_zone_file("stale", generated_chars, current_packetloss_rate)
 
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-    send_queries_to_resolvers(resolver_ip_addresses,
-                              sleep_time_after_every_send, current_packetloss_rate, generated_chars)
+    # Non-Multithreading code
+    # send_queries_to_resolvers(resolver_ip_addresses,
+    #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "stale")
 
     # Context manager
-    # with concurrent.futures.ProcessPoolExecutor() as executor:
-    #    # Using list comprehension to build the results list
-    #    # submit() schedules the callable to be executed and returns a
-    #    # future object representing the execution of the callable.
-    #    results = [executor.submit(send_queries_to_resolvers, [1,
-    #                                                         query_name_to_send,
-    #                                                         current_resolver_ip,
-    #                                                         sleep_time_after_every_send])
-    #               for current_resolver_ip in resolver_ip_addresses]
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Using list comprehension to build the results list
+        # submit() schedules the callable to be executed and returns a
+        # future object representing the execution of the callable.
+        results = [executor.submit(send_queries_to_resolvers,
+                                   current_resolver_ip,
+                                   sleep_time_after_every_send,
+                                   current_packetloss_rate,
+                                   generated_chars,
+                                   "stale")
+                   for current_resolver_ip in resolver_ip_addresses]
 
     # Cooldown between packetloss configurations
     sleep_for_seconds(sleep_time_between_packetloss_config)

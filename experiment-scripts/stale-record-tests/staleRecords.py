@@ -199,6 +199,8 @@ def compress_log_files(directory_name):
     except Exception:
         print("  Exception occurred while compressing the packet capture files !!")
 
+    print("Compressing done")
+    
 
 # Create directory to store the packet capture log files
 def create_folder(directory_name):
@@ -375,7 +377,7 @@ print(f"Current time: {datetime.utcnow()}")
 
 for current_packetloss_rate in packetloss_rates:
 
-    print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}")
+    print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}%")
 
     # Start packet capture
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,

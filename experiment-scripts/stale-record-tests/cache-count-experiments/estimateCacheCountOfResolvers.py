@@ -30,14 +30,14 @@ resolver_ip_addresses = [
 
 skip_to_next = False
 
-file_name = "cache_count_logs_3.txt"
+file_name = "cache_count_logs_4.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "216-146-35-35-5-pl70.packetloss.syssec-research.mmci.uni-saarland.de"
+query_name = "156-154-70-1-2-pl10.packetloss.syssec-research.mmci.uni-saarland.de"
 sleep_time = 2
 max_ttl_of_record = 86400
 query_count = 35
@@ -128,8 +128,8 @@ def send_queries():
 
             time.sleep(sleep_time)
 
-        print(f"Done sending queries to {ip_addr}\n")
-        f.write(f"Done sending queries to {ip_addr}\n\n")
+        print(f"\nDone sending queries to {ip_addr}\n")
+        f.write(f"\nDone sending queries to {ip_addr}\n\n")
 
         temp_list = ttl_list.copy()
         same_query = 0
@@ -151,7 +151,9 @@ def send_queries():
                         index_of_same_origin = x
                         same_query += 1
                         calculated_ttls.append(ttl_list[y])
-                        temp_list.remove(ttl_list[y])
+                        if y < len(temp_list) and ttl_list[y] in temp_list:
+                            del temp_list[y]
+                            # temp_list.remove(ttl_list[y])
             if found_same_query:
                 calculated_ttls.append(ttl_list[index_of_same_origin])
                 temp_list.remove(ttl_list[index_of_same_origin])
@@ -170,9 +172,9 @@ def send_queries():
         print(f"  Estimated cache count of {ip_addr}: {count_of_fresh_caches}\n")
         f.write(f"  Estimated cache count of {ip_addr}: {count_of_fresh_caches}\n\n")
 
-    print(f"\nClosing file...\n")
-    f.write(f"\nClosing file...\n\n")
+    f.write(f"\nEND\n")
     f.close()
+    print(f"\nEND\n")
     sys.exit()
 
 

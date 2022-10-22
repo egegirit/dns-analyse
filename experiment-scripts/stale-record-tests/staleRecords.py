@@ -14,13 +14,17 @@ from datetime import datetime
 # Execute this script as root user #
 ####################################
 
-# Time to wait after one domain query is sent to all resolver IP Addresses
-# (Sleeping time between counters)
+# Time to wait after one query is sent to a resolver IP Addresses
 sleep_time_between_counters = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 # Time to sleep in order the answer to become stale on the resolver
 sleep_time_until_stale = 10
+
+# The probability that we will hit all the caches of the resolver.
+# This probability is used to calculate the query count to send to the resolver
+# in the prefetch phase
+cache_hit_probability = 0.95
 
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
@@ -34,10 +38,6 @@ directory_name_of_logs = "packet_capture_logs"
 
 # Packetloss rates to be simulated on the authoritative server
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
-
-# The amount of the query we will send to the resolver to
-# make the resolver cache the answer to this query
-count_of_prefetch_queries = 30
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
@@ -60,6 +60,28 @@ resolver_ip_addresses = [
     "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
     "77.88.8.8",  # Yandex 2   (secondary.dns.yandex.ru )
 ]
+
+# Define how many caches does the resolver have
+caches_of_resolvers = {
+    "94.140.14.14": 1,  # AdGuard 1
+    "94.140.14.15": 1,  # AdGuard 2
+    "185.228.168.168": 5,  # CleanBrowsing 1
+    "185.228.168.9": 5,  # CleanBrowsing 2
+    "1.1.1.1": 18,  # Cloudflare 1
+    "1.0.0.1": 18,  # Cloudflare 2
+    "216.146.35.35": 3,  # Dyn 1
+    "216.146.36.36": 3,  # Dyn 2
+    "8.8.8.8": 9,  # Google 1
+    "8.8.4.4": 9,  # Google 2
+    "64.6.64.6": 3,  # Neustar 1
+    "156.154.70.1": 3,  # Neustar 2
+    "208.67.222.222": 16,  # OpenDNS 1
+    "208.67.222.2": 16,  # OpenDNS 2
+    "9.9.9.9": 8,  # Quad9 1
+    "9.9.9.11": 8,  # Quad9 2
+    "77.88.8.1": 10,  # Yandex 1
+    "77.88.8.8": 10,  # Yandex 2
+}
 
 
 # Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
@@ -194,20 +216,46 @@ def create_folder(directory_name):
         print(f"Folder not created.")
 
 
-# TODO
-def calculate_prefetch_query_count(ip_addr, phase, pl_rate):
-    global count_of_prefetch_queries
+def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resolver, desired_probability):
+    query_count = 1
+
+    print(f"{ip_addr} has {cache_count_of_resolver} caches")
+
+    # cache_i_missed_total = ((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count
+    cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
+    # print(
+    #     f"Probability of Cache_i is missed with {query_count} query:  ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
+    #     f"{query_count} = {cache_i_missed_total}")
+    # print(
+    #     f"Probability of Cache_i is hit with {query_count} query:     1 - ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
+    #     f"{query_count} = {cache_i_hit_total}\n")
+
+    while cache_i_hit_total < desired_probability:
+        # print(f"Probability of total cache hit was not {desired_probability * 100}%")
+        # print(f"  Incrementing query count from {query_count} to {query_count + 1}")
+        query_count += 1
+        cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
+        # print(
+        #     f"  New probability of Cache hit with {query_count} query:  1 - ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
+        #     f"{query_count} = {cache_i_hit_total}\n")
+
+    print(f"{desired_probability * 100}% Probability is met with {query_count} queries.")
+    return query_count
+
+
+def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability):
+    global caches_of_resolvers
     if phase == "prefetch":
-        return count_of_prefetch_queries
+        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + 1
     elif phase == "stale":
         return 1
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
 # Todo: multithreading, send queries to resolvers parallel
-def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase):
+def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase, desired_probability):
     print(f"\n  Sending query to IP: {ip_addr}")
-    query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate)
+    query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
     for counter in range(query_count):
@@ -354,7 +402,8 @@ for current_packetloss_rate in packetloss_rates:
                                    sleep_time_between_counters,
                                    current_packetloss_rate,
                                    generated_chars,
-                                   "prefetch")
+                                   "prefetch",
+                                   cache_hit_probability)
                    for current_resolver_ip in resolver_ip_addresses]
 
     print(f"\nPREFETCH PHASE DONE\n")
@@ -391,7 +440,8 @@ for current_packetloss_rate in packetloss_rates:
                                    sleep_time_between_counters,
                                    current_packetloss_rate,
                                    generated_chars,
-                                   "stale")
+                                   "stale",
+                                   cache_hit_probability)
                    for current_resolver_ip in resolver_ip_addresses]
 
     print(f"\nSTALE PHASE DONE\n")

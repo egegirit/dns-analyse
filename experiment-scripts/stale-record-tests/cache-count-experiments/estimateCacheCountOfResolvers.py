@@ -30,17 +30,17 @@ resolver_ip_addresses = [
 
 skip_to_next = False
 
-file_name = "cache_count_logs_4.txt"
+file_name = "cache_count_logs_300.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "8-8-8-8-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de"
+query_name = "securitycharms.com"  # "8-8-8-8-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de"
 sleep_time = 2
-max_ttl_of_record = 86400
-query_count = 35
+max_ttl_of_record = 300
+query_count = 40
 
 print(f"Current time: {datetime.utcnow()}")
 f.write(f"Current time: {datetime.utcnow()}\n")
@@ -131,44 +131,44 @@ def send_queries():
         print(f"\nDone sending queries to {ip_addr}\n")
         f.write(f"\nDone sending queries to {ip_addr}\n\n")
 
-        temp_list = ttl_list.copy()
-        same_query = 0
-        calculated_ttls = []
+        #temp_list = ttl_list.copy()
+        #same_query = 0
+        #calculated_ttls = []
 
-        for x in range(len(ttl_list)):
-            if ttl_list[x] in calculated_ttls:
-                continue
+        #for x in range(len(ttl_list)):
+        #    if ttl_list[x] in calculated_ttls:
+        #        continue
 
-            found_same_query = False
-            index_of_same_origin = 0
-            for y in range(len(ttl_list)):
-                if x == y:
-                    continue
-                else:
-                    diff = abs(x - y)
-                    if diff * sleep_time == abs(ttl_list[x] - ttl_list[y]):
-                        found_same_query = True
-                        index_of_same_origin = x
-                        same_query += 1
-                        calculated_ttls.append(ttl_list[y])
-                        # TODO: when an item is deleted, all indexes after that item changes -> Fix?
-                        if y < len(temp_list) and ttl_list[y] in temp_list:
-                            del temp_list[y]
-                            # temp_list.remove(ttl_list[y])
-            if found_same_query:
-                calculated_ttls.append(ttl_list[index_of_same_origin])
-                if index_of_same_origin < len(temp_list) and ttl_list[index_of_same_origin] in temp_list:
-                    temp_list.remove(ttl_list[index_of_same_origin])
-                    del temp_list[index_of_same_origin]
+        #    found_same_query = False
+        #    index_of_same_origin = 0
+        #    for y in range(len(ttl_list)):
+        #        if x == y:
+        #            continue
+        #        else:
+        #            diff = abs(x - y)
+        #            if diff * sleep_time == abs(ttl_list[x] - ttl_list[y]):
+        #                found_same_query = True
+        #                index_of_same_origin = x
+        #                same_query += 1
+        #                calculated_ttls.append(ttl_list[y])
+        #                # TODO: when an item is deleted, all indexes after that item changes -> Fix?
+        #                if y < len(temp_list) and ttl_list[y] in temp_list:
+        #                    del temp_list[y]
+        #                    # temp_list.remove(ttl_list[y])
+        #    if found_same_query:
+        #        calculated_ttls.append(ttl_list[index_of_same_origin])
+        #        if index_of_same_origin < len(temp_list) and ttl_list[index_of_same_origin] in temp_list:
+        #            temp_list.remove(ttl_list[index_of_same_origin])
+        #            del temp_list[index_of_same_origin]
 
-        print(f"Unique Query TTLs: {temp_list}")
-        print(f"TTLs of Same Queries: {calculated_ttls}")
-        print(f"Same Query count: {same_query}")
-        print(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}")
-        f.write(f"Unique Query TTLs: {temp_list}\n")
-        f.write(f"TTLs of Same Queries: {calculated_ttls}\n")
-        f.write(f"Same Query count: {same_query}\n\n")
-        f.write(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}\n\n")
+        #print(f"Unique Query TTLs: {temp_list}")
+        #print(f"TTLs of Same Queries: {calculated_ttls}")
+        #print(f"Same Query count: {same_query}")
+        #print(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}")
+        #f.write(f"Unique Query TTLs: {temp_list}\n")
+        #f.write(f"TTLs of Same Queries: {calculated_ttls}\n")
+        #f.write(f"Same Query count: {same_query}\n\n")
+        #f.write(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}\n\n")
 
         print(f"\n  Observed Max TTL count of {ip_addr}: {count_of_max_ttl}")
         f.write(f"\n  Observed Max TTL count of {ip_addr}: {count_of_max_ttl}\n")

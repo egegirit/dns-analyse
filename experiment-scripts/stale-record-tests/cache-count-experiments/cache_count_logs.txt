@@ -1,0 +1,164 @@
+Press "a" to skip the current Resolver IP
+
+  Current Open Resolver: 94.140.14.14
+(0): 86400, First (Max?) TTL for 94.140.14.14 set to 86400, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 86398, (2): 86396, (3): 86394, (4): 86392, (5): 86390, (6): 86388, (7): 86386, (8): 86384, (9): 86382, (10): 86380, (11): 86378, (12): 86376, (13): 86374, (14): 86372, (15): 86370, (16): 86368, (17): 86366, (18): 86364, (19): 86362, (20): 86360, (21): 86358, (22): 86356, (23): 86354, (24): 86352, (25): 86350, (26): 86348, (27): 86346, (28): 86343, (29): 86342, (30): 86339, (31): 86338, (32): 86336, (33): 86333, (34): 86332, (35): 86330, (36): 86327, (37): 86326, (38): 86323, (39): 86321, (40): 86319, (41): 86317, (42): 86315, (43): 86314, (44): 86311, (45): 86309, (46): 86307, (47): 86305, (48): 86303, (49): 86301, 
+  Observed Max TTL count of 94.140.14.14: 1
+  Estimated cache count of 94.140.14.14: 1
+
+
+  Current Open Resolver: 94.140.14.15
+(0): 86299, First (Max?) TTL for 94.140.14.15 set to 86299, 
+  Possible shared cache or reduced cache TTL for: 94.140.14.15 
+
+Observed Max TTL count incremented: 1, (1): 86297, (2): 86295, (3): 86293, (4): 86291, (5): 86289, (6): 86287, (7): 86285, (8): 86283, (9): 86281, (10): 86279, (11): 86277, (12): 86275, (13): 86273, (14): 86271, (15): 86269, (16): 86267, (17): 86265, (18): 86263, (19): 86261, (20): 86259, (21): 86257, (22): 86255, (23): 86253, (24): 86251, (25): 86249, (26): 86247, (27): 86245, (28): 86243, (29): 86241, (30): 86239, (31): 86237, (32): 86235, (33): 86233, (34): 86231, (35): 86229, (36): 86227, (37): 86225, (38): 86223, (39): 86220, (40): 86219, (41): 86216, (42): 86214, (43): 86212, (44): 86211, (45): 86209, (46): 86207, (47): 86205, (48): 86203, (49): 86201, 
+  Observed Max TTL count of 94.140.14.15: 1
+  Estimated cache count of 94.140.14.15: 0
+
+
+  Current Open Resolver: 185.228.168.168
+(0): 86400, First (Max?) TTL for 185.228.168.168 set to 86400, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 86400, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 86396, (3): 86396, (4): 86394, (5): 86390, (6): 86390, (7): 86386, (8): 86386, (9): 86384, (10): 86382, (11): 86378, (12): 86400, Cache count incremented: 3, Observed Max TTL count incremented: 3, (13): 86374, (14): 86396, (15): 86370, (16): 86392, (17): 86390, (18): 86364, (19): 86386, (20): 86360, (21): 86382, (22): 86380, (23): 86378, (24): 86352, (25): 86400, Cache count incremented: 4, Observed Max TTL count incremented: 4, (26): 86348, (27): 86396, (28): 86394, (29): 86342, (30): 86390, (31): 86338, (32): 86336, (33): 86384, (34): 86382, (35): 86380, (36): 86378, (37): 86326, (38): 86324, (39): 86372, (40): 86370, (41): 86368, (42): 86366, (43): 86314, (44): 86312, (45): 86310, (46): 86308, (47): 86400, Cache count incremented: 5, Observed Max TTL count incremented: 5, (48): 86398, (49): 86396, 
+  Observed Max TTL count of 185.228.168.168: 5
+  Estimated cache count of 185.228.168.168: 5
+
+
+  Current Open Resolver: 185.228.168.9
+(0): 86300, First (Max?) TTL for 185.228.168.9 set to 86300, 
+  Possible shared cache or reduced cache TTL for: 185.228.168.9 
+
+Observed Max TTL count incremented: 1, (1): 86392, (2): 86296, (3): 86388, (4): 86292, (5): 86289, (6): 86287, (7): 86379, (8): 86377, (9): 86281, (10): 86279, (11): 86277, (12): 86369, (13): 86367, (14): 86365, (15): 86269, (16): 86361, (17): 86265, (18): 86357, (19): 86355, (20): 86353, (21): 86257, (22): 86255, (23): 86347, (24): 86345, (25): 86343, (26): 86247, (27): 86245, (28): 86337, (29): 86335, (30): 86333, (31): 86237, (32): 86329, (33): 86327, (34): 86231, (35): 86323, (36): 86321, (37): 86225, (38): 86317, (39): 86315, (40): 86313, (41): 86217, (42): 86309, (43): 86307, (44): 86400, Cache count incremented: 1, (45): 86398, (46): 86301, (47): 86299, (48): 86297, (49): 86295, 
+  Observed Max TTL count of 185.228.168.9: 1
+  Estimated cache count of 185.228.168.9: 1
+
+
+  Current Open Resolver: 1.1.1.1
+(0): 172800, First (Max?) TTL for 1.1.1.1 set to 172800, 
+  Possible shared cache or reduced cache TTL for: 1.1.1.1 
+
+Observed Max TTL count incremented: 1, (1): 172800, Observed Max TTL count incremented: 2, (2): 172800, Observed Max TTL count incremented: 3, (3): 172800, Observed Max TTL count incremented: 4, (4): 172798, (5): 172800, Observed Max TTL count incremented: 5, (6): 172794, (7): 172800, Observed Max TTL count incremented: 6, (8): 172800, Observed Max TTL count incremented: 7, (9): 172800, Observed Max TTL count incremented: 8, (10): 172800, Observed Max TTL count incremented: 9, (11): 172788, (12): 172782, (13): 172784, (14): 172800, Observed Max TTL count incremented: 10, (15): 172780, (16): 172800, Observed Max TTL count incremented: 11, (17): 172794, (18): 172800, Observed Max TTL count incremented: 12, (19): 172800, Observed Max TTL count incremented: 13, (20): 172798, (21): 172764, (22): 172800, Observed Max TTL count incremented: 14, (23): 172800, Observed Max TTL count incremented: 15, (24): 172800, Observed Max TTL count incremented: 16, (25): 172800, Observed Max TTL count incremented: 17, (26): 172758, (27): 172756, (28): 172800, Observed Max TTL count incremented: 18, (29): 172770, (30): 172796, (31): 172758, (32): 172784, (33): 172754, (34): 172800, Observed Max TTL count incremented: 19, (35): 172780, (36): 172796, (37): 172794, (38): 172734, (39): 172790, (40): 172748, (41): 172774, (42): 172726, (43): 172752, (44): 172750, (45): 172720, (46): 172746, (47): 172774, (48): 172742, (49): 172734, 
+  Observed Max TTL count of 1.1.1.1: 19
+  Estimated cache count of 1.1.1.1: 0
+
+
+  Current Open Resolver: 1.0.0.1
+(0): 172710, First (Max?) TTL for 1.0.0.1 set to 172710, 
+  Possible shared cache or reduced cache TTL for: 1.0.0.1 
+
+Observed Max TTL count incremented: 1, (1): 172766, (2): 172752, (3): 172722, (4): 172702, (5): 172728, (6): 172756, (7): 172742, (8): 172734, (9): 172702, (10): 172700, (11): 172746, (12): 172686, (13): 172706, (14): 172720, (15): 172680, (16): 172718, (17): 172694, (18): 172720, (19): 172712, (20): 172666, (21): 172668, (22): 172688, (23): 172674, (24): 172690, (25): 172660, (26): 172654, (27): 172666, (28): 172682, (29): 172662, (30): 172688, (31): 172670, (32): 172674, (33): 172662, (34): 172664, (35): 172686, (36): 172666, (37): 172682, (38): 172680, (39): 172670, (40): 172648, (41): 172666, (42): 172672, (43): 172646, (44): 172650, (45): 172642, (46): 172636, (47): 172662, (48): 172614, (49): 172630, 
+  Observed Max TTL count of 1.0.0.1: 1
+  Estimated cache count of 1.0.0.1: 0
+
+
+  Current Open Resolver: 216.146.35.35
+(0): 3600, First (Max?) TTL for 216.146.35.35 set to 3600, 
+  Possible shared cache or reduced cache TTL for: 216.146.35.35 
+
+Observed Max TTL count incremented: 1, (1): 3598, (2): 3600, Observed Max TTL count incremented: 2, (3): 3598, (4): 3592, (5): 3590, (6): 3592, (7): 3590, (8): 3584, (9): 3582, (10): 3584, (11): 3582, (12): 3579, (13): 3577, (14): 3571, (15): 3600, Observed Max TTL count incremented: 3, (16): 3567, (17): 3569, (18): 3567, (19): 3561, (20): 3590, (21): 3561, (22): 3586, (23): 3553, (24): 3555, (25): 3580, (26): 3578, (27): 3545, (28): 3547, (29): 3545, (30): 3543, (31): 3537, (32): 3539, (33): 3533, (34): 3531, (35): 3560, (36): 3558, (37): 3556, (38): 3527, (39): 3525, (40): 3523, (41): 3548, (42): 3519, (43): 3517, (44): 3542, (45): 3509, (46): 3538, (47): 3505, (48): 3534, (49): 3505, 
+  Observed Max TTL count of 216.146.35.35: 3
+  Estimated cache count of 216.146.35.35: 0
+
+
+  Current Open Resolver: 216.146.36.36
+(0): 3503, First (Max?) TTL for 216.146.36.36 set to 3503, 
+  Possible shared cache or reduced cache TTL for: 216.146.36.36 
+
+Observed Max TTL count incremented: 1, (1): 3528, (2): 3499, (3): 3493, (4): 3495, (5): 3489, (6): 3487, (7): 3489, (8): 3483, (9): 3481, (10): 3479, (11): 3477, (12): 3506, (13): 3504, (14): 3502, (15): 3469, (16): 3467, (17): 3469, (18): 3463, (19): 3465, (20): 3490, (21): 3488, (22): 3455, (23): 3457, (24): 3455, (25): 3480, (26): 3478, (27): 3449, (28): 3446, (29): 3444, (30): 3442, (31): 3467, (32): 3465, (33): 3432, (34): 3434, (35): 3428, (36): 3430, (37): 3428, (38): 3453, (39): 3424, (40): 3449, (41): 3420, (42): 3414, (43): 3416, (44): 3441, (45): 3412, (46): 3437, (47): 3408, (48): 3406, (49): 3404, 
+  Observed Max TTL count of 216.146.36.36: 1
+  Estimated cache count of 216.146.36.36: 0
+
+
+  Current Open Resolver: 8.8.8.8
+(0): 21600, First (Max?) TTL for 8.8.8.8 set to 21600, 
+  Possible shared cache or reduced cache TTL for: 8.8.8.8 
+
+Observed Max TTL count incremented: 1, (1): 21600, Observed Max TTL count incremented: 2, (2): 21596, (3): 21600, Observed Max TTL count incremented: 3, (4): 21600, Observed Max TTL count incremented: 4, (5): 21592, (6): 21600, Observed Max TTL count incremented: 5, (7): 21594, (8): 21600, Observed Max TTL count incremented: 6, (9): 21600, Observed Max TTL count incremented: 7, (10): 21586, (11): 21596, (12): 21578, (13): 21576, (14): 21580, (15): 21600, Observed Max TTL count incremented: 8, (16): 21576, (17): 21566, (18): 21576, (19): 21568, (20): 21566, (21): 21560, (22): 21564, (23): 21554, (24): 21558, (25): 21552, (26): 21566, (27): 21564, (28): 21562, (29): 21554, (30): 21547, (31): 21567, (32): 21553, (33): 21539, (34): 21537, (35): 21535, (36): 21545, (37): 21555, (38): 21529, (39): 21537, (40): 21521, (41): 21529, (42): 21545, (43): 21521, (44): 21513, (45): 21509, (46): 21525, (47): 21511, (48): 21509, (49): 21501, 
+  Observed Max TTL count of 8.8.8.8: 8
+  Estimated cache count of 8.8.8.8: 0
+
+
+  Current Open Resolver: 8.8.4.4
+(0): 21507, First (Max?) TTL for 8.8.4.4 set to 21507, 
+  Possible shared cache or reduced cache TTL for: 8.8.4.4 
+
+Observed Max TTL count incremented: 1, (1): 21503, (2): 21507, Observed Max TTL count incremented: 2, (3): 21509, (4): 21509, (5): 21507, Observed Max TTL count incremented: 3, (6): 21493, (7): 21485, (8): 21495, (9): 21483, (10): 21491, (11): 21485, (12): 21491, (13): 21491, (14): 21471, (15): 21477, (16): 21485, (17): 21477, (18): 21471, (19): 21467, (20): 21459, (21): 21475, (22): 21461, (23): 21459, (24): 21453, (25): 21467, (26): 21455, (27): 21457, (28): 21461, (29): 21471, (30): 21457, (31): 21445, (32): 21437, (33): 21451, (34): 21439, (35): 21445, (36): 21443, (37): 21425, (38): 21441, (39): 21427, (40): 21425, (41): 21423, (42): 21415, (43): 21443, (44): 21422, (45): 21438, (46): 21424, (47): 21412, (48): 21420, (49): 21418, 
+  Observed Max TTL count of 8.8.4.4: 3
+  Estimated cache count of 8.8.4.4: 0
+
+
+  Current Open Resolver: 64.6.64.6
+(0): 43200, First (Max?) TTL for 64.6.64.6 set to 43200, 
+  Possible shared cache or reduced cache TTL for: 64.6.64.6 
+
+Observed Max TTL count incremented: 1, (1): 43200, Observed Max TTL count incremented: 2, (2): 43198, (3): 43196, (4): 43192, (5): 43200, Observed Max TTL count incremented: 3, (6): 43198, (7): 43186, (8): 43186, (9): 43184, (10): 43190, (11): 43178, (12): 43176, (13): 43174, (14): 43174, (15): 43170, (16): 43168, (17): 43166, (18): 43164, (19): 43164, (20): 43170, (21): 43160, (22): 43166, (23): 43156, (24): 43162, (25): 43150, (26): 43148, (27): 43146, (28): 43154, (29): 43142, (30): 43142, (31): 43148, (32): 43146, (33): 43136, (34): 43132, (35): 43132, (36): 43128, (37): 43126, (38): 43126, (39): 43124, (40): 43130, (41): 43128, (42): 43125, (43): 43123, (44): 43113, (45): 43119, (46): 43117, (47): 43115, (48): 43105, (49): 43103, 
+  Observed Max TTL count of 64.6.64.6: 3
+  Estimated cache count of 64.6.64.6: 0
+
+
+  Current Open Resolver: 156.154.70.1
+(0): 43099, First (Max?) TTL for 156.154.70.1 set to 43099, 
+  Possible shared cache or reduced cache TTL for: 156.154.70.1 
+
+Observed Max TTL count incremented: 1, (1): 43099, Observed Max TTL count incremented: 2, (2): 43105, (3): 43095, (4): 43091, (5): 43099, Observed Max TTL count incremented: 3, (6): 43097, (7): 43095, (8): 43093, (9): 43091, (10): 43081, (11): 43077, (12): 43075, (13): 43075, (14): 43081, (15): 43069, (16): 43069, (17): 43067, (18): 43063, (19): 43063, (20): 43059, (21): 43059, (22): 43065, (23): 43063, (24): 43051, (25): 43059, (26): 43047, (27): 43047, (28): 43045, (29): 43041, (30): 43039, (31): 43047, (32): 43045, (33): 43033, (34): 43031, (35): 43029, (36): 43027, (37): 43035, Exception or timeout occurred for 185-228-168-9-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de 
+(39): 43013, (40): 43019, (41): 43009, (42): 43007, (43): 43005, (44): 43003, (45): 43001, (46): 42997, (47): 43005, (48): 42995, (49): 42993, 
+  Observed Max TTL count of 156.154.70.1: 3
+  Estimated cache count of 156.154.70.1: 0
+
+
+  Current Open Resolver: 208.67.222.222
+(0): 172800, First (Max?) TTL for 208.67.222.222 set to 172800, 
+  Possible shared cache or reduced cache TTL for: 208.67.222.222 
+
+Observed Max TTL count incremented: 1, (1): 172800, Observed Max TTL count incremented: 2, (2): 172800, Observed Max TTL count incremented: 3, (3): 172800, Observed Max TTL count incremented: 4, (4): 172800, Observed Max TTL count incremented: 5, (5): 172800, Observed Max TTL count incremented: 6, (6): 172793, (7): 172787, (8): 172800, Observed Max TTL count incremented: 7, (9): 172785, (10): 172787, (11): 172781, (12): 172800, Observed Max TTL count incremented: 8, (13): 172775, (14): 172782, (15): 172780, (16): 172773, (17): 172767, (18): 172780, (19): 172800, Observed Max TTL count incremented: 9, (20): 172765, (21): 172756, (22): 172794, (23): 172752, (24): 172753, (25): 172753, (26): 172800, Observed Max TTL count incremented: 10, (27): 172761, (28): 172749, (29): 172745, (30): 172749, (31): 172762, (32): 172745, (33): 172800, Observed Max TTL count incremented: 11, (34): 172798, (35): 172781, (36): 172800, Observed Max TTL count incremented: 12, (37): 172735, (38): 172724, (39): 172728, (40): 172743, (41): 172800, Observed Max TTL count incremented: 13, (42): 172725, (43): 172765, (44): 172712, (45): 172800, Observed Max TTL count incremented: 14, (46): 172774, (47): 172800, Observed Max TTL count incremented: 15, (48): 172701, (49): 172753, 
+  Observed Max TTL count of 208.67.222.222: 15
+  Estimated cache count of 208.67.222.222: 0
+
+
+  Current Open Resolver: 208.67.222.2
+(0): 172714, First (Max?) TTL for 208.67.222.2 set to 172714, 
+  Possible shared cache or reduced cache TTL for: 208.67.222.2 
+
+Observed Max TTL count incremented: 1, (1): 172700, (2): 172777, (3): 172800, (4): 172757, (5): 172704, (6): 172687, (7): 172736, (8): 172749, (9): 172747, (10): 172786, (11): 172683, (12): 172690, (13): 172696, (14): 172694, (15): 172741, (16): 172669, (17): 172756, (18): 172672, (19): 172684, (20): 172668, (21): 172663, (22): 172749, (23): 172704, (24): 172689, (25): 172672, (26): 172649, (27): 172654, (28): 172725, (29): 172643, (30): 172648, (31): 172652, (32): 172701, (33): 172637, (34): 172633, (35): 172644, (36): 172642, (37): 172627, (38): 172674, (39): 172687, (40): 172628, (41): 172699, (42): 172612, (43): 172636, (44): 172611, (45): 172615, (46): 172609, (47): 172671, (48): 172654, (49): 172695, 
+  Observed Max TTL count of 208.67.222.2: 1
+  Estimated cache count of 208.67.222.2: 0
+
+
+  Current Open Resolver: 9.9.9.9
+(0): 43200, First (Max?) TTL for 9.9.9.9 set to 43200, 
+  Possible shared cache or reduced cache TTL for: 9.9.9.9 
+
+Observed Max TTL count incremented: 1, (1): 43200, Observed Max TTL count incremented: 2, (2): 43200, Observed Max TTL count incremented: 3, (3): 43194, (4): 43200, Observed Max TTL count incremented: 4, (5): 43190, (6): 43200, Observed Max TTL count incremented: 5, (7): 43186, (8): 43188, (9): 43186, (10): 43180, (11): 43200, Observed Max TTL count incremented: 6, (12): 43176, (13): 43176, (14): 43194, (15): 43174, (16): 43172, (17): 43174, (18): 43168, (19): 43170, (20): 43160, (21): 43158, (22): 43156, (23): 43172, (24): 43148, (25): 43146, Exception or timeout occurred for 185-228-168-9-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de 
+Exception or timeout occurred for 185-228-168-9-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de 
+(28): 43120, (29): 43118, (30): 43118, (31): 43116, (32): 43134, (33): 43110, (34): 43112, (35): 43106, (36): 43104, (37): 43104, (38): 43100, (39): 43102, (40): 43104, (41): 43101, (42): 43099, (43): 43093, (44): 43095, (45): 43085, (46): 43200, Observed Max TTL count incremented: 7, (47): 43081, (48): 43083, (49): 43077, 
+  Observed Max TTL count of 9.9.9.9: 7
+  Estimated cache count of 9.9.9.9: 0
+
+
+  Current Open Resolver: 9.9.9.11
+(0): 28800, First (Max?) TTL for 9.9.9.11 set to 28800, 
+  Possible shared cache or reduced cache TTL for: 9.9.9.11 
+
+Observed Max TTL count incremented: 1, (1): 28800, Observed Max TTL count incremented: 2, (2): 28798, (3): 28796, (4): 28792, (5): 28790, (6): 28800, Observed Max TTL count incremented: 3, (7): 28800, Observed Max TTL count incremented: 4, (8): 28800, Observed Max TTL count incremented: 5, (9): 28794, (10): 28800, Observed Max TTL count incremented: 6, (11): 28778, (12): 28787, (13): 28785, (14): 28787, (15): 28771, (16): 28783, (17): 28765, (18): 28777, (19): 28777, (20): 28761, (21): 28773, (22): 28771, (23): 28755, Exception or timeout occurred for 185-228-168-9-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de 
+(25): 28751, (26): 28753, (27): 28747, (28): 28745, (29): 28751, (30): 28743, (31): 28741, (32): 28741, (33): 28725, (34): 28741, (35): 28733, (36): 28731, (37): 28727, (38): 28727, (39): 28800, Observed Max TTL count incremented: 7, (40): 28706, (41): 28724, (42): 28714, (43): 28714, (44): 28714, (45): 28708, (46): 28712, (47): 28706, (48): 28704, (49): 28778, 
+  Observed Max TTL count of 9.9.9.11: 7
+  Estimated cache count of 9.9.9.11: 0
+
+
+  Current Open Resolver: 77.88.8.1
+(0): 72859, First (Max?) TTL for 77.88.8.1 set to 72859, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.1 
+
+Observed Max TTL count incremented: 1, (1): 69051, (2): 73934, (3): 71970, (4): 85752, (5): 68253, (6): 60405, (7): 65169, (8): 52480, (9): 81033, (10): 49990, (11): 80320, (12): 64882, (13): 80804, (14): 67979, (15): 79773, (16): 43916, (17): 74187, (18): 51301, (19): 80607, (20): 59644, (21): 84528, (22): 52867, (23): 80859, (24): 77984, (25): 74225, (26): 67167, (27): 59934, (28): 50412, (29): 49090, (30): 47221, (31): 64178, (32): 82372, (33): 78195, (34): 86315, (35): 74613, (36): 48897, (37): 58932, (38): 80406, (39): 72743, (40): 76808, (41): 64941, (42): 78817, (43): 76407, (44): 75986, (45): 74173, (46): 51258, (47): 64727, (48): 56388, (49): 71157, 
+  Observed Max TTL count of 77.88.8.1: 1
+  Estimated cache count of 77.88.8.1: 0
+
+
+  Current Open Resolver: 77.88.8.8
+(0): 81970, First (Max?) TTL for 77.88.8.8 set to 81970, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.8 
+
+Observed Max TTL count incremented: 1, (1): 76034, (2): 53804, (3): 45564, (4): 46532, (5): 46288, (6): 84594, (7): 79661, (8): 47996, (9): 84009, (10): 54915, (11): 50033, (12): 79139, (13): 65302, (14): 46128, (15): 80496, (16): 45486, (17): 43615, (18): 68450, (19): 54855, (20): 83519, (21): 45319, (22): 49220, (23): 58000, (24): 64508, (25): 64903, (26): 67148, (27): 47101, (28): 52766, (29): 44221, (30): 49205, (31): 50316, (32): 85578, (33): 48377, (34): 52059, (35): 45391, (36): 84534, (37): 75853, (38): 76886, (39): 65728, (40): 61539, (41): 82397, (42): 82362, (43): 71903, (44): 46196, (45): 48374, (46): 65059, (47): 74889, (48): 63146, (49): 44041, 
+  Observed Max TTL count of 77.88.8.8: 1
+  Estimated cache count of 77.88.8.8: 0
+
+
+Closing file...
+

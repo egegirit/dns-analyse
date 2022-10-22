@@ -195,7 +195,7 @@ def create_folder(directory_name):
 
 
 # TODO
-def calculate_prefetch_query_count(ip_addr, phase):
+def calculate_prefetch_query_count(ip_addr, phase, pl_rate):
     global count_of_prefetch_queries
     if phase == "prefetch":
         return count_of_prefetch_queries
@@ -207,7 +207,7 @@ def calculate_prefetch_query_count(ip_addr, phase):
 # Todo: multithreading, send queries to resolvers parallel
 def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase):
     print(f"\n  Sending query to IP: {ip_addr}")
-    query_count = calculate_prefetch_query_count(ip_addr, phase)
+    query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
     for counter in range(query_count):
@@ -233,16 +233,16 @@ def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated
         # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
         # print(f"Query sent at: {datetime.utcnow()}")
-        # try:
-        #     # Show the DNS response and TTL time
-        #     if answers is not None:
-        #         print(f"TTL of Answer: {answers.rrset.ttl}")
+        try:
+            # Show the DNS response and TTL time
+            if answers is not None:
+                print(f"TTL of Answer ({counter + 1}): {answers.rrset.ttl}")
         #         print(f"RRset:")
         #         if answers.rrset is not None:
         #             print("        ", end="")
         #             print(answers.rrset)
-        # except Exception:
-        #     print(f"Error when showing results")
+        except Exception:
+            print(f"Error when showing results of ({counter + 1}) {query_name}")
 
         # Sleep after sending a query to the same resolver to not spam the resolver
         time.sleep(sleep_time_after_send)
@@ -342,9 +342,6 @@ for current_packetloss_rate in packetloss_rates:
     # Set the right zone file for the prefetching phase
     switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
 
-    # Send queries to resolvers to allow them to store the answer
-    sleep_time_after_every_send = 0
-
     print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
     # Context manager
@@ -354,7 +351,7 @@ for current_packetloss_rate in packetloss_rates:
         # future object representing the execution of the callable.
         results = [executor.submit(send_queries_to_resolvers,
                                    current_resolver_ip,
-                                   sleep_time_after_every_send,
+                                   sleep_time_between_counters,
                                    current_packetloss_rate,
                                    generated_chars,
                                    "prefetch")
@@ -364,7 +361,7 @@ for current_packetloss_rate in packetloss_rates:
 
     # Non-multithreading code
     # send_queries_to_resolvers(resolver_ip_addresses,
-    #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "prefetch")
+    #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "prefetch")
 
     print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
 
@@ -380,7 +377,7 @@ for current_packetloss_rate in packetloss_rates:
     # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
     # Non-Multithreading code
     # send_queries_to_resolvers(resolver_ip_addresses,
-    #                           sleep_time_after_every_send, current_packetloss_rate, generated_chars, "stale")
+    #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "stale")
 
     print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
@@ -391,7 +388,7 @@ for current_packetloss_rate in packetloss_rates:
         # future object representing the execution of the callable.
         results = [executor.submit(send_queries_to_resolvers,
                                    current_resolver_ip,
-                                   sleep_time_after_every_send,
+                                   sleep_time_between_counters,
                                    current_packetloss_rate,
                                    generated_chars,
                                    "stale")

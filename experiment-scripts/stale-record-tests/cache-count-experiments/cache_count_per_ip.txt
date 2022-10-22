@@ -1,0 +1,50 @@
+Adguard:
+
+	Estimated cache count of 94.140.14.14: 1
+	Estimated cache count of 94.140.14.15: 0
+	(Shared cache)	
+
+CleanBrowsing:
+	Estimated cache count of 185.228.168.168: 5
+	Estimated cache count of 185.228.168.9: 1	
+	(Shared cache)
+	
+Cloudflare:
+	Estimated cache count of 1.1.1.1: 18
+	Estimated cache count of 1.0.0.1: 0
+	(Shared cache)
+
+Dyn:
+	Estimated cache count of 216.146.35.35: 3
+	Estimated cache count of 216.146.36.36: 0
+	(Shared cache)
+
+Google:
+	Estimated cache count of 8.8.8.8: 8
+	Estimated cache count of 8.8.4.4: 0
+	(Shared cache)
+
+	
+Neustar:
+	Estimated cache count of 64.6.64.6: 3
+	Estimated cache count of 156.154.70.1: 0
+	(Shared cache)
+
+
+OpenDNS:
+	Estimated cache count of 208.67.222.222: 15
+	Estimated cache count of 208.67.222.2: 1
+	(Shared cache)
+
+
+Quad9:
+	Estimated cache count of 9.9.9.9: 7
+	Estimated cache count of 9.9.9.11: 7 -> No shared cache, but different TTL reducing
+
+
+Yandex:
+	Estimated cache count of 77.88.8.1: 0
+	Estimated cache count of 77.88.8.8: 0
+	(SHARED CACHE WITH ANOTHER OPERATOR?)
+
+

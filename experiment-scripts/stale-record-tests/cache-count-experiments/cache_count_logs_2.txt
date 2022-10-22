@@ -1,0 +1,49 @@
+Current time: 2022-10-21 23:33:20.661983
+Press "a" to skip the current Resolver IP
+
+  Current Open Resolver: 94.140.14.14
+(0): 86400, First (Max?) TTL for 94.140.14.14 set to 86400, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 86399, (2): 86398, (3): 86397, (4): 86396, (5): 86395, (6): 86394, (7): 86393, (8): 86392, (9): 86391, (10): 86390, (11): 86389, (12): 86388, (13): 86387, (14): 86386, (15): 86385, (16): 86384, (17): 86383, (18): 86382, (19): 86381, 
+  Observed Max TTL count of 94.140.14.14: 1
+  Estimated cache count of 94.140.14.14: 1
+
+
+  Current Open Resolver: 94.140.14.15
+(0): 86380, First (Max?) TTL for 94.140.14.15 set to 86380, 
+  Possible shared cache or reduced cache TTL for: 94.140.14.15 
+
+Observed Max TTL count incremented: 1, (1): 86379, (2): 86378, (3): 86377, (4): 86376, (5): 86375, (6): 86374, (7): 86373, (8): 86372, (9): 86371, (10): 86370, (11): 86369, (12): 86367, (13): 86366, (14): 86365, (15): 86364, (16): 86364, (17): 86362, (18): 86362, (19): 86360, 
+  Observed Max TTL count of 94.140.14.15: 1
+  Estimated cache count of 94.140.14.15: 0
+
+
+  Current Open Resolver: 77.88.8.1
+(0): 83665, First (Max?) TTL for 77.88.8.1 set to 83665, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.1 
+
+Observed Max TTL count incremented: 1, (1): 52997, (2): 64786, (3): 43773, (4): 79847, (5): 48393, (6): 60718, (7): 72922, (8): 66171, (9): 63895, (10): 46542, (11): 67404, (12): 85934, (13): 79517, (14): 68751, (15): 53307, (16): 44377, (17): 66492, (18): 69983, (19): 76675, 
+  Observed Max TTL count of 77.88.8.1: 1
+  Estimated cache count of 77.88.8.1: 0
+
+
+Closing file...
+
+Current time: 2022-10-21 23:36:47.897328
+Press "a" to skip the current Resolver IP
+
+  Current Open Resolver: 185.228.168.168
+(0): 86400, First (Max?) TTL for 185.228.168.168 set to 86400, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 86399, (2): 86398, (3): 86400, Cache count incremented: 2, Observed Max TTL count incremented: 2, (4): 86395, (5): 86394, (6): 86393, (7): 86392, (8): 86391, (9): 86394, (10): 86393, (11): 86392, (12): 86391, (13): 86386, (14): 86389, (15): 86388, (16): 86383, (17): 86382, (18): 86381, (19): 86384, 
+  Observed Max TTL count of 185.228.168.168: 2
+  Estimated cache count of 185.228.168.168: 2
+
+
+  Current Open Resolver: 77.88.8.1
+(0): 60950, First (Max?) TTL for 77.88.8.1 set to 60950, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.1 
+
+Observed Max TTL count incremented: 1, (1): 52205, (2): 63797, (3): 83365, (4): 67538, (5): 66549, (6): 73767, (7): 60667, (8): 52161, (9): 80436, (10): 53391, (11): 66439, (12): 65537, (13): 75375, (14): 79864, (15): 48518, (16): 67404, (17): 66803, (18): 45985, (19): 65038, 
+  Observed Max TTL count of 77.88.8.1: 1
+  Estimated cache count of 77.88.8.1: 0
+
+
+Closing file...
+

@@ -37,7 +37,7 @@ resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "156-154-70-1-2-pl10.packetloss.syssec-research.mmci.uni-saarland.de"
+query_name = "8-8-8-8-4-pl30.packetloss.syssec-research.mmci.uni-saarland.de"
 sleep_time = 2
 max_ttl_of_record = 86400
 query_count = 35
@@ -151,12 +151,15 @@ def send_queries():
                         index_of_same_origin = x
                         same_query += 1
                         calculated_ttls.append(ttl_list[y])
+                        # TODO: when an item is deleted, all indexes after that item changes -> Fix?
                         if y < len(temp_list) and ttl_list[y] in temp_list:
                             del temp_list[y]
                             # temp_list.remove(ttl_list[y])
             if found_same_query:
                 calculated_ttls.append(ttl_list[index_of_same_origin])
-                temp_list.remove(ttl_list[index_of_same_origin])
+                if index_of_same_origin < len(temp_list) and ttl_list[index_of_same_origin] in temp_list:
+                    temp_list.remove(ttl_list[index_of_same_origin])
+                    del temp_list[index_of_same_origin]
 
         print(f"Unique Query TTLs: {temp_list}")
         print(f"TTLs of Same Queries: {calculated_ttls}")

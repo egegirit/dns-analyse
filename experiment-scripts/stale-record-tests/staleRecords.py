@@ -137,9 +137,6 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
 def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface):
-    # DF (don't fragment) bit set (IP)
-    # Example filter:
-    # 'ip[6] & 64 != 64'
 
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
@@ -252,7 +249,6 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
-# Todo: multithreading, send queries to resolvers parallel
 def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase, desired_probability):
     print(f"\n  Sending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
@@ -373,8 +369,6 @@ def generate_random_characters(length):
 create_folder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
-
-# TODO: Multithreading for each resolver IP Address we have
 
 generated_chars = generate_random_characters(3)
 print(f"Current time: {datetime.utcnow()}")

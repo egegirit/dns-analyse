@@ -185,6 +185,16 @@ Next, test that the build step completes successfully, but without installing th
 $ make
 
 
+RNDC Configuration for bind:
+
+https://www.ibm.com/support/pages/how-setup-rndc-bind-9
+https://serverfault.com/questions/221250/fixing-bind9-rndc-error-connection-to-remote-host-closed
+
+# Automatic configuration of rndc. Creates a file rndc.key in the directory that BIND is installed:
+$ rndc-confgen -a -k rndckey
+# restart BIND:
+$ /etc/init.d/named restart
+
 ======= Bind 9 Documentation ========
 
 BIND 9 uses a single configuration file called named.conf. named.conf is typically located in either /etc/namedb or /usr/local/etc/namedb.

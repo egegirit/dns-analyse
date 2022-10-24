@@ -200,7 +200,7 @@ def compress_log_files(directory_name):
         print("  Exception occurred while compressing the packet capture files !!")
 
     print("Compressing done")
-    
+
 
 # Create directory to store the packet capture log files
 def create_folder(directory_name):

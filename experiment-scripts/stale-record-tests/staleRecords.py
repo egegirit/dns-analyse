@@ -5,7 +5,6 @@ import time
 import os
 import signal
 import dns.resolver
-import dns.reversename
 import string
 import random
 from datetime import datetime
@@ -194,6 +193,7 @@ def compress_log_files(directory_name):
     compress_files_command = f"zip -r logs.zip {directory_name}"
     print("Compressing all log files into a logs.zip file with the following command:")
     print("  " + compress_files_command)
+    print("Compressing...")
     try:
         subprocess.run(compress_files_command, shell=True, stdout=subprocess.PIPE, check=True)
     except Exception:

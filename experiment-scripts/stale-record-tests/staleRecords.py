@@ -20,7 +20,10 @@ sleep_time_between_packetloss_config = 600
 # Time to sleep in order the answer to become stale on the resolver
 sleep_time_until_stale = 10
 
-# TODO
+# How many A records there are for each IP
+count_of_a_records = 5
+
+# How many times the experiment should run
 experiment_count = 5
 
 # The probability that we will hit all the caches of the resolver.
@@ -138,19 +141,19 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
 
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
-def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface):
+def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface, generated_chars):
 
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
-    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth1_{auth_interface}_{current_packetloss_rate}.pcap -nnn -i {auth_interface} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_1 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_auth_{auth_interface}_{current_packetloss_rate}_{generated_chars}.pcap -nnn -i {auth_interface} "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
         f"  (1) Running packet capture on {auth_interface} interface with the following command:"
     )
     print("    " + packet_capture_command_1)
 
     # Packet capture on client interface
-    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{client_interface}_{current_packetloss_rate}.pcap -nnn -i {client_interface} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
+    packet_capture_command_2 = f'sudo tcpdump -w ./{directory_name_of_logs}/tcpdump_log_client_{client_interface}_{current_packetloss_rate}_{generated_chars}.pcap -nnn -i {client_interface} "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"'
     print(
         f"  (2) Running packet capture on {client_interface} interface with the following command:"
     )
@@ -264,48 +267,50 @@ def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
-    for counter in range(query_count):
-        query_name = build_query(pl_rate, ip_addr, generated_tokens)
-        print(f"   Query name: {query_name}")
+    for a_record_counter in range(count_of_a_records):
+        print(f"\n  Current A record counter: {a_record_counter}")
+        for counter in range(query_count):
+            query_name = build_query(pl_rate, ip_addr, generated_tokens, a_record_counter)
+            print(f"   Query name: {query_name}")
 
-        resolver = dns.resolver.Resolver()
-        # Set the resolver IP Address
-        resolver.nameservers = [ip_addr]
-        # Set the timeout of the query
-        resolver.timeout = 10
-        resolver.lifetime = 10
-        # Measure the time of the DNS response (Optional)
-        # start_time = time.time()
-        # Note: if multiple prints are used, other processes might print in between them
-        print(f"      ({counter + 1}) Sending Query")
-        try:
-            answers = resolver.resolve(query_name, "A")
-        except Exception:
-            print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
-            answers = None
-        # measured_time = time.time() - start_time
-        # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
+            resolver = dns.resolver.Resolver()
+            # Set the resolver IP Address
+            resolver.nameservers = [ip_addr]
+            # Set the timeout of the query
+            resolver.timeout = 10
+            resolver.lifetime = 10
+            # Measure the time of the DNS response (Optional)
+            # start_time = time.time()
+            # Note: if multiple prints are used, other processes might print in between them
+            print(f"      ({counter + 1}) Sending Query")
+            try:
+                answers = resolver.resolve(query_name, "A")
+            except Exception:
+                print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
+                answers = None
+            # measured_time = time.time() - start_time
+            # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
-        # print(f"Query sent at: {datetime.utcnow()}")
-        try:
-            # Show the DNS response and TTL time
-            if answers is not None:
-                print(f"TTL of Answer ({counter + 1}): {answers.rrset.ttl}")
-        #         print(f"RRset:")
-        #         if answers.rrset is not None:
-        #             print("        ", end="")
-        #             print(answers.rrset)
-        except Exception:
-            print(f"Error when showing results of ({counter + 1}) {query_name}")
+            # print(f"Query sent at: {datetime.utcnow()}")
+            try:
+                # Show the DNS response and TTL time
+                if answers is not None:
+                    print(f"TTL of Answer ({counter + 1}): {answers.rrset.ttl}")
+            #         print(f"RRset:")
+            #         if answers.rrset is not None:
+            #             print("        ", end="")
+            #             print(answers.rrset)
+            except Exception:
+                print(f"Error when showing results of ({counter + 1}) {query_name}")
 
-        # Sleep after sending a query to the same resolver to not spam the resolver
-        time.sleep(sleep_time_after_send)
+            # Sleep after sending a query to the same resolver to not spam the resolver
+            time.sleep(sleep_time_after_send)
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
-def build_query(packetloss_rate, ip_addr, generated_tokens):
+def build_query(packetloss_rate, ip_addr, generated_tokens, counter):
     ip_addr_with_dashes = ip_addr.replace(".", "-")
-    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + \
+    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + "-" + str(counter) + \
             ".packetloss.syssec-research.mmci.uni-saarland.de"
     print(f"  Built query: {query}")
     return query
@@ -341,12 +346,14 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
     f = open('active.zone', 'a')
 
     for ip_addr in resolver_ip_addresses:
-        ip_addr_with_dashes = ip_addr.replace(".", "-")
+        for c in range(count_of_a_records):
 
-        a_records = "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
-            generated_tokens) + "\tIN\tA\t139." + a_record_end + "\n"
-        created_A_record += a_records
-        f.write(a_records)
+            ip_addr_with_dashes = ip_addr.replace(".", "-")
+
+            a_records = "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
+                generated_tokens) + "-" + str(c) + "\tIN\tA\t139." + a_record_end + "\n"
+            created_A_record += a_records
+            f.write(a_records)
     f.close()
 
     print(f"\nCreated A record for {zone_type}, {pl_rate} Packetloss rate:")
@@ -380,92 +387,96 @@ create_folder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
 
-generated_chars = generate_random_characters(3)
-print(f"Current time: {datetime.utcnow()}")
+for current_experiment_count in range(experiment_count):
+    print(f"\n**** Experiment count: {current_experiment_count} ****")
+    print(f"Current time: {datetime.utcnow()}")
 
-for current_packetloss_rate in packetloss_rates:
+    generated_chars = generate_random_characters(3)
+    print(f"Generated random tokens: {generated_chars}")
 
-    print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}%")
+    for current_packetloss_rate in packetloss_rates:
 
-    # Start packet capture
-    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
-                                              client_interface_name)
+        print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}%")
 
-    # Set the right zone file for the prefetching phase
-    switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
+        # Start packet capture
+        capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
+                                                  client_interface_name, generated_chars)
 
-    print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
+        # Set the right zone file for the prefetching phase
+        switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
 
-    # Context manager
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        # Using list comprehension to build the results list
-        # submit() schedules the callable to be executed and returns a
-        # future object representing the execution of the callable.
-        results = [executor.submit(send_queries_to_resolvers,
-                                   current_resolver_ip,
-                                   sleep_time_between_counters,
-                                   current_packetloss_rate,
-                                   generated_chars,
-                                   "prefetch",
-                                   cache_hit_probability)
-                   for current_resolver_ip in resolver_ip_addresses]
+        print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
-    print(f"\nPREFETCH PHASE DONE\n")
+        # Context manager
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            # Using list comprehension to build the results list
+            # submit() schedules the callable to be executed and returns a
+            # future object representing the execution of the callable.
+            results = [executor.submit(send_queries_to_resolvers,
+                                       current_resolver_ip,
+                                       sleep_time_between_counters,
+                                       current_packetloss_rate,
+                                       generated_chars,
+                                       "prefetch",
+                                       cache_hit_probability)
+                       for current_resolver_ip in resolver_ip_addresses]
 
-    # Non-multithreading code
-    # send_queries_to_resolvers(resolver_ip_addresses,
-    #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "prefetch")
+        print(f"\nPREFETCH PHASE DONE\n")
 
-    print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
+        # Non-multithreading code
+        # send_queries_to_resolvers(resolver_ip_addresses,
+        #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "prefetch")
 
-    # Wait until we are certain that the answer which is stored in the resolver is stale
-    sleep_for_seconds(sleep_time_until_stale)
+        print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
 
-    # Simulate packetloss on authoritative Server
-    simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
+        # Wait until we are certain that the answer which is stored in the resolver is stale
+        sleep_for_seconds(sleep_time_until_stale)
 
-    # Set the right zone file for the phase after the answer is stale
-    switch_zone_file("stale", generated_chars, current_packetloss_rate)
+        # Simulate packetloss on authoritative Server
+        simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
-    # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-    # Non-Multithreading code
-    # send_queries_to_resolvers(resolver_ip_addresses,
-    #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "stale")
+        # Set the right zone file for the phase after the answer is stale
+        switch_zone_file("stale", generated_chars, current_packetloss_rate)
 
-    print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
+        # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
+        # Non-Multithreading code
+        # send_queries_to_resolvers(resolver_ip_addresses,
+        #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "stale")
 
-    # Context manager
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        # Using list comprehension to build the results list
-        # submit() schedules the callable to be executed and returns a
-        # future object representing the execution of the callable.
-        results = [executor.submit(send_queries_to_resolvers,
-                                   current_resolver_ip,
-                                   sleep_time_between_counters,
-                                   current_packetloss_rate,
-                                   generated_chars,
-                                   "stale",
-                                   cache_hit_probability)
-                   for current_resolver_ip in resolver_ip_addresses]
+        print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
-    print(f"\nSTALE PHASE DONE\n")
-    print(f"Sleeping for {sleep_time_until_stale} seconds between packetloss rate configs (Cooldown)")
+        # Context manager
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            # Using list comprehension to build the results list
+            # submit() schedules the callable to be executed and returns a
+            # future object representing the execution of the callable.
+            results = [executor.submit(send_queries_to_resolvers,
+                                       current_resolver_ip,
+                                       sleep_time_between_counters,
+                                       current_packetloss_rate,
+                                       generated_chars,
+                                       "stale",
+                                       cache_hit_probability)
+                       for current_resolver_ip in resolver_ip_addresses]
 
-    # Cooldown between packetloss configurations
-    sleep_for_seconds(sleep_time_between_packetloss_config)
+        print(f"\nSTALE PHASE DONE\n")
+        print(f"Sleeping for {sleep_time_until_stale} seconds between packetloss rate configs (Cooldown)")
 
-    # Terminate packet captures / all created processes
-    print(f"  Stopping packet capture")
-    # Using .terminate() doesn't stop the packet capture
-    if len(capture_processes) > 0:
-        for process in capture_processes:
-            try:
-                # Send the SIGTERM signal to all the process groups
-                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-            except Exception:
-                print(f"    Exception while terminating tcpdump")
-        print(f"    Sleeping for 1 seconds for tcpdump to terminate")
-        sleep_for_seconds(1)
+        # Cooldown between packetloss configurations
+        sleep_for_seconds(sleep_time_between_packetloss_config)
+
+        # Terminate packet captures / all created processes
+        print(f"  Stopping packet capture")
+        # Using .terminate() doesn't stop the packet capture
+        if len(capture_processes) > 0:
+            for process in capture_processes:
+                try:
+                    # Send the SIGTERM signal to all the process groups
+                    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                except Exception:
+                    print(f"    Exception while terminating tcpdump")
+            print(f"    Sleeping for 1 seconds for tcpdump to terminate")
+            sleep_for_seconds(1)
 
 print("\n==== Experiment ended ====\n")
 

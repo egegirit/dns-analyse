@@ -245,6 +245,9 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
 
     print(f"{desired_probability * 100}% Probability is met with {query_count} queries.")
 
+    # if query_count < minimum_prefetch_query_count:
+    #    print(f"Query count set to {minimum_prefetch_query_count} (minimum)")
+
     return min(query_count, minimum_prefetch_query_count)
 
 

@@ -254,7 +254,7 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
 def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability):
     global caches_of_resolvers
     if phase == "prefetch":
-        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability)
+        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + 10
     elif phase == "stale":
         return 10
 

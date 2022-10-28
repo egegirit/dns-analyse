@@ -25,6 +25,10 @@ sleep_time_until_stale = 10
 # in the prefetch phase
 cache_hit_probability = 0.95
 
+# The minimum number of queries to send to a resolver in the prefetch phase,
+# even when the resolver has only 1 cache.
+minimum_prefetch_query_count = 10
+
 # Minimum and maximum counter values for the domains
 counter_min = 0  # Inclusive
 counter_max = 50  # Exclusive
@@ -216,6 +220,7 @@ def create_folder(directory_name):
 
 
 def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resolver, desired_probability):
+    global minimum_prefetch_query_count
     query_count = 1
 
     print(f"{ip_addr} has {cache_count_of_resolver} caches")
@@ -239,7 +244,8 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
         #     f"{query_count} = {cache_i_hit_total}\n")
 
     print(f"{desired_probability * 100}% Probability is met with {query_count} queries.")
-    return query_count
+
+    return min(query_count, minimum_prefetch_query_count)
 
 
 def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability):
@@ -247,7 +253,7 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     if phase == "prefetch":
         return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + 1
     elif phase == "stale":
-        return 1
+        return 10
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries

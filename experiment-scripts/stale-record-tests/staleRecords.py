@@ -20,6 +20,9 @@ sleep_time_between_packetloss_config = 600
 # Time to sleep in order the answer to become stale on the resolver
 sleep_time_until_stale = 10
 
+# TODO
+experiment_count = 5
+
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
 # in the prefetch phase
@@ -28,10 +31,6 @@ cache_hit_probability = 0.95
 # The minimum number of queries to send to a resolver in the prefetch phase,
 # even when the resolver has only 1 cache.
 minimum_prefetch_query_count = 10
-
-# Minimum and maximum counter values for the domains
-counter_min = 0  # Inclusive
-counter_max = 50  # Exclusive
 
 # Set the interface names for packet capture with tcpdump
 auth_interface_name = "bond0"  # The interface of authoritative server
@@ -256,7 +255,7 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     if phase == "prefetch":
         return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + 10
     elif phase == "stale":
-        return 10
+        return 1
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries

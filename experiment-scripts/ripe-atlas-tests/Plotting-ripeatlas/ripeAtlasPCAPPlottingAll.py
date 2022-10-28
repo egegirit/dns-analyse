@@ -362,7 +362,7 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
 
 # Create bar plot to show failure rates
 # failure_rate_data is already filled when looping the packets
-def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upper_limit):
+def create_overall_bar_plot_failure(directory_name, file_name):
     print(f" Creating bar plot: {file_name}")
     print(f"   Inside the folder: {directory_name}")
 
@@ -409,7 +409,7 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
         if fail_count != 0:
             # Divide by 900 because we send 900 queries from client pro packetloss config (18 Resolver * 50 counter),
             # when you filter by an IP, you need to adjust the query_count_per_pl_rate like so:
-            # TODO
+            asdfasdfasdf
             query_count_per_pl_rate = 900 - (0 * 50)
             # print(f"query_count_per_pl_rate: {query_count_per_pl_rate}")
             # Label auf plot
@@ -445,7 +445,7 @@ def create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, upp
     plt.xlabel("Packetloss Rate")
     plt.ylabel("DNS Response Failure Rate")
     plt.title(f"Overall Response Failure Rate")
-    plt.ylim(bottom=bottom_limit, top=upper_limit)
+    plt.ylim(bottom=0, top=100)
 
     # save plot as png
     plt.savefig(directory_name + "/" + (file_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
@@ -803,9 +803,8 @@ def calculate_failure_rate_of_packet(current_packet, packetloss_index, file_name
     # If the packet is a response with no error, don't examine it, count as success
     if 'dns.flags.rcode' in current_packet['_source']['layers']['dns']['dns.flags_tree']:
         current_rcode = current_packet['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
-        if current_rcode == "0":
-            append_item_to_nth_value_of_dict(failure_rate_data, packetloss_index, "0")
-            return
+        append_item_to_nth_value_of_dict(failure_rate_data, packetloss_index, current_rcode)
+
     return
 
 
@@ -1143,7 +1142,7 @@ def loop_all_packets_latencies_failures_retransmissions_overall(file_name, rcode
         print(f"  INDEX/Packetloss rate: {index}")
         for packet in packets:
             latency = calculate_latency_of_packet(packet, file_name, rcode_filter)
-            # calculate_failure_rate_of_packet(packet, index, file_name, rcode_filter)
+            calculate_failure_rate_of_packet(packet, index, file_name, rcode_filter)
             if latency is not None:
                 append_item_to_nth_value_of_dict(latencyData, index, latency)
 
@@ -1400,7 +1399,7 @@ def create_overall_plots_for_one_filter(rcode, bottom_limit, upper_limit, direct
                             log_scale_y_axis)
     create_overall_latency_violin_plot(directory_name, file_name, bottom_limit, upper_limit,
                                        log_scale_y_axis)
-    # create_overall_bar_plot_failure(directory_name, file_name, bottom_limit, 100)
+    create_overall_bar_plot_failure(directory_name, file_name)
 
     prepare_for_next_iteration()
 

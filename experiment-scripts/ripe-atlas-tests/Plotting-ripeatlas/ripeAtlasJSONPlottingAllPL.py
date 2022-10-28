@@ -8,10 +8,8 @@ import base64
 import dns.message
 from collections import deque
 
-
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
-
 
 latencies_with_pl = {
     "latency_0": [],
@@ -27,7 +25,6 @@ latencies_with_pl = {
     "latency_90": [],
     "latency_95": [],
 }
-
 
 query_names_with_pl = {
     "query_names_0": [],
@@ -90,6 +87,38 @@ duplicate_answer_count_with_pl = {
     "duplicate_answer_count_95": 0,
 }
 
+global servfail_count_with_pl
+servfail_count_with_pl = {
+    "servfail_count_0": 0,
+    "servfail_count_10": 0,
+    "servfail_count_20": 0,
+    "servfail_count_30": 0,
+    "servfail_count_40": 0,
+    "servfail_count_50": 0,
+    "servfail_count_60": 0,
+    "servfail_count_70": 0,
+    "servfail_count_80": 0,
+    "servfail_count_85": 0,
+    "servfail_count_90": 0,
+    "servfail_count_95": 0,
+}
+
+global count_of_answers_with_pl
+count_of_answers_with_pl = {
+    "count_of_answers_0": 0,
+    "count_of_answers_10": 0,
+    "count_of_answers_20": 0,
+    "count_of_answers_30": 0,
+    "count_of_answers_40": 0,
+    "count_of_answers_50": 0,
+    "count_of_answers_60": 0,
+    "count_of_answers_70": 0,
+    "count_of_answers_80": 0,
+    "count_of_answers_85": 0,
+    "count_of_answers_90": 0,
+    "count_of_answers_95": 0,
+}
+
 def get_packetloss_index(pl_rate):
     if pl_rate == "0":
         return 0
@@ -116,6 +145,7 @@ def get_packetloss_index(pl_rate):
     if pl_rate == "95":
         return 11
     return None
+
 
 def get_pl_rate_of_index(index):
     if index == 0:
@@ -303,7 +333,8 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     # But if the list was empty and we added a dummy value, subtract it from the plot text
     data_count_string = ""
     for i in range(len(list(latencies_with_pl.values()))):
-        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(len(list(latencies_with_pl.values())[i])) + "\n"
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            len(list(latencies_with_pl.values())[i])) + "\n"
 
     # print(f"Annotate text violin plot: {data_count_string}")
 
@@ -338,6 +369,99 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     # show plot
     # plt.show()
     print(f" Created violin plot: {file_name_prefix}")
+    # Clear plots
+    plt.cla()
+    plt.close()
+
+
+# Create bar plot to show failure rates
+# failure_rate_data is already filled when looping the packets
+def create_overall_bar_plot_failure(directory_name, file_name):
+    print(f" Creating bar plot: {file_name}")
+    print(f"   Inside the folder: {directory_name}")
+
+    # Create bar plot for failure rate
+    # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
+    failure_rate_data_dict = {'0': 0, '10': 0, '20': 0, '30': 0, '40': 0, '50': 0,
+                              '60': 0, '70': 0, '80': 0, '85': 0, '90': 0, '95': 0}
+
+    failure_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+
+    # Write the failure count on the plot
+    # TODO: As dictionary
+    fail_1 = []
+    fail_2 = []
+    fail_3 = []
+    fail_4 = []
+    fail_5 = []
+    fail_6 = []
+    fail_7 = []
+    fail_8 = []
+    fail_9 = []
+    fail_10 = []
+    fail_11 = []
+    fail_12 = []
+    failure_counts = [fail_1, fail_2,
+                      fail_3,
+                      fail_4,
+                      fail_5,
+                      fail_6,
+                      fail_7,
+                      fail_8,
+                      fail_9,
+                      fail_10,
+                      fail_11,
+                      fail_12]
+
+    # The bar plot accepts a dictionary like above.
+    # This for loop extracts the saved RCODE counts and converts them to a dictionary
+    index = 0
+    for current_packetloss_rate in packetloss_rates:
+
+        current_servfail_count = servfail_count_with_pl["servfail_count_" + str(current_packetloss_rate)]
+
+        if current_servfail_count != 0:
+            # Divide by 900 because we send 900 queries from client pro packetloss config (18 Resolver * 50 counter),
+            # when you filter by an IP, you need to adjust the query_count_per_pl_rate like so:
+            query_count_per_pl_rate = count_of_answers_with_pl["count_of_answers_" + str(current_packetloss_rate)]
+            failure_counts[index] = current_servfail_count
+            failure_rate_data_dict[str(current_packetloss_rate)] = (current_servfail_count / query_count_per_pl_rate) * 100
+        else:
+            failure_counts[index] = 0
+            failure_rate_data_dict[str(current_packetloss_rate)] = 0
+        index = index + 1
+
+    keys = list(failure_rate_data_dict.keys())
+    values = list(failure_rate_data_dict.values())
+
+    print(f"Failure rates: {keys}")
+    print(f"Failure ratio: {values}")
+
+    plt.figure(figsize=(10, 5))
+    # fig = plt.figure(figsize=(10, 5))
+
+    # creating the bar plot
+    plt.bar(failure_rates, values, color='maroon', width=4)
+
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(servfail_count_with_pl)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            failure_counts[i]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11, color='r')
+    text.set_alpha(0.5)
+
+    # set labels
+    plt.xlabel("Packetloss Rate")
+    plt.ylabel("DNS Response Failure Rate")
+    plt.title(f"Overall Response Failure Rate")
+    plt.ylim(bottom=0, top=100)
+
+    # save plot as png
+    plt.savefig(directory_name + "/" + (file_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
+    # shot plot
+    # plt.show()
+    print(f" Created bar plot: {file_name}")
     # Clear plots
     plt.cla()
     plt.close()
@@ -438,13 +562,16 @@ for pl_rate in packetloss_rates:
                     query_names_with_pl["query_names_" + str(pl_rate)].append(qbuf_query_name)
 
             if "'result':" in report:
+
+                count_of_answers_with_pl["count_of_answers_" + str(pl_rate)] += 1
+
                 # print(f"Packet has result")
                 result_json = report.split("'result':")[1]
                 # print(f"result_json: {result_json}")
                 response_time = float(get_desired_attribute(report, "'rt': "))
                 # print(f"Response time: {response_time} (ms) -> {response_time/1000.0} (s)")
 
-                latencies_with_pl["latency_" + str(pl_rate)].append(response_time/1000.0)
+                latencies_with_pl["latency_" + str(pl_rate)].append(response_time / 1000.0)
 
                 abuf = get_desired_attribute(report, "'abuf': ")
                 if abuf is not None:
@@ -458,6 +585,10 @@ for pl_rate in packetloss_rates:
                     # print(f"\nABUF:\n{abuf_decoded}")
                     abuf_opcode = extract_attribute_from_buf("opcode ", abuf_decoded)
                     abuf_rcode = extract_attribute_from_buf("rcode ", abuf_decoded)
+
+                    if abuf_rcode == "SERVFAIL":
+                        servfail_count_with_pl["servfail_count_" + str(pl_rate)] += 1
+
                     abuf_question = extract_field_from_buf(';QUESTION', abuf_decoded)
                     # print(f"abuf_question: {abuf_question}")
 
@@ -472,7 +603,8 @@ for pl_rate in packetloss_rates:
                         duplicate_answer_count_with_pl["duplicate_answer_count_" + str(pl_rate)] += 1
 
                     # print(f"abuf_query_name: {abuf_query_name}")
-                    if abuf_query_name != "" and abuf_query_name not in answer_names_with_pl["answer_names_" + str(pl_rate)]:
+                    if abuf_query_name != "" and abuf_query_name not in answer_names_with_pl[
+                        "answer_names_" + str(pl_rate)]:
                         answer_names_with_pl["answer_names_" + str(pl_rate)].append(abuf_query_name)
 
             report_count += 1
@@ -530,5 +662,20 @@ for elem in duplicate_query_count_with_pl:
     print(f"Length of duplicate query count for PL {pl_rate}: {value}")
     index += 1
 
+index = 0
+for elem in servfail_count_with_pl:
+    value = list(servfail_count_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of servfail_count_with_pl for PL {pl_rate}: {value}")
+    index += 1
+
+index = 0
+for elem in count_of_answers_with_pl:
+    value = list(count_of_answers_with_pl.values())[index]
+    pl_rate = get_pl_rate_of_index(index)
+    print(f"Length of count_of_answers_with_pl for PL {pl_rate}: {value}")
+    index += 1
+
 create_overall_latency_violin_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
 create_overall_box_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
+create_overall_bar_plot_failure(directory_name_of_plots, "ripe-atlas")

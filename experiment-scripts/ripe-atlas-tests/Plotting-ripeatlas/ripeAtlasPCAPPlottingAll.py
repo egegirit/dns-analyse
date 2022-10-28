@@ -409,8 +409,7 @@ def create_overall_bar_plot_failure(directory_name, file_name):
         if fail_count != 0:
             # Divide by 900 because we send 900 queries from client pro packetloss config (18 Resolver * 50 counter),
             # when you filter by an IP, you need to adjust the query_count_per_pl_rate like so:
-            asdfasdfasdf
-            query_count_per_pl_rate = 900 - (0 * 50)
+            query_count_per_pl_rate = count_of_answers_with_pl["count_of_answers_" + str(current_packetloss_rate)]
             # print(f"query_count_per_pl_rate: {query_count_per_pl_rate}")
             # Label auf plot
             failure_counts[index] = fail_count
@@ -1035,6 +1034,22 @@ def calculate_retransmission_of_query_resolver(current_packet, packetloss_index,
         return
 
 
+global count_of_answers_with_pl
+count_of_answers_with_pl = {
+    "count_of_answers_0": 0,
+    "count_of_answers_10": 0,
+    "count_of_answers_20": 0,
+    "count_of_answers_30": 0,
+    "count_of_answers_40": 0,
+    "count_of_answers_50": 0,
+    "count_of_answers_60": 0,
+    "count_of_answers_70": 0,
+    "count_of_answers_80": 0,
+    "count_of_answers_85": 0,
+    "count_of_answers_90": 0,
+    "count_of_answers_95": 0,
+}
+
 # Read the JSON files for each captured packet and store all the dns packets
 # into the global lists
 # Filter the source and destination IP's of client for only the client packet capture
@@ -1108,6 +1123,9 @@ def initialize_packet_lists(file_prefix):
 
                     global allPacketsOfAuth
                     allPacketsOfAuth.append(json_data[i])
+
+                if 'Answers' in json_data[i]['_source']['layers']['dns']:
+                    count_of_answers_with_pl["count_of_answers_" + str(current_packetloss_rate)] += 1
 
         # Continue reading packets with the next packetloss rate JSON file
         index = index + 1

@@ -42,7 +42,7 @@ client_interface_name = "bond0"  # The interface of client
 directory_name_of_logs = "packet_capture_logs"
 
 # Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [

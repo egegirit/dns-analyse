@@ -283,6 +283,8 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
 def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired_probability):
     # global runtimes_of_multithreads
     global ttl_value_of_records
+    global sleep_time_after_every_prefetch
+    global sleep_time_after_every_stale_query
     prefetch_query_timeout = 0.1
     stale_query_timeout = 5
 
@@ -292,7 +294,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
 
     # Show a warning if the sent queries will become stale before we begin the stale phase
     if "prefetch" == phase:
-        minimum_waiting_time_of_prefetch = query_count * prefetch_query_timeout
+        minimum_waiting_time_of_prefetch = ((query_count * prefetch_query_timeout) + (query_count * sleep_time_after_every_prefetch)) * count_of_a_records
         if minimum_waiting_time_of_prefetch > ttl_value_of_records:
             print(f"Warning! Minimum runtime of stale phase is {minimum_waiting_time_of_prefetch} for {ip_addr}, which is greater than the TTL value {ttl_value_of_records}")
 

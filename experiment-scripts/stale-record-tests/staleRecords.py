@@ -24,7 +24,7 @@ sleep_time_after_every_stale_query = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 # Time to sleep in order the answer to become stale on the resolver
-sleep_time_until_stale = 10
+sleep_time_until_stale = 60
 # The TTL value of the A records on the authoritative server
 ttl_value_of_records = 60
 

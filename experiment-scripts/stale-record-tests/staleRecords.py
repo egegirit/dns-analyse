@@ -23,8 +23,6 @@ sleep_time_after_every_prefetch = 0.5
 sleep_time_after_every_stale_query = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
-# Time to sleep in order the answer to become stale on the resolver
-sleep_time_until_stale = 60
 # The TTL value of the A records on the authoritative server
 ttl_value_of_records = 60
 
@@ -464,7 +462,7 @@ for current_experiment_count in range(experiment_count):
         #     min_runtime = min(runtimes_of_multithreads)
         #     max_runtime = max(runtimes_of_multithreads)
         #     time_difference = max_runtime - min_runtime
-        #     first_query_remaining_time_to_stale = float(sleep_time_until_stale) - max_runtime
+        #     first_query_remaining_time_to_stale = float(ttl_value_of_records) - max_runtime
         #     print(f"Thread count: {len(runtimes_of_multithreads)}")
         #     print(f"Min runtime: {min_runtime}")
         #     print(f"Max runtime: {max_runtime}")
@@ -472,10 +470,10 @@ for current_experiment_count in range(experiment_count):
         #     if first_query_remaining_time_to_stale < 0:
         #         print(f"First query is already stale before the waiting phase!")
 
-        print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
+        print(f"Sleeping for {ttl_value_of_records} seconds until the records are stale")
 
         # Wait until we are certain that the answer which is stored in the resolver is stale
-        sleep_for_seconds(sleep_time_until_stale)
+        sleep_for_seconds(ttl_value_of_records)
 
         # Simulate packetloss on authoritative Server
         simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
@@ -500,7 +498,7 @@ for current_experiment_count in range(experiment_count):
                        for current_resolver_ip in resolver_ip_addresses]
 
         print(f"\nSTALE PHASE DONE\n")
-        print(f"Sleeping for {sleep_time_until_stale} seconds between packetloss rate configs (Cooldown)")
+        print(f"Sleeping for {ttl_value_of_records} seconds between packetloss rate configs (Cooldown)")
 
         # Cooldown between packetloss configurations
         sleep_for_seconds(sleep_time_between_packetloss_config)

@@ -5,6 +5,10 @@ import time
 import os
 import signal
 import dns.resolver
+import dns.name
+import dns.message
+import dns.query
+import dns.flags
 import string
 import random
 from datetime import datetime
@@ -13,12 +17,16 @@ from datetime import datetime
 # Execute this script as root user #
 ####################################
 
+# Time to wait after one prefetch query is sent to a resolver IP Addresses
+sleep_time_after_every_prefetch = 0.5
 # Time to wait after one query is sent to a resolver IP Addresses
-sleep_time_between_counters = 1
+sleep_time_after_every_stale_query = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 # Time to sleep in order the answer to become stale on the resolver
 sleep_time_until_stale = 10
+# The TTL value of the A records on the authoritative server
+ttl_value_of_records = 60
 
 # How many A records there are for each IP
 count_of_a_records = 5
@@ -34,6 +42,10 @@ cache_hit_probability = 0.95
 # The minimum number of queries to send to a resolver in the prefetch phase,
 # even when the resolver has only 1 cache.
 minimum_prefetch_query_count = 10
+# After the required prefetch query count for a resolver is calculated, this value is added onto it
+extra_query_count = 10
+# Measure the runtimes of the running multithreads
+# runtimes_of_multithreads = []
 
 # Set the interface names for packet capture with tcpdump
 auth_interface_name = "bond0"  # The interface of authoritative server
@@ -105,7 +117,8 @@ def simulate_packetloss(packetloss_rate, interface_name):
         subprocess.run(packetloss_filter_command_1, shell=True, stdout=subprocess.PIPE, check=True)
         subprocess.run(packetloss_filter_command_2, shell=True, stdout=subprocess.PIPE, check=True)
         return True
-    except Exception:
+    except Exception as e:
+        print(e)
         print(
             f"  Exception occurred while simulating {packetloss_rate}% packetloss on interface {interface_name} !!"
         )
@@ -132,7 +145,8 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
             disable_packetloss_2, shell=True, stdout=subprocess.PIPE, check=True
         )
         return True
-    except Exception:
+    except Exception as e:
+        print(e)
         print(
             f"  Exception occurred while removing {packetloss_rate}% packetloss rule on interface {interface_name} !!"
         )
@@ -171,7 +185,8 @@ def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_
         )
         result_processes.append(process_1)
         result_processes.append(process_2)
-    except Exception:
+    except Exception as e:
+        print(e)
         print("    Packet capture failed!")
         return result_processes  # Empty list
 
@@ -202,7 +217,8 @@ def compress_log_files(directory_name):
     print("Compressing...")
     try:
         subprocess.run(compress_files_command, shell=True, stdout=subprocess.PIPE, check=True)
-    except Exception:
+    except Exception as e:
+        print(e)
         print("  Exception occurred while compressing the packet capture files !!")
 
     print("Compressing done")
@@ -217,7 +233,8 @@ def create_folder(directory_name):
     try:
         subprocess.run(create_folder_command, shell=True, stdout=subprocess.PIPE, check=True)
         print(f"Folder {directory_name} created.")
-    except Exception:
+    except Exception as e:
+        print(e)
         print(f"Folder not created.")
 
 
@@ -254,18 +271,32 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
 
 
 def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability):
+    global extra_query_count
     global caches_of_resolvers
     if phase == "prefetch":
-        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + 10
+        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + extra_query_count
     elif phase == "stale":
         return 1
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
-def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated_tokens, phase, desired_probability):
+def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired_probability):
+    # global runtimes_of_multithreads
+    global ttl_value_of_records
+    prefetch_query_timeout = 0.1
+    stale_query_timeout = 5
+
     print(f"\n  Sending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
+
+    # Show a warning if the sent queries will become stale before we begin the stale phase
+    if "prefetch" == phase:
+        minimum_waiting_time_of_prefetch = query_count * prefetch_query_timeout
+        if minimum_waiting_time_of_prefetch > ttl_value_of_records:
+            print(f"Warning! Minimum runtime of stale phase is {minimum_waiting_time_of_prefetch} for {ip_addr}, which is greater than the TTL value {ttl_value_of_records}")
+
+    # start = time.time()
 
     for a_record_counter in range(count_of_a_records):
         print(f"\n  Current A record counter: {a_record_counter}")
@@ -273,38 +304,40 @@ def send_queries_to_resolvers(ip_addr, sleep_time_after_send, pl_rate, generated
             query_name = build_query(pl_rate, ip_addr, generated_tokens, a_record_counter)
             print(f"   Query name: {query_name}")
 
-            resolver = dns.resolver.Resolver()
-            # Set the resolver IP Address
-            resolver.nameservers = [ip_addr]
-            # Set the timeout of the query
-            resolver.timeout = 10
-            resolver.lifetime = 10
-            # Measure the time of the DNS response (Optional)
-            # start_time = time.time()
-            # Note: if multiple prints are used, other processes might print in between them
+            # Create an EDNS Query with NSID Option
+            request = dns.message.make_query(query_name, dns.rdatatype.A)
+            request.use_edns(payload=4096, options=[dns.edns.GenericOption(dns.edns.NSID, '')])
+            request.flags |= dns.flags.AD
+
             print(f"      ({counter + 1}) Sending Query")
-            try:
-                answers = resolver.resolve(query_name, "A")
-            except Exception:
-                print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
-                answers = None
-            # measured_time = time.time() - start_time
-            # print(f"      ({counter + 1}) Response time of {query_name}: {measured_time}")
 
-            # print(f"Query sent at: {datetime.utcnow()}")
-            try:
-                # Show the DNS response and TTL time
-                if answers is not None:
-                    print(f"TTL of Answer ({counter + 1}): {answers.rrset.ttl}")
-            #         print(f"RRset:")
-            #         if answers.rrset is not None:
-            #             print("        ", end="")
-            #             print(answers.rrset)
-            except Exception:
-                print(f"Error when showing results of ({counter + 1}) {query_name}")
+            # For the prefetch phase, send the query and don't wait for an answer (non-blocking, very low timeout value)
+            if "prefetch" == phase:
+                try:
+                    dns.query.udp(request, ip_addr, timeout=prefetch_query_timeout)
+                # Dont print timeout exceptions
+                except dns.exception.Timeout:
+                    pass
+                    # print(f"Timeout")
+                # Print all other exceptions
+                except Exception as e:
+                    print(f"Exception occured when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
+                    print(e)
+                # Sleep after sending a query to the same resolver to not spam the resolver
+                time.sleep(sleep_time_after_every_prefetch)
 
-            # Sleep after sending a query to the same resolver to not spam the resolver
-            time.sleep(sleep_time_after_send)
+            # Different timeout value for stale phase, and show expection if any occurs
+            else:
+                try:
+                    dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
+                except Exception as e:
+                    print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
+                    print(e)
+                time.sleep(sleep_time_after_every_stale_query)
+    # end = time.time()
+    # runtime_of_thread = end - start
+    # print(f"Thread runtime: {runtime_of_thread}")
+    # runtimes_of_multithreads.append(runtime_of_thread)
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
@@ -368,10 +401,11 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
 
     try:
         subprocess.run(reload_command_1, shell=True, stdout=subprocess.PIPE, check=True)
-    except Exception:
+    except Exception as e:
         print(
             f"  Exception occurred while reloading bind !"
         )
+        print(e)
 
 
 # Generate x random characters to add it at the end of the query names in the zone file
@@ -414,7 +448,6 @@ for current_experiment_count in range(experiment_count):
             # future object representing the execution of the callable.
             results = [executor.submit(send_queries_to_resolvers,
                                        current_resolver_ip,
-                                       sleep_time_between_counters,
                                        current_packetloss_rate,
                                        generated_chars,
                                        "prefetch",
@@ -423,9 +456,19 @@ for current_experiment_count in range(experiment_count):
 
         print(f"\nPREFETCH PHASE DONE\n")
 
-        # Non-multithreading code
-        # send_queries_to_resolvers(resolver_ip_addresses,
-        #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "prefetch")
+        # Show a warning if the first query is already stale before the waiting phase
+        # if len(runtimes_of_multithreads) != 0:
+        #     print(f"Runtimes of threads: {runtimes_of_multithreads}")
+        #     min_runtime = min(runtimes_of_multithreads)
+        #     max_runtime = max(runtimes_of_multithreads)
+        #     time_difference = max_runtime - min_runtime
+        #     first_query_remaining_time_to_stale = float(sleep_time_until_stale) - max_runtime
+        #     print(f"Thread count: {len(runtimes_of_multithreads)}")
+        #     print(f"Min runtime: {min_runtime}")
+        #     print(f"Max runtime: {max_runtime}")
+        #     print(f"Time for first stale: {first_query_remaining_time_to_stale}")
+        #     if first_query_remaining_time_to_stale < 0:
+        #         print(f"First query is already stale before the waiting phase!")
 
         print(f"Sleeping for {sleep_time_until_stale} seconds until the records are stale")
 
@@ -439,10 +482,6 @@ for current_experiment_count in range(experiment_count):
         switch_zone_file("stale", generated_chars, current_packetloss_rate)
 
         # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-        # Non-Multithreading code
-        # send_queries_to_resolvers(resolver_ip_addresses,
-        #                           sleep_time_between_counters, current_packetloss_rate, generated_chars, "stale")
-
         print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
         # Context manager
@@ -452,7 +491,6 @@ for current_experiment_count in range(experiment_count):
             # future object representing the execution of the callable.
             results = [executor.submit(send_queries_to_resolvers,
                                        current_resolver_ip,
-                                       sleep_time_between_counters,
                                        current_packetloss_rate,
                                        generated_chars,
                                        "stale",
@@ -473,8 +511,9 @@ for current_experiment_count in range(experiment_count):
                 try:
                     # Send the SIGTERM signal to all the process groups
                     os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                except Exception:
+                except Exception as e:
                     print(f"    Exception while terminating tcpdump")
+                    print(e)
             print(f"    Sleeping for 1 seconds for tcpdump to terminate")
             sleep_for_seconds(1)
 

@@ -27,10 +27,13 @@ sleep_time_between_packetloss_config = 600
 ttl_value_of_records = 60
 
 # How many A records there are for each IP
-count_of_a_records = 5
+# This also determines the count of the results we will get for each IP and each Packetloss config
+count_of_a_records = 4
 
 # How many times the experiment should run
-experiment_count = 5
+# Every increment of this increases the runtime of the script by at least (in Seconds):
+# sleep_time_between_packetloss_config * (len(packetloss_rates)-1) + (33 * (TTL) * count_of_a_records)
+experiment_count = 2
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver

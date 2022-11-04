@@ -285,8 +285,8 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
     global ttl_value_of_records
     global sleep_time_after_every_prefetch
     global sleep_time_after_every_stale_query
-    prefetch_query_timeout = 0.1
-    stale_query_timeout = 5
+    prefetch_query_timeout = 0.01
+    stale_query_timeout = 2
 
     print(f"\n  Sending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)

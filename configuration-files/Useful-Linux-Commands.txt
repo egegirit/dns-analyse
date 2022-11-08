@@ -319,21 +319,6 @@ mount bind
 You can create a shell script inside chroot, make it executable with chmod +x ... and (exit from chroot)
 execute it in your host OS with this in a jail: sudo chroot jail /test.sh
 
--------- other video ----------
-mkdir chroot
-
-debootstrap --include linux-image-amd64,grub-pc,locales \
-> --arch amd64 unstable /hom/chroot/ http://ftp.us.debian.org/debian
-
-cd jail
-
-ls -l
-
-chroot /home/jail/   // changes prompt
-
-
-
-
 
 ================
 
@@ -379,6 +364,8 @@ sudo named-checkconf named.conf
 
 The command named-checkzone checks BIND9 zone files in the server to avoid DNS errors.
 Example: named-checkzone nixcraft.com /var/named/zone.nixcraft.com
+
+named-checkzone packetloss.syssec-research.mmci.uni-saarland.de stale.zone
 
 restart the service:
 sudo systemctl restart bind9

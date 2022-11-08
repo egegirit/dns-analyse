@@ -106,3 +106,5 @@ dns.resp.ttl
 
 Stale records filter:
 (dns.flags.rcode) && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
+
+((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")) && (dns.flags.response == 1)

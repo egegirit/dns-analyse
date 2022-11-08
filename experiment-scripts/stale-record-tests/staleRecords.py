@@ -48,6 +48,12 @@ extra_query_count = 10
 # Measure the runtimes of the running multithreads
 # runtimes_of_multithreads = []
 
+# active zone file path
+active_zone_file_path = "active.zone"
+
+# active zone file path
+boilerplate_zone_file_path = "boilerplate.zone"
+
 # Set the interface names for packet capture with tcpdump
 auth_interface_name = "bond0"  # The interface of authoritative server
 client_interface_name = "bond0"  # The interface of client
@@ -370,7 +376,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
 
     # Write the contents of the desired zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
-    with open('boilerplate.zone', 'r') as first_file, open('active.zone', 'w') as second_file:
+    with open(boilerplate_zone_file_path, 'r') as first_file, open(active_zone_file_path, 'w') as second_file:
         # Read content from first zone file
         for line in first_file:
             # Append content to active zone file line by line
@@ -379,7 +385,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
     a_records = ""
     created_A_record = ""  # DEBUG
 
-    f = open('active.zone', 'a')
+    f = open(active_zone_file_path, 'a')
 
     for ip_addr in resolver_ip_addresses:
         for c in range(count_of_a_records):
@@ -501,7 +507,7 @@ for current_experiment_count in range(experiment_count):
                        for current_resolver_ip in resolver_ip_addresses]
 
         print(f"\nSTALE PHASE DONE\n")
-        print(f"Sleeping for {ttl_value_of_records} seconds between packetloss rate configs (Cooldown)")
+        print(f"Sleeping for {sleep_time_between_packetloss_config} seconds between packetloss rate configs (Cooldown)")
 
         # Cooldown between packetloss configurations
         sleep_for_seconds(sleep_time_between_packetloss_config)
@@ -519,6 +525,8 @@ for current_experiment_count in range(experiment_count):
                     print(e)
             print(f"    Sleeping for 1 seconds for tcpdump to terminate")
             sleep_for_seconds(1)
+
+        disable_packetloss_simulation(current_packetloss_rate, auth_interface_name)
 
 print("\n==== Experiment ended ====\n")
 

@@ -49,9 +49,11 @@ extra_query_count = 10
 # runtimes_of_multithreads = []
 
 # active zone file path
+# "/etc/bind/active.zone"
 active_zone_file_path = "active.zone"
 
 # active zone file path
+# "/etc/bind/boilerplate.zone"
 boilerplate_zone_file_path = "boilerplate.zone"
 
 # Set the interface names for packet capture with tcpdump

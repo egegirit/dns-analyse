@@ -401,6 +401,36 @@ resolver_directory_name = "Resolver-plot-results"
 
 # ---------------------------
 
+operator_packets = {
+    "AdGuard1": [],
+    "AdGuard2": [],
+    "CleanBrowsing1": [],
+    "CleanBrowsing2": [],
+    "Cloudflare1": [],
+    "Cloudflare2": [],
+    "Dyn1": [],
+    "Dyn2": [],
+    "Google1": [],
+    "Google2": [],
+    "Neustar1": [],
+    "Neustar2": [],
+    "OpenDNS1": [],
+    "OpenDNS2": [],
+    "Quad91": [],
+    "Quad92": [],
+    "Yandex1": [],
+    "Yandex2": []
+}
+
+
+auth_json_prefix = "auth_stale_pl"
+client_json_prefix = "client_stale_pl"
+
+ttl_wait_time = 124
+wait_packetloss_config = 595
+
+all_query_names = set()
+
 def read_json_file(auth_filename):
     print(f"Reading file: {auth_filename}")
     if not os.path.exists("./" + auth_filename):
@@ -443,27 +473,14 @@ def read_json_file(auth_filename):
                 if "frame.number" in json_data[i]['_source']['layers']['frame']:
                     frame_number = int(json_data[i]['_source']['layers']['frame']["frame.number"])
                     print(f"frame_number: {frame_number}")
+                if "frame.time_epoch" in json_data[i]['_source']['layers']['frame']:
+                    frame_time_epoch = float(json_data[i]['_source']['layers']['frame']["frame.time_epoch"])
+                    print(f"frame_time_epoch: {frame_time_epoch}")
+                if "frame.time" in json_data[i]['_source']['layers']['frame']:
+                    frame_time = json_data[i]['_source']['layers']['frame']["frame.time"]
+                    print(f"frame_time: {frame_time}")
 
-            time_diff_to_previous_packet = frame_time_relative - frame_time_relative_of_previous
-            print(f"Time diff to previous packet: {time_diff_to_previous_packet}")
-            time_diff_abs = abs(frame_time_relative - frame_time_relative_of_previous)
-            if time_diff_abs < ttl_wait_time:
-                print(f"Same phase, add packet")
-                print(f"Adding packet to phase: {phases[phase_index]}")
-            elif ttl_wait_time <= time_diff_abs <= wait_packetloss_config:
-                print(f"  @@@@@ Phase switching detected, first packet of the phase")
-                phase_index = (phase_index + 1) % 2
-                print(f"Adding packet to phase: {phases[phase_index]}")
-                time.sleep(10)
-            elif time_diff_abs > wait_packetloss_config:
-                print(f"  @@@@@ First packet after cooldown phase")
-                phase_index = (phase_index + 1) % 2
-                print(f"Adding packet to phase: {phases[phase_index]}")
-                time.sleep(10)
-
-            frame_time_relative_of_previous = frame_time_relative
-
-            # Get source and destination IP of the DNS ğacket
+            # Get source and destination IP of the DNS packet
             if 'ip' in json_data[i]['_source']['layers']:
                 if "ip.src" in json_data[i]['_source']['layers']["ip"]:
                     ip_src = json_data[i]['_source']['layers']["ip"]["ip.src"]
@@ -523,35 +540,41 @@ def read_json_file(auth_filename):
                                     dns_time = float(json_data[i]['_source']['layers']['dns']['dns.time'])
                                     print(f"dns_time: {dns_time}")
 
+            is_a_new_query = query_name in all_query_names
+            if is_a_new_query:
+                print(f"  Query is NEW ********")
+            else:
+                print(f"  Query was sent before")
+            # Add only query names of queries, not responses
+            if is_response == "0":
+                all_query_names.add(query_name)
+
+            # Calculate the time difference to the previous packet and try to calculate, which phase the packet belongs to
+            time_diff_to_previous_packet = frame_time_relative - frame_time_relative_of_previous
+            print(f"                               Time diff to previous packet: {time_diff_to_previous_packet}")
+            time_diff_abs = abs(frame_time_relative - frame_time_relative_of_previous)
+            if time_diff_abs < ttl_wait_time:
+                print(f"Same phase, add packet")
+                print(f"Adding packet to phase: {phases[phase_index]}")
+            elif ttl_wait_time <= time_diff_abs <= wait_packetloss_config:
+                print(f"  @@@@@ Phase switching detected, first packet of the phase")
+                phase_index = (phase_index + 1) % 2
+                print(f"  Adding packet to phase: {phases[phase_index]}")
+                time.sleep(10)
+            elif wait_packetloss_config < time_diff_abs < 700:
+                print(f"  @@@@@ First packet after cooldown phase")
+                phase_index = 0
+                print(f"  Adding packet to phase: {phases[phase_index]}")
+                time.sleep(10)
+            elif time_diff_abs >= 700:
+                print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
+                phase_index = 0
+                print(f"  Adding packet to phase: {phases[phase_index]}")
+                time.sleep(10)
+
+            frame_time_relative_of_previous = frame_time_relative
 
 
-operator_packets = {
-    "AdGuard1": [],
-    "AdGuard2": [],
-    "CleanBrowsing1": [],
-    "CleanBrowsing2": [],
-    "Cloudflare1": [],
-    "Cloudflare2": [],
-    "Dyn1": [],
-    "Dyn2": [],
-    "Google1": [],
-    "Google2": [],
-    "Neustar1": [],
-    "Neustar2": [],
-    "OpenDNS1": [],
-    "OpenDNS2": [],
-    "Quad91": [],
-    "Quad92": [],
-    "Yandex1": [],
-    "Yandex2": []
-}
-
-
-auth_json_prefix = "auth_stale_pl"
-client_json_prefix = "client_stale_pl"
-
-ttl_wait_time = 124
-wait_packetloss_config = 595
 
 for current_pl_rate in packetloss_rates:
     print(f"  Current packetloss rate: {current_pl_rate}")

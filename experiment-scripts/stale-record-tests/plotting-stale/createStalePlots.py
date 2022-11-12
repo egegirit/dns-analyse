@@ -494,9 +494,12 @@ for current_pl_rate in packetloss_rates:
         read_json_file(client_filename)
 
 
+    # Filter all non dns packets, all dns packets that doesn't have our query structure such as NS records, queries with _ etc.
 
+    # Group all the packets into prefetching(1,2, ...) and stale(1,2,...) phase.
 
-    # Check if the last Octet of the A record answer == current_pl_rate or == (current_pl_rate + 1)
+    # For the stale record phase packets, Check if the last Octet of the A record answer == current_pl_rate or == (current_pl_rate + 1)
+    # Get the ratio of stale records, measure latency of the stale record responses
 
 
 

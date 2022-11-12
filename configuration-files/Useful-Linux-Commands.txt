@@ -495,7 +495,9 @@ scp Filepathinwindows username@ubuntuserverip:linuxserverpath
 Example
 scp C:\Users\egegi\Desktop\ns1.zonefilev2 debian@192.168.1.30:/home/debian/Desktop  
 
-scp C:\Users\egegi\Desktop\ripeAtlasProbeID.py domeras@192.168.1.21:/home/domeras/Desktop  
+scp C:\Users\egegi\Desktop\logs.zip domeras@192.168.1.21:/home/domeras/Desktop  
+
+scp C:\Users\egegi\Desktop\logs-2022-11-10-a-stale.zip domeras@192.168.1.21:/home/domeras/Desktop  
 
 From Linux to windows:
 pscp.exe linux-username@linux-server-ipaddress: [source-DIR-inLinux] [destination-DIR-inWin]
@@ -504,7 +506,7 @@ pscp.exe domeras@192.168.1.13:/home/domeras/Desktop/logs.zip "C:\Users\egegi\Des
 
 pscp.exe debian@192.168.1.30:/home/debian/config_v2.zip "C:\Users\egegi\Desktop"
 
-pscp.exe domeras@192.168.1.9:/home/domeras/Desktop/capture_logs "C:\Users\egegi\Desktop"
+pscp.exe domeras@192.168.1.21:/home/domeras/Desktop/logs-last-exp.zip "C:\Users\egegi\Desktop"
 
 ***********************************
 

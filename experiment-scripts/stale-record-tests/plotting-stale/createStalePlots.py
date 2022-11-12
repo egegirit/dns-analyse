@@ -4,6 +4,7 @@ import matplotlib.lines as mlines
 import json
 import re
 import os
+import time
 
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
@@ -28,6 +29,7 @@ operators = {
     "Yandex1": "77-88-8-1",
     "Yandex2": "77-88-8-8"
 }
+
 
 # Get the n-th element (list) of the given dictionary
 def get_nth_value_of_dict(dictionary, n):
@@ -335,6 +337,7 @@ def dst_ip_match(packet, ip_list):
             return True
     return False
 
+
 # Get RCODE of a single JSON packet
 def get_rcode_of_packet(packet):
     if 'dns.flags.rcode' in packet['_source']['layers']['dns']['dns.flags_tree']:
@@ -373,7 +376,7 @@ def get_index_of_packetloss_rate(pl_rate):
 
 
 # File prefixes of JSON files
-file_names = ["auth1", "client"]
+# file_names = ["auth1", "client"]
 
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
@@ -382,7 +385,6 @@ auth_only_dest_ips = ["139.19.117.11"]
 # Write text onto plots using this coordinates
 x_axis_for_text = 0
 y_axis_for_text = 0
-
 
 # Filtering options
 # rcodes_to_get = ["0", "2"]
@@ -397,9 +399,6 @@ auth_upper_limit = 30
 overall_directory_name = "Overall-plot-results"
 resolver_directory_name = "Resolver-plot-results"
 
-create_resolver_plots_for_one_filter(rcodes_to_get, 0, 30, resolver_directory_name)
-
-
 # ---------------------------
 
 def read_json_file(auth_filename):
@@ -413,35 +412,118 @@ def read_json_file(auth_filename):
     packet_count = len(json_data)
     print(f"  Number of packets in JSON file: {packet_count}")
 
+    frame_time_relative_of_previous = 0
+    phases = ["Prefetching", "Stale"]
+    phase_index = 0
+
     # Examine all the packets in the JSON file
     for i in range(0, packet_count):
+        print(f"----------------")
         # Check if the packet is a DNS packet
         if 'dns' in json_data[i]['_source']['layers']:
+
             json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
             splitted_json1 = json_string.split("'dns.qry.name': ")
             splitted2 = str(splitted_json1[1])
             query_name = splitted2.split("'")[1]
-            # print(f"Current query name: {query_name}")
+            print(f"Current query name: {query_name}")
 
-            # DNS is case-insensitive, some resolvers might send queries with different cases,
-            # use case insensitivity with re.IGNORECASE
+            # Filter query names that doesn't belong to our experiment
             # Example query: stale-1-0-0-1-50-ENM-0.packetloss.syssec-research.mmci.uni-saarland.de
-            query_match = re.search("^stale-*-*-*-*-*-*-*-*.packetloss.syssec-research.mmci.uni-saarland.de",
-                                    query_name, re.IGNORECASE)
-            # Query doesn't match our experiment stucture, ignore it and
-            # continue with the next packet
-            if query_match is None:
+            query_name_lower = query_name.lower()
+            if "ns1.packetloss.syssec-research.mmci.uni-saarland.de" in query_name_lower or "_.packetloss.syssec-research.mmci.uni-saarland.de" in query_name_lower or ".packetloss.syssec-research.mmci.uni-saarland.de" not in query_name_lower:
                 print(f"Skipping invalid domain name: {query_name}")
                 continue
 
-            # Filter specific resolver packets by the query's IP Address
-            splitted_domain = query_name.split("-")
-            ip_addr_with_dashes = splitted_domain[0] + "-" + splitted_domain[1] + "-" + \
-                                  splitted_domain[2] + "-" + splitted_domain[3]
+            # Get frame number and frame time relative of packet
+            if 'frame' in json_data[i]['_source']['layers']:
+                if "frame.time_relative" in json_data[i]['_source']['layers']['frame']:
+                    frame_time_relative = float(json_data[i]['_source']['layers']['frame']["frame.time_relative"])
+                    print(f"frame_time_relative: {frame_time_relative}")
+                if "frame.number" in json_data[i]['_source']['layers']['frame']:
+                    frame_number = int(json_data[i]['_source']['layers']['frame']["frame.number"])
+                    print(f"frame_number: {frame_number}")
 
-            if ip_addr_with_dashes in filter_ip_list:
-                # print(f"Skipping filtered IP: {ip_addr_with_dashes}")
-                continue
+            time_diff_to_previous_packet = frame_time_relative - frame_time_relative_of_previous
+            print(f"Time diff to previous packet: {time_diff_to_previous_packet}")
+            time_diff_abs = abs(frame_time_relative - frame_time_relative_of_previous)
+            if time_diff_abs < ttl_wait_time:
+                print(f"Same phase, add packet")
+                print(f"Adding packet to phase: {phases[phase_index]}")
+            elif ttl_wait_time <= time_diff_abs <= wait_packetloss_config:
+                print(f"  @@@@@ Phase switching detected, first packet of the phase")
+                phase_index = (phase_index + 1) % 2
+                print(f"Adding packet to phase: {phases[phase_index]}")
+                time.sleep(10)
+            elif time_diff_abs > wait_packetloss_config:
+                print(f"  @@@@@ First packet after cooldown phase")
+                phase_index = (phase_index + 1) % 2
+                print(f"Adding packet to phase: {phases[phase_index]}")
+                time.sleep(10)
+
+            frame_time_relative_of_previous = frame_time_relative
+
+            # Get source and destination IP of the DNS ğacket
+            if 'ip' in json_data[i]['_source']['layers']:
+                if "ip.src" in json_data[i]['_source']['layers']["ip"]:
+                    ip_src = json_data[i]['_source']['layers']["ip"]["ip.src"]
+                    print(f"IP SRC: {ip_src}")
+                if "ip.dst" in json_data[i]['_source']['layers']["ip"]:
+                    ip_dst = json_data[i]['_source']['layers']["ip"]["ip.dst"]
+                    print(f"IP DST: {ip_dst}")
+
+            # Filter specific resolver packets by the query's IP Address
+            last_label = query_name.split(".")[0]
+            splitted_domain = last_label.split("-")
+            ip_addr_with_dashes = splitted_domain[1] + "-" + splitted_domain[2] + "-" + \
+                                  splitted_domain[3] + "-" + splitted_domain[4]
+
+            operator = get_operator_name_from_ip(ip_addr_with_dashes)
+            print(f"Operator: {operator}")
+
+            print(f"IP Address in query: {ip_addr_with_dashes}")
+            pl_rate_of_query_name = splitted_domain[5]
+            print(f"Packetloss rate: {pl_rate_of_query_name}")
+            random_token_of_query = splitted_domain[6]
+            # print(f"random_token_of_query: {random_token_of_query}")
+            counter_of_random_token = splitted_domain[7]
+            # print(f"counter_of_random_token: {counter_of_random_token}")
+
+            if "dns.id" in json_data[i]['_source']['layers']['dns']:
+                dns_id = json_data[i]['_source']['layers']['dns']["dns.id"]
+                print(f"DNS ID: {dns_id}")
+
+            if "dns.flags_tree" in json_data[i]['_source']['layers']['dns']:
+                if "dns.flags.response" in json_data[i]['_source']['layers']['dns']["dns.flags_tree"]:
+                    is_response = json_data[i]['_source']['layers']['dns']["dns.flags_tree"]["dns.flags.response"]
+                    print(f"Is response: {is_response}")
+                    if is_response == "1":
+                        # print(f"Is response")
+                        if "dns.count.answers" in json_data[i]['_source']['layers']['dns']:
+                            answer_count = json_data[i]['_source']['layers']['dns']["dns.count.answers"]
+                            if int(answer_count) >= 1:
+                                print(f"Answer count: {answer_count}")
+                                answer_string = str(json_data[i]['_source']['layers']['dns']["Answers"])
+                                # print(f"answer_string: {answer_string}")
+                                splitted1 = answer_string.split("'dns.a': ")
+                                # print(f"splitted1: {splitted1}")
+                                splitted2 = str(splitted1[1])
+                                a_record = splitted2.split("'")[1]
+                                print(f"A record: {a_record}")
+
+                                splitted3 = answer_string.split("'dns.resp.ttl': ")
+                                splitted4 = str(splitted3[1])
+                                ttl_of_answer = int(splitted4.split("'")[1])
+                                print(f"TTL: {ttl_of_answer}")
+
+                                rcode = json_data[i]['_source']['layers']['dns']['dns.flags_tree']['dns.flags.rcode']
+                                print(f"RCODE: {rcode}")
+
+                                if 'dns.time' in json_data[i]['_source']['layers']['dns']:
+                                    dns_time = float(json_data[i]['_source']['layers']['dns']['dns.time'])
+                                    print(f"dns_time: {dns_time}")
+
+
 
 operator_packets = {
     "AdGuard1": [],
@@ -464,42 +546,40 @@ operator_packets = {
     "Yandex2": []
 }
 
-directory_of_json_logs = "C:\\Users\\egegi\\Desktop\\Testing\\Stale Test\\plotStale\\packet_capture_logs"
 
-auth_json_prefix = "tcpdump_log_auth_bond0_"
-client_json_prefix = "tcpdump_log_client_bond0_"
+auth_json_prefix = "auth_stale_pl"
+client_json_prefix = "client_stale_pl"
+
+ttl_wait_time = 124
+wait_packetloss_config = 595
 
 for current_pl_rate in packetloss_rates:
-    # print(f"  Current packetloss rate: {current_packetloss_rate}")
+    print(f"  Current packetloss rate: {current_pl_rate}")
 
-    client_json_file_name = client_json_prefix + current_pl_rate
-    auth_json_file_name = auth_json_prefix + current_pl_rate
+    client_json_file_name = client_json_prefix + str(current_pl_rate) + ".json"
+    # auth_json_file_name = auth_json_prefix + current_pl_rate + ".json"
 
-    random_chars_of_file = set()
-
-    # Extract the 3 random characters at the end of the json files
-    for path, currentDirectory, files in os.walk(directory_of_json_logs):
-        for file in files:
-            if file.startswith(auth_json_prefix):
-                random_chars_of_file.add(str(file))
-
-    for random_char in random_chars_of_file:
-
-        # Read auth json
-        auth_filename = auth_json_file_name + "_" + random_char + ".json"
-        read_json_file(auth_filename)
-
-        # Read client json
-        client_filename = client_json_file_name + "_" + random_char + ".json"
-        read_json_file(client_filename)
-
-
-    # Filter all non dns packets, all dns packets that doesn't have our query structure such as NS records, queries with _ etc.
+    read_json_file(client_json_file_name)
 
     # Group all the packets into prefetching(1,2, ...) and stale(1,2,...) phase.
+    phase_packets = {
+        "prefetch": [],
+        "stale": []
+    }
+    # current_phase = "prefetch"
+    # wait_time = 120
+    # wait_packetloss_config = 599
+    # add current_packet to current_phase
+    # next_packet
+    # time_diff_of_packets = abs(next_packet.time - current_packet.time)
+    # if time_diff_of_packets < wait_time:
+    #     phase_packets[current_phase].add(next_packet)
+    # elif time_diff_of_packets > wait_time and time_diff_of_packets < wait_packetloss_config:
+    #     current_phase = "stale"
+    #     phase_packets[current_phase].add(next_packet)
+    # elif time_diff_of_packets > wait_packetloss_config:
+    #     current_phase = "prefetch"
+    #     phase_packets[current_phase].add(next_packet)
 
     # For the stale record phase packets, Check if the last Octet of the A record answer == current_pl_rate or == (current_pl_rate + 1)
     # Get the ratio of stale records, measure latency of the stale record responses
-
-
-

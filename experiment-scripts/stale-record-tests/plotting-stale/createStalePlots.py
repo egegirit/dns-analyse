@@ -816,7 +816,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
 
 
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92"]
+filtered_resolvers = []
 
 for current_pl_rate in packetloss_rates:
     print(f"Current packetloss rate: {current_pl_rate}")
@@ -826,13 +826,13 @@ for current_pl_rate in packetloss_rates:
 
     read_json_file(client_json_file_name, current_pl_rate, filtered_resolvers)
 
-directory_name = "Yandex"
+directory_name = "Overall"
 
 # Create directory to store logs into it
 if not os.path.exists(directory_name):
     os.makedirs(directory_name)
 
-file_name = "Yandex"
+file_name = "Overall"
 bottom_limit = 0
 upper_limit = 40
 log_scale_y_axis = False

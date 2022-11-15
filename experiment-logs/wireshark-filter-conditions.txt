@@ -113,3 +113,5 @@ Stale records filter:
 
 dns.a == 139.51.51.51
 dns.a != 139.51.51.51 or better dns.a == 139.50.50.50
+
+10 stale phase 10 Experiment  (*13 bcs 13 pcaps for each pl rate) = 130 stale phase, 130 Experiment

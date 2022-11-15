@@ -441,6 +441,14 @@ def create_overall_bar_plot_failure(directory_name, file_name):
             print("Zero division error!")
             ratio_value[i] = 0
 
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(packetloss_rates)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(failed_packet_pl_rate[str(packetloss_rates[i])]) + "/" + str(failed_packet_pl_rate[str(packetloss_rates[i])] + norerror_pl_rate[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11,
+                    color='r')
+    text.set_alpha(0.5)
+
     print(f"Failure rate ratio_value: {ratio_value}")
 
     plt.figure(figsize=(10, 5))
@@ -488,6 +496,14 @@ def create_overall_bar_plot_stale(directory_name, file_name):
 
     plt.figure(figsize=(10, 5))
     # fig = plt.figure(figsize=(10, 5))
+
+    # adding text inside the plot
+    data_count_string = ""
+    for i in range(len(packetloss_rates)):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(stale_count_of_pl[str(packetloss_rates[i])]) + "\n"
+    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11,
+                    color='r')
+    text.set_alpha(0.5)
 
     # creating the bar plot
     plt.bar(packetloss_rates, ratio_value, color='orange', width=4)
@@ -584,13 +600,21 @@ latency_of_stales_pl = {
 auth_json_prefix = "auth_stale_pl"
 client_json_prefix = "client_stale_pl"
 
-ttl_wait_time = 124
+ttl_wait_time = 108
 wait_packetloss_config = 595
+
+# Debug
+stale_phase_count = 0
+prefetching_phase_count = 0
+experiment_count = 0
 
 all_query_names = set()
 
 
 def read_json_file(filename, pl_rate, resolver_filter):
+    global stale_phase_count
+    global prefetching_phase_count
+    global experiment_count
     print(f"Reading file: {filename}")
     if not os.path.exists("./" + filename):
         print(f"File not found: {filename}")
@@ -758,15 +782,20 @@ def read_json_file(filename, pl_rate, resolver_filter):
                 # print(f"  @@@@@ Phase switching detected, first packet of the phase")
                 phase_index = (phase_index + 1) % 2
                 # print(f"  Adding packet to phase: {phases[phase_index]}")
+                if phases[phase_index] == "Stale":
+                    stale_phase_count += 1
+                elif phases[phase_index] == "Prefetching":
+                    prefetching_phase_count += 1
 
             elif wait_packetloss_config < time_diff_abs < 700:
                 # print(f"  @@@@@ First packet after cooldown phase")
                 phase_index = 0
                 # print(f"  Adding packet to phase: {phases[phase_index]}")
 
-            elif time_diff_abs >= 700:
+            elif time_diff_abs >= 7200:  # 7200 = 12(pl araları) * 600(pl arası cooldown)
                 # print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
                 phase_index = 0
+                experiment_count += 1
                 # print(f"  Adding packet to phase: {phases[phase_index]}")
 
             frame_time_relative_of_previous = frame_time_relative
@@ -826,6 +855,8 @@ for current_pl_rate in packetloss_rates:
 
     read_json_file(client_json_file_name, current_pl_rate, filtered_resolvers)
 
+# name = "Adguard"
+
 directory_name = "Overall"
 
 # Create directory to store logs into it
@@ -875,3 +906,8 @@ for i in packetloss_rates:
             f"PL {i}: mean: {statistics.mean(latency_of_stales_pl[str(i)])},  median: {statistics.median(latency_of_stales_pl[str(i)])}")
     except Exception:
         print("no data error")
+
+print(f"----------------")
+print(f"stale_phase_count: {stale_phase_count}")
+print(f"prefetching_phase_count: {prefetching_phase_count}")
+print(f"experiment_count: {experiment_count}")

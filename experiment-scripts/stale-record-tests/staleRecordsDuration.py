@@ -30,6 +30,7 @@ sleep_time_after_every_stale_query = ttl_value_of_records
 
 maximum_tries_in_stale_phase = 10
 give_up_after_non_stale_count = 5
+stale_phase_send_consecutive_query_count = 10
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
@@ -292,44 +293,63 @@ def stale_phase(ip_addr):
     global sleep_time_after_every_stale_query
     global maximum_tries_in_stale_phase
     global give_up_after_non_stale_count
+    global stale_phase_send_consecutive_query_count
     stale_query_timeout = 10
+    consecutive_non_stale_count = 0
+    sleep_after_consecutive_send = 0.5
 
-    asdfasdf and if
+    stop_experiment = False
+    iteration = 0
 
     print(f"\n  Sending query to IP: {ip_addr}")
-    query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
-    print(f"  Query Amount to send to the resolver: {query_count}")
 
-    for counter in range(query_count):
-        query_name = build_query(pl_rate, ip_addr, generated_tokens)
-        print(f"   Query name: {query_name}")
+    query_name = build_query(pl_rate, ip_addr, generated_tokens)
+    print(f"   Query name: {query_name}")
 
-        # Create an EDNS Query with NSID Option
-        request = dns.message.make_query(query_name, dns.rdatatype.A)
-        print(f"      ({counter + 1}) Sending Query")
+    while not stop_experiment:
+        print(f"    {iteration+1}. iteration for {ip_addr}")
+        for i in range(stale_phase_send_consecutive_query_count):
 
-        try:
-            response = dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
-        except Exception as e:
-            print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
-            print(e)
-        try:
-            if not response.answer:
-                print(f"No Answer")
-            for a in response.answer:
-                dataset = a.to_rdataset()
-                # print(f"a:  {a}")
-                # print(f"Set:  {dataset}")
-                if "A" in str(dataset):
-                    a_record = str(dataset).split("A ")[1]
-                    print(f"A record: {a_record}")
-                ttl = int(dataset.ttl)
-                print(f"TTL:  {ttl}")
-        except Exception as e:
-            print(f"Error reading the response of query ({counter + 1}) {query_name}")
-            print(e)
+            # Create an EDNS Query with NSID Option
+            request = dns.message.make_query(query_name, dns.rdatatype.A)
+            print(f"      Sending Query ({i+1})")
+
+            # Send query and wait for response
+            try:
+                response = dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
+            except Exception as e:
+                print(f"      Exception or timeout occurred for {query_name} ")
+                print(e)
+            # Extract A record and TTL from response
+            try:
+                if not response.answer:
+                    print(f"        No Answer")
+                for a in response.answer:
+                    dataset = a.to_rdataset()
+                    if "A" in str(dataset):
+                        a_record = str(dataset).split("A ")[1]
+                        print(f"        A record: {a_record}")
+                    ttl = int(dataset.ttl)
+                    print(f"        TTL:  {ttl}")
+                if "101" not in a_record:
+                    consecutive_non_stale_count += 1
+                else:
+                    consecutive_non_stale_count = 0
+            except Exception as e:
+                print(f"        Error reading the response of query ({counter + 1}) {query_name}")
+                print(e)
+            # If we get non stale answer too often, stop the experiment for that resolver
+            if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
+                stop_experiment = True
+                break
+            time.sleep(sleep_after_consecutive_send)
 
         time.sleep(sleep_time_after_every_stale_query)
+        iteration += 1
+        if iteration >= 10:
+            print(f"Ending stale phase, stale record till last iteration")
+            stop_experiment = True
+            break
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)

@@ -19,21 +19,17 @@ from datetime import datetime
 
 # Time to wait after one prefetch query is sent to a resolver IP Addresses
 sleep_time_after_every_prefetch = 0.5
-# Time to wait after one query is sent to a resolver IP Addresses
-sleep_time_after_every_stale_query = 1
+
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 # The TTL value of the A records on the authoritative server
-ttl_value_of_records = 60
+ttl_value_of_records = 130
 
-# How many A records there are for each IP
-# This also determines the count of the results we will get for each IP and each Packetloss config
-count_of_a_records = 4
+# Time to wait after one query is sent to a resolver IP Addresses
+sleep_time_after_every_stale_query = ttl_value_of_records
 
-# How many times the experiment should run
-# Every increment of this increases the runtime of the script by at least (in Seconds):
-# sleep_time_between_packetloss_config * (len(packetloss_rates)-1) + (33 * (TTL) * count_of_a_records)
-experiment_count = 2
+maximum_tries_in_stale_phase = 10
+give_up_after_non_stale_count = 5
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
@@ -60,53 +56,36 @@ boilerplate_zone_file_path = "boilerplate.zone"
 auth_interface_name = "bond0"  # The interface of authoritative server
 client_interface_name = "bond0"  # The interface of client
 
-directory_name_of_logs = "packet_capture_logs"
+directory_name_of_logs = "packet_capture_logs_stale2"
 
 # Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
+packetloss_rates = [100]
+
+# Stale record supporting resolvers
+# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92"
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
-    "94.140.14.14",  # AdGuard 1  (dns.adguard.com)
-    "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
-    "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
-    "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
     "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
     "1.0.0.1",  # Cloudflare 2     (1dot1dot1dot1.cloudflare-dns.com)
     "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
     "216.146.36.36",  # Dyn 2  (resolver2.dyndnsinternetguide.com )
-    "8.8.8.8",  # Google 1  (dns.google )
-    "8.8.4.4",  # Google 2  (dns.google )
-    "64.6.64.6",  # Neustar 1  (?)  ERROR
-    "156.154.70.1",  # Neustar 2  (?)  ERROR
     "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
     "208.67.222.2",  # OpenDNS 2  (sandbox.opendns.com )
     "9.9.9.9",  # Quad9 1    (dns9.quad9.net )
     "9.9.9.11",  # Quad9 2    (dns11.quad9.net)
-    "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
-    "77.88.8.8",  # Yandex 2   (secondary.dns.yandex.ru )
 ]
 
 # Define how many caches does the resolver have
 caches_of_resolvers = {
-    "94.140.14.14": 1,  # AdGuard 1
-    "94.140.14.15": 1,  # AdGuard 2
-    "185.228.168.168": 5,  # CleanBrowsing 1
-    "185.228.168.9": 5,  # CleanBrowsing 2
     "1.1.1.1": 18,  # Cloudflare 1
     "1.0.0.1": 18,  # Cloudflare 2
     "216.146.35.35": 3,  # Dyn 1
     "216.146.36.36": 3,  # Dyn 2
-    "8.8.8.8": 9,  # Google 1
-    "8.8.4.4": 9,  # Google 2
-    "64.6.64.6": 3,  # Neustar 1
-    "156.154.70.1": 3,  # Neustar 2
     "208.67.222.222": 16,  # OpenDNS 1
     "208.67.222.2": 16,  # OpenDNS 2
     "9.9.9.9": 8,  # Quad9 1
     "9.9.9.11": 8,  # Quad9 2
-    "77.88.8.1": 10,  # Yandex 1
-    "77.88.8.8": 10,  # Yandex 2
 }
 
 
@@ -253,28 +232,13 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
 
     print(f"{ip_addr} has {cache_count_of_resolver} caches")
 
-    # cache_i_missed_total = ((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count
     cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
-    # print(
-    #     f"Probability of Cache_i is missed with {query_count} query:  ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
-    #     f"{query_count} = {cache_i_missed_total}")
-    # print(
-    #     f"Probability of Cache_i is hit with {query_count} query:     1 - ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
-    #     f"{query_count} = {cache_i_hit_total}\n")
 
     while cache_i_hit_total < desired_probability:
-        # print(f"Probability of total cache hit was not {desired_probability * 100}%")
-        # print(f"  Incrementing query count from {query_count} to {query_count + 1}")
         query_count += 1
         cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
-        # print(
-        #     f"  New probability of Cache hit with {query_count} query:  1 - ({cache_count_of_resolver}-1/{cache_count_of_resolver})^"
-        #     f"{query_count} = {cache_i_hit_total}\n")
 
     print(f"{desired_probability * 100}% Probability is met with {query_count} queries.")
-
-    # if query_count < minimum_prefetch_query_count:
-    #    print(f"Query count set to {minimum_prefetch_query_count} (maximum)")
 
     return max(query_count, minimum_prefetch_query_count)
 
@@ -285,76 +249,93 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     if phase == "prefetch":
         return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + extra_query_count
     elif phase == "stale":
-        return 1
+        return 10
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
 def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired_probability):
-    # global runtimes_of_multithreads
     global ttl_value_of_records
     global sleep_time_after_every_prefetch
     global sleep_time_after_every_stale_query
     prefetch_query_timeout = 0.01
-    stale_query_timeout = 2
+    stale_query_timeout = 10
 
     print(f"\n  Sending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
-    # Show a warning if the sent queries will become stale before we begin the stale phase
-    if "prefetch" == phase:
-        minimum_waiting_time_of_prefetch = ((query_count * prefetch_query_timeout) + (query_count * sleep_time_after_every_prefetch)) * count_of_a_records
-        if minimum_waiting_time_of_prefetch > ttl_value_of_records:
-            print(f"Warning! Minimum runtime of stale phase is {minimum_waiting_time_of_prefetch} for {ip_addr}, which is greater than the TTL value {ttl_value_of_records}")
+    for counter in range(query_count):
+        query_name = build_query(pl_rate, ip_addr, generated_tokens)
+        print(f"   Query name: {query_name}")
 
-    # start = time.time()
+        # Create Query
+        request = dns.message.make_query(query_name, dns.rdatatype.A)
+        print(f"      ({counter + 1}) Sending Query")
 
-    for a_record_counter in range(count_of_a_records):
-        print(f"\n  Current A record counter: {a_record_counter}")
-        for counter in range(query_count):
-            query_name = build_query(pl_rate, ip_addr, generated_tokens, a_record_counter)
-            print(f"   Query name: {query_name}")
+        try:
+            dns.query.udp(request, ip_addr, timeout=prefetch_query_timeout)
+        # Dont print timeout exceptions
+        except dns.exception.Timeout:
+            pass
+            # print(f"Timeout")
+        # Print all other exceptions
+        except Exception as e:
+            print(f"Exception occured when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
+            print(e)
+        # Sleep after sending a query to the same resolver to not spam the resolver
+        time.sleep(sleep_time_after_every_prefetch)
 
-            # Create an EDNS Query with NSID Option
-            request = dns.message.make_query(query_name, dns.rdatatype.A)
-            request.use_edns(payload=4096, options=[dns.edns.GenericOption(dns.edns.NSID, '')])
-            request.flags |= dns.flags.AD
 
-            print(f"      ({counter + 1}) Sending Query")
+# Prefetch phase, send queries to resolvers to make them cache the entries
+def stale_phase(ip_addr):
+    global ttl_value_of_records
+    global sleep_time_after_every_stale_query
+    global maximum_tries_in_stale_phase
+    global give_up_after_non_stale_count
+    stale_query_timeout = 10
 
-            # For the prefetch phase, send the query and don't wait for an answer (non-blocking, very low timeout value)
-            if "prefetch" == phase:
-                try:
-                    dns.query.udp(request, ip_addr, timeout=prefetch_query_timeout)
-                # Dont print timeout exceptions
-                except dns.exception.Timeout:
-                    pass
-                    # print(f"Timeout")
-                # Print all other exceptions
-                except Exception as e:
-                    print(f"Exception occured when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
-                    print(e)
-                # Sleep after sending a query to the same resolver to not spam the resolver
-                time.sleep(sleep_time_after_every_prefetch)
+    asdfasdf and if
 
-            # Different timeout value for stale phase, and show exception if any occurs
-            else:
-                try:
-                    dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
-                except Exception as e:
-                    print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
-                    print(e)
-                time.sleep(sleep_time_after_every_stale_query)
-    # end = time.time()
-    # runtime_of_thread = end - start
-    # print(f"Thread runtime: {runtime_of_thread}")
-    # runtimes_of_multithreads.append(runtime_of_thread)
+    print(f"\n  Sending query to IP: {ip_addr}")
+    query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
+    print(f"  Query Amount to send to the resolver: {query_count}")
+
+    for counter in range(query_count):
+        query_name = build_query(pl_rate, ip_addr, generated_tokens)
+        print(f"   Query name: {query_name}")
+
+        # Create an EDNS Query with NSID Option
+        request = dns.message.make_query(query_name, dns.rdatatype.A)
+        print(f"      ({counter + 1}) Sending Query")
+
+        try:
+            response = dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
+        except Exception as e:
+            print(f"      ({counter + 1}) Exception or timeout occurred for {query_name} ")
+            print(e)
+        try:
+            if not response.answer:
+                print(f"No Answer")
+            for a in response.answer:
+                dataset = a.to_rdataset()
+                # print(f"a:  {a}")
+                # print(f"Set:  {dataset}")
+                if "A" in str(dataset):
+                    a_record = str(dataset).split("A ")[1]
+                    print(f"A record: {a_record}")
+                ttl = int(dataset.ttl)
+                print(f"TTL:  {ttl}")
+        except Exception as e:
+            print(f"Error reading the response of query ({counter + 1}) {query_name}")
+            print(e)
+
+        time.sleep(sleep_time_after_every_stale_query)
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
-def build_query(packetloss_rate, ip_addr, generated_tokens, counter):
+def build_query(packetloss_rate, ip_addr, generated_tokens):
     ip_addr_with_dashes = ip_addr.replace(".", "-")
-    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + "-" + str(counter) + \
+    query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + \
             ".packetloss.syssec-research.mmci.uni-saarland.de"
     print(f"  Built query: {query}")
     return query
@@ -390,14 +371,11 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
     f = open(active_zone_file_path, 'a')
 
     for ip_addr in resolver_ip_addresses:
-        for c in range(count_of_a_records):
-
-            ip_addr_with_dashes = ip_addr.replace(".", "-")
-
-            a_records = "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
-                generated_tokens) + "-" + str(c) + "\tIN\tA\t139." + a_record_end + "\n"
-            created_A_record += a_records
-            f.write(a_records)
+        ip_addr_with_dashes = ip_addr.replace(".", "-")
+        a_records = "stale-" + str(ip_addr_with_dashes) + "-" + str(pl_rate) + "-" + str(
+            generated_tokens) + "\tIN\tA\t139." + a_record_end + "\n"
+        created_A_record += a_records
+        f.write(a_records)
     f.close()
 
     print(f"\nCreated A record for {zone_type}, {pl_rate} Packetloss rate:")
@@ -432,103 +410,79 @@ create_folder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
 
-for current_experiment_count in range(experiment_count):
-    print(f"\n**** Experiment count: {current_experiment_count} ****")
-    print(f"Current time: {datetime.utcnow()}")
 
-    generated_chars = generate_random_characters(3)
-    print(f"Generated random tokens: {generated_chars}")
+print(f"\n**** Experiment count: {current_experiment_count} ****")
+print(f"Current time: {datetime.utcnow()}")
 
-    for current_packetloss_rate in packetloss_rates:
+generated_chars = generate_random_characters(3)
+print(f"Generated random tokens: {generated_chars}")
 
-        print(f"\nSwitching to Packetloss Rate: {current_packetloss_rate}%")
+for current_packetloss_rate in packetloss_rates:
 
-        # Start packet capture
-        capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
-                                                  client_interface_name, generated_chars)
+    print(f"\nCurrent Packetloss Rate: {current_packetloss_rate}%")
 
-        # Set the right zone file for the prefetching phase
-        switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
+    # Start packet capture
+    capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface_name,
+                                              client_interface_name, generated_chars)
 
-        print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
+    # Set the right zone file for the prefetching phase
+    switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
 
-        # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            # Using list comprehension to build the results list
-            # submit() schedules the callable to be executed and returns a
-            # future object representing the execution of the callable.
-            results = [executor.submit(send_queries_to_resolvers,
-                                       current_resolver_ip,
-                                       current_packetloss_rate,
-                                       generated_chars,
-                                       "prefetch",
-                                       cache_hit_probability)
-                       for current_resolver_ip in resolver_ip_addresses]
+    print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
-        print(f"\nPREFETCH PHASE DONE\n")
+    # Context manager
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = [executor.submit(send_queries_to_resolvers,
+                                   current_resolver_ip,
+                                   current_packetloss_rate,
+                                   generated_chars,
+                                   "prefetch",
+                                   cache_hit_probability)
+                   for current_resolver_ip in resolver_ip_addresses]
 
-        # Show a warning if the first query is already stale before the waiting phase
-        # if len(runtimes_of_multithreads) != 0:
-        #     print(f"Runtimes of threads: {runtimes_of_multithreads}")
-        #     min_runtime = min(runtimes_of_multithreads)
-        #     max_runtime = max(runtimes_of_multithreads)
-        #     time_difference = max_runtime - min_runtime
-        #     first_query_remaining_time_to_stale = float(ttl_value_of_records) - max_runtime
-        #     print(f"Thread count: {len(runtimes_of_multithreads)}")
-        #     print(f"Min runtime: {min_runtime}")
-        #     print(f"Max runtime: {max_runtime}")
-        #     print(f"Time for first stale: {first_query_remaining_time_to_stale}")
-        #     if first_query_remaining_time_to_stale < 0:
-        #         print(f"First query is already stale before the waiting phase!")
+    print(f"\nPREFETCH PHASE DONE\n")
 
-        print(f"Sleeping for {ttl_value_of_records} seconds until the records are stale")
+    print(f"Sleeping for {ttl_value_of_records} seconds until the records are stale")
 
-        # Wait until we are certain that the answer which is stored in the resolver is stale
-        sleep_for_seconds(ttl_value_of_records)
+    # Wait until we are certain that the answer which is stored in the resolver is stale
+    sleep_for_seconds(ttl_value_of_records)
 
-        # Simulate packetloss on authoritative Server
-        simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
+    # Simulate packetloss on authoritative Server
+    simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
-        # Set the right zone file for the phase after the answer is stale
-        switch_zone_file("stale", generated_chars, current_packetloss_rate)
+    # Set the right zone file for the phase after the answer is stale
+    switch_zone_file("stale", generated_chars, current_packetloss_rate)
 
-        # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
-        print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
+    # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
+    print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
-        # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            # Using list comprehension to build the results list
-            # submit() schedules the callable to be executed and returns a
-            # future object representing the execution of the callable.
-            results = [executor.submit(send_queries_to_resolvers,
-                                       current_resolver_ip,
-                                       current_packetloss_rate,
-                                       generated_chars,
-                                       "stale",
-                                       cache_hit_probability)
-                       for current_resolver_ip in resolver_ip_addresses]
+    # Context manager
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = [executor.submit(stale_phase,
+                                   current_resolver_ip)
+                   for current_resolver_ip in resolver_ip_addresses]
 
-        print(f"\nSTALE PHASE DONE\n")
-        print(f"Sleeping for {sleep_time_between_packetloss_config} seconds between packetloss rate configs (Cooldown)")
+    print(f"\nSTALE PHASE DONE\n")
+    print(f"Sleeping for {sleep_time_between_packetloss_config} seconds between packetloss rate configs (Cooldown)")
 
-        # Cooldown between packetloss configurations
-        sleep_for_seconds(sleep_time_between_packetloss_config)
+    # Cooldown between packetloss configurations
+    sleep_for_seconds(sleep_time_between_packetloss_config)
 
-        # Terminate packet captures / all created processes
-        print(f"  Stopping packet capture")
-        # Using .terminate() doesn't stop the packet capture
-        if len(capture_processes) > 0:
-            for process in capture_processes:
-                try:
-                    # Send the SIGTERM signal to all the process groups
-                    os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                except Exception as e:
-                    print(f"    Exception while terminating tcpdump")
-                    print(e)
-            print(f"    Sleeping for 1 seconds for tcpdump to terminate")
-            sleep_for_seconds(1)
+    # Terminate packet captures / all created processes
+    print(f"  Stopping packet capture")
+    # Using .terminate() doesn't stop the packet capture
+    if len(capture_processes) > 0:
+        for process in capture_processes:
+            try:
+                # Send the SIGTERM signal to all the process groups
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+            except Exception as e:
+                print(f"    Exception while terminating tcpdump")
+                print(e)
+        print(f"    Sleeping for 1 seconds for tcpdump to terminate")
+        sleep_for_seconds(1)
 
-        disable_packetloss_simulation(current_packetloss_rate, auth_interface_name)
+    disable_packetloss_simulation(current_packetloss_rate, auth_interface_name)
 
 print("\n==== Experiment ended ====\n")
 

@@ -294,18 +294,25 @@ def stale_phase(ip_addr):
     global maximum_tries_in_stale_phase
     global give_up_after_non_stale_count
     global stale_phase_send_consecutive_query_count
+    # Timeout value of the query in stale phase
     stale_query_timeout = 10
+    # The count of how many consecutive non stale responses we got
+    # This variable is used to determine if we should stop the experiment because no stale records are observed
     consecutive_non_stale_count = 0
+    # Send stale_phase_send_consecutive_query_count times queries to the resolver and wait time between them
     sleep_after_consecutive_send = 0.5
 
     stop_experiment = False
     iteration = 0
+    # Stop experiment for the resolver if iteration count is equals max_iteration
+    max_iteration = 10
 
     print(f"\n  Sending query to IP: {ip_addr}")
 
     query_name = build_query(pl_rate, ip_addr, generated_tokens)
     print(f"   Query name: {query_name}")
 
+    # Keep sending queries until we stop receiving stale records or when the experiment took very long (too many iterations).
     while not stop_experiment:
         print(f"    {iteration+1}. iteration for {ip_addr}")
         for i in range(stale_phase_send_consecutive_query_count):
@@ -344,9 +351,10 @@ def stale_phase(ip_addr):
                 break
             time.sleep(sleep_after_consecutive_send)
 
+        # Wait TTL
         time.sleep(sleep_time_after_every_stale_query)
         iteration += 1
-        if iteration >= 10:
+        if iteration >= max_iteration:
             print(f"Ending stale phase, stale record till last iteration")
             stop_experiment = True
             break

@@ -121,4 +121,7 @@ dns.a != 139.51.51.51 or better dns.a == 139.50.50.50
 ((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de"))  
 && (dns.qry.name != "_.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.type != 2)
 
+((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de"))  
+&& (dns.qry.name != "_.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.type != 2) && (dns.qry.name matches "156-154-70-1" || dns.qry.name matches "64-6-64-6")
+
 

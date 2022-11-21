@@ -28,8 +28,9 @@ ttl_value_of_records = 130
 # Time to wait after one query is sent to a resolver IP Addresses
 sleep_time_after_every_stale_query = ttl_value_of_records
 
+# Max consecutive non stale answer before giving up
 maximum_tries_in_stale_phase = 10
-give_up_after_non_stale_count = 5
+
 # Send queries fast and consecutively in the stale phase (1 Iteration)
 stale_phase_send_consecutive_query_count = 5
 
@@ -293,7 +294,7 @@ def stale_phase(ip_addr, generated_tokens):
     global ttl_value_of_records
     global sleep_time_after_every_stale_query
     global maximum_tries_in_stale_phase
-    global give_up_after_non_stale_count
+
     global stale_phase_send_consecutive_query_count
     # Timeout value of the query in stale phase
     stale_query_timeout = 10
@@ -306,7 +307,7 @@ def stale_phase(ip_addr, generated_tokens):
     stop_experiment = False
     iteration = 0
     # Stop experiment for the resolver if iteration count is equals max_iteration
-    max_iteration = 10
+    max_iteration = 20
 
     print(f"\n  Sending query to IP: {ip_addr}")
 
@@ -351,11 +352,13 @@ def stale_phase(ip_addr, generated_tokens):
                 print(e)
             # If we get non stale answer too often, stop the experiment for that resolver
             if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
-                print(f"        Too many non stale records observed for {iteration}, stopping.")
+                print(f"        Too many non stale records observed for {ip_addr}, stopping.")
+                print(f"        Last iteration was: {iteration}")
                 stop_experiment = True
                 break
             if no_answer_count >= maximum_no_answer_count:
-                print(f"        Too many empty answers observed for {iteration}, stopping.")
+                print(f"        Too many empty answers observed for {ip_addr}, stopping.")
+                print(f"        Last iteration was: {iteration}")
                 stop_experiment = True
                 break
             time.sleep(sleep_after_consecutive_send)

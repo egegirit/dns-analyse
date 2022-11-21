@@ -351,11 +351,11 @@ def stale_phase(ip_addr, generated_tokens):
                 print(e)
             # If we get non stale answer too often, stop the experiment for that resolver
             if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
-                print(f"        Too many non stale records observed, stopping.")
+                print(f"        Too many non stale records observed for {iteration}, stopping.")
                 stop_experiment = True
                 break
             if no_answer_count >= maximum_no_answer_count:
-                print(f"        Too many empty answers observed, stopping.")
+                print(f"        Too many empty answers observed for {iteration}, stopping.")
                 stop_experiment = True
                 break
             time.sleep(sleep_after_consecutive_send)
@@ -365,6 +365,7 @@ def stale_phase(ip_addr, generated_tokens):
         iteration += 1
         if iteration >= max_iteration:
             print(f"Ending stale phase, max iteration count reached")
+            print(f"The resolver {ip_addr} sent stale records till {iteration}-th iteration.")
             stop_experiment = True
             break
 

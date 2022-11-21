@@ -30,7 +30,8 @@ sleep_time_after_every_stale_query = ttl_value_of_records
 
 maximum_tries_in_stale_phase = 10
 give_up_after_non_stale_count = 5
-stale_phase_send_consecutive_query_count = 10
+# Send queries fast and consecutively in the stale phase (1 Iteration)
+stale_phase_send_consecutive_query_count = 5
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
@@ -288,7 +289,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
-def stale_phase(ip_addr):
+def stale_phase(ip_addr, generated_tokens):
     global ttl_value_of_records
     global sleep_time_after_every_stale_query
     global maximum_tries_in_stale_phase
@@ -309,7 +310,7 @@ def stale_phase(ip_addr):
 
     print(f"\n  Sending query to IP: {ip_addr}")
 
-    query_name = build_query(pl_rate, ip_addr, generated_tokens)
+    query_name = build_query(100, ip_addr, generated_tokens)
     print(f"   Query name: {query_name}")
 
     # Keep sending queries until we stop receiving stale records or when the experiment took very long (too many iterations).
@@ -331,31 +332,39 @@ def stale_phase(ip_addr):
             try:
                 if not response.answer:
                     print(f"        No Answer")
-                for a in response.answer:
-                    dataset = a.to_rdataset()
-                    if "A" in str(dataset):
-                        a_record = str(dataset).split("A ")[1]
-                        print(f"        A record: {a_record}")
-                    ttl = int(dataset.ttl)
-                    print(f"        TTL:  {ttl}")
-                if "101" not in a_record:
-                    consecutive_non_stale_count += 1
+                    no_answer_count += 1
+                # If Answer was not empty, process
                 else:
-                    consecutive_non_stale_count = 0
+                    for a in response.answer:
+                        dataset = a.to_rdataset()
+                        if "A" in str(dataset):
+                            a_record = str(dataset).split("A ")[1]
+                            print(f"        A record: {a_record}")
+                        ttl = int(dataset.ttl)
+                        print(f"        TTL:  {ttl}")
+                    if "101" not in a_record:
+                        consecutive_non_stale_count += 1
+                    else:
+                        consecutive_non_stale_count = 0
             except Exception as e:
                 print(f"        Error reading the response of query ({counter + 1}) {query_name}")
                 print(e)
             # If we get non stale answer too often, stop the experiment for that resolver
             if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
+                print(f"        Too many non stale records observed, stopping.")
+                stop_experiment = True
+                break
+            if no_answer_count >= maximum_no_answer_count:
+                print(f"        Too many empty answers observed, stopping.")
                 stop_experiment = True
                 break
             time.sleep(sleep_after_consecutive_send)
 
-        # Wait TTL
+            # Wait TTL
         time.sleep(sleep_time_after_every_stale_query)
         iteration += 1
         if iteration >= max_iteration:
-            print(f"Ending stale phase, stale record till last iteration")
+            print(f"Ending stale phase, max iteration count reached")
             stop_experiment = True
             break
 
@@ -437,9 +446,6 @@ def generate_random_characters(length):
 create_folder(directory_name_of_logs)
 
 print("\n==== Experiment starting ====\n")
-
-
-print(f"\n**** Experiment count: {current_experiment_count} ****")
 print(f"Current time: {datetime.utcnow()}")
 
 generated_chars = generate_random_characters(3)
@@ -487,7 +493,8 @@ for current_packetloss_rate in packetloss_rates:
     # Context manager
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = [executor.submit(stale_phase,
-                                   current_resolver_ip)
+                                   current_resolver_ip,
+                                   generated_chars)
                    for current_resolver_ip in resolver_ip_addresses]
 
     print(f"\nSTALE PHASE DONE\n")

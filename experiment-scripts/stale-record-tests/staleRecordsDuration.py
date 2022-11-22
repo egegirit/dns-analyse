@@ -352,7 +352,7 @@ def stale_phase(ip_addr, generated_tokens):
                 print(e)
             # If we get non stale answer too often, stop the experiment for that resolver
             if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
-                print(f"        Too many non stale records observed for {ip_addr}, stopping.")
+                print(f"        Too many consecutive non stale records observed for {ip_addr}, stopping.")
                 print(f"        Last iteration was: {iteration}")
                 stop_experiment = True
                 break

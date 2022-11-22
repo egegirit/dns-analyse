@@ -32,7 +32,7 @@ sleep_time_after_every_stale_query = ttl_value_of_records
 maximum_tries_in_stale_phase = 10
 
 # Send queries fast and consecutively in the stale phase (1 Iteration)
-stale_phase_send_consecutive_query_count = 5
+stale_phase_send_consecutive_query_count = 1
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
@@ -233,7 +233,7 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
     global minimum_prefetch_query_count
     query_count = 1
 
-    print(f"{ip_addr} has {cache_count_of_resolver} caches")
+    print(f"  {ip_addr} has {cache_count_of_resolver} caches")
 
     cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
 
@@ -241,7 +241,7 @@ def calculate_query_count_with_desired_probability(ip_addr, cache_count_of_resol
         query_count += 1
         cache_i_hit_total = 1 - (((cache_count_of_resolver - 1) / cache_count_of_resolver) ** query_count)
 
-    print(f"{desired_probability * 100}% Probability is met with {query_count} queries.")
+    print(f"  {desired_probability * 100}% Probability is met with {query_count} queries.")
 
     return max(query_count, minimum_prefetch_query_count)
 
@@ -252,7 +252,7 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     if phase == "prefetch":
         return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + extra_query_count
     elif phase == "stale":
-        return 10
+        return 1
 
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
@@ -263,7 +263,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
     prefetch_query_timeout = 0.01
     stale_query_timeout = 10
 
-    print(f"\n  Sending query to IP: {ip_addr}")
+    print(f"\nSending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
@@ -283,7 +283,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
             # print(f"Timeout")
         # Print all other exceptions
         except Exception as e:
-            print(f"Exception occured when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
+            print(f"Exception occurred when sending prefetch query {query_name} for {ip_addr} (Not a timeout)")
             print(e)
         # Sleep after sending a query to the same resolver to not spam the resolver
         time.sleep(sleep_time_after_every_prefetch)
@@ -294,7 +294,6 @@ def stale_phase(ip_addr, generated_tokens):
     global ttl_value_of_records
     global sleep_time_after_every_stale_query
     global maximum_tries_in_stale_phase
-
     global stale_phase_send_consecutive_query_count
     # Timeout value of the query in stale phase
     stale_query_timeout = 10
@@ -303,74 +302,58 @@ def stale_phase(ip_addr, generated_tokens):
     consecutive_non_stale_count = 0
     # Send stale_phase_send_consecutive_query_count times queries to the resolver and wait time between them
     sleep_after_consecutive_send = 0.5
-
-    stop_experiment = False
+    stale_answer_count = 0
+    no_answer_count = 0
     iteration = 0
     # Stop experiment for the resolver if iteration count is equals max_iteration
-    max_iteration = 20
+    max_iteration = 50
+    # If there was a stale record observed in the i-th iteration, mark the i-th element of list as 1
+    stale_record_on_iterations = [-1] * max_iteration
 
     print(f"\n  Sending query to IP: {ip_addr}")
-
     query_name = build_query(100, ip_addr, generated_tokens)
     print(f"   Query name: {query_name}")
 
-    # Keep sending queries until we stop receiving stale records or when the experiment took very long (too many iterations).
-    while not stop_experiment:
-        print(f"    {iteration+1}. iteration for {ip_addr}")
-        for i in range(stale_phase_send_consecutive_query_count):
+    # Keep sending queries until we stop receiving stale records or when the expe<riment took very long (too many iterations).
+    for x in range(max_iteration):
+        print(f"    {x+1}. iteration for {ip_addr}")
+        # Send stale_phase_send_consecutive_query_count times queries to the resolvers (by default its 1)
+        request = dns.message.make_query(query_name, dns.rdatatype.A)
+        print(f"      Sending Query")
 
-            # Create an EDNS Query with NSID Option
-            request = dns.message.make_query(query_name, dns.rdatatype.A)
-            print(f"      Sending Query ({i+1})")
-
-            # Send query and wait for response
-            try:
-                response = dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
-            except Exception as e:
-                print(f"      Exception or timeout occurred for {query_name} ")
-                print(e)
-            # Extract A record and TTL from response
-            try:
-                if not response.answer:
-                    print(f"        No Answer")
-                    no_answer_count += 1
-                # If Answer was not empty, process
-                else:
-                    for a in response.answer:
-                        dataset = a.to_rdataset()
-                        if "A" in str(dataset):
-                            a_record = str(dataset).split("A ")[1]
-                            print(f"        A record: {a_record}")
-                        ttl = int(dataset.ttl)
-                        print(f"        TTL:  {ttl}")
-                    if "101" not in a_record:
-                        consecutive_non_stale_count += 1
-                    else:
-                        consecutive_non_stale_count = 0
-            except Exception as e:
-                print(f"        Error reading the response of query ({counter + 1}) {query_name}")
-                print(e)
-            # If we get non stale answer too often, stop the experiment for that resolver
-            if consecutive_non_stale_count >= maximum_tries_in_stale_phase:
-                print(f"        Too many consecutive non stale records observed for {ip_addr}, stopping.")
-                print(f"        Last iteration was: {iteration}")
-                stop_experiment = True
-                break
-            if no_answer_count >= maximum_no_answer_count:
-                print(f"        Too many empty answers observed for {ip_addr}, stopping.")
-                print(f"        Last iteration was: {iteration}")
-                stop_experiment = True
-                break
-            time.sleep(sleep_after_consecutive_send)
-
-            # Wait TTL
+        # Send query and wait for response
+        try:
+            response = dns.query.udp(request, ip_addr, timeout=stale_query_timeout)
+        except Exception as e:
+            print(f"      Exception or timeout occurred for {query_name} ")
+            print(e)
+        # Extract A record and TTL from response
+        try:
+            if not response.answer:
+                print(f"        No Answer")
+                no_answer_count += 1
+                stale_record_on_iterations[x] = 0
+            # If Answer was not empty, process
+            else:
+                stale_answer_count += 1
+                stale_record_on_iterations[x] = 1
+                for a in response.answer:
+                    dataset = a.to_rdataset()
+                    if "A" in str(dataset):
+                        a_record = str(dataset).split("A ")[1]
+                        print(f"        A record: {a_record}")
+                    ttl = int(dataset.ttl)
+                    print(f"        TTL:  {ttl}")
+        except Exception as e:
+            print(f"        Error reading the response of query {query_name}")
+            print(e)
+        # Wait TTL
         time.sleep(sleep_time_after_every_stale_query)
-        iteration += 1
-        if iteration >= max_iteration:
-            print(f"Ending stale phase, max iteration count reached")
-            print(f"The resolver {ip_addr} sent stale records till {iteration}-th iteration.")
-            stop_experiment = True
-            break
+    print(f"Ending stale phase for {ip_addr}, max iteration count reached")
+    print(f"Results of {ip_addr}:")
+    print(f"  stale_answer_count: {stale_answer_count}")
+    print(f"  no_answer_count: {no_answer_count}")
+    print(f"  stale_record_on_iterations: {stale_record_on_iterations}")
 
 
 # Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
@@ -378,7 +361,7 @@ def build_query(packetloss_rate, ip_addr, generated_tokens):
     ip_addr_with_dashes = ip_addr.replace(".", "-")
     query = "stale-" + str(ip_addr_with_dashes) + "-" + str(packetloss_rate) + "-" + str(generated_tokens) + \
             ".packetloss.syssec-research.mmci.uni-saarland.de"
-    print(f"  Built query: {query}")
+    # print(f"  Built query: {query}")
     return query
 
 
@@ -419,7 +402,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
         f.write(a_records)
     f.close()
 
-    print(f"\nCreated A record for {zone_type}, {pl_rate} Packetloss rate:")
+    print(f"\nCreated zone file and A records for {zone_type}, {pl_rate} Packetloss rate:")
     print(created_A_record)
 
     # Reload bind/dns services

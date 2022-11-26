@@ -1,0 +1,3916 @@
+Creating a folder named packet_capture_logs_stale2 with the following command:
+  mkdir packet_capture_logs_stale2
+Folder packet_capture_logs_stale2 created.
+
+==== Experiment starting ====
+
+Current time: 2022-11-24 13:31:53.280090
+Generated random tokens: KGN
+
+Current Packetloss Rate: 100%
+  (1) Running packet capture on bond0 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs_stale2/tcpdump_log_auth_bond0_100_KGN.pcap -nnn -i bond0 "host 139.19.117.11 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"
+  (2) Running packet capture on bond0 interface with the following command:
+    sudo tcpdump -w ./packet_capture_logs_stale2/tcpdump_log_client_bond0_100_KGN.pcap -nnn -i bond0 "host 139.19.117.1 and (((ip[6:2] > 0) and (not ip[6] = 64)) or port 53)"
+  Sleeping 1 second to let the packet captures start
+  Creating prefetch zone file with generated chars KGN and packetloss rate 100
+
+Created zone file and A records for prefetch, 100 Packetloss rate:
+stale-1-1-1-1-100-KGN	IN	A	139.100.100.100
+stale-1-0-0-1-100-KGN	IN	A	139.100.100.100
+stale-216-146-35-35-100-KGN	IN	A	139.100.100.100
+stale-216-146-36-36-100-KGN	IN	A	139.100.100.100
+stale-208-67-222-222-100-KGN	IN	A	139.100.100.100
+stale-208-67-222-2-100-KGN	IN	A	139.100.100.100
+stale-9-9-9-9-100-KGN	IN	A	139.100.100.100
+stale-9-9-9-11-100-KGN	IN	A	139.100.100.100
+
+  Reloading bind9 with the following command:
+    sudo rndc reload
+
+PREFETCH PHASE BEGIN, SENDING QUERIES
+
+Sending query to IP: 1.1.1.1
+  1.1.1.1 has 18 caches
+  95.0% Probability is met with 53 queries.
+  Query Amount to send to the resolver: 63
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+
+Sending query to IP: 1.0.0.1
+  1.0.0.1 has 18 caches
+  95.0% Probability is met with 53 queries.
+  Query Amount to send to the resolver: 63
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+      (1) Sending Query
+
+Sending query to IP: 216.146.35.35
+  216.146.35.35 has 3 caches
+  95.0% Probability is met with 8 queries.
+  Query Amount to send to the resolver: 20
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+
+Sending query to IP: 216.146.36.36
+  216.146.36.36 has 3 caches
+  95.0% Probability is met with 8 queries.
+  Query Amount to send to the resolver: 20
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+
+Sending query to IP: 208.67.222.222
+  208.67.222.222 has 16 caches
+  95.0% Probability is met with 47 queries.
+  Query Amount to send to the resolver: 57
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+
+Sending query to IP: 208.67.222.2
+  208.67.222.2 has 16 caches
+  95.0% Probability is met with 47 queries.
+  Query Amount to send to the resolver: 57
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+
+Sending query to IP: 9.9.9.9
+  9.9.9.9 has 8 caches
+  95.0% Probability is met with 23 queries.
+  Query Amount to send to the resolver: 33
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+
+Sending query to IP: 9.9.9.11
+  9.9.9.11 has 8 caches
+  95.0% Probability is met with 23 queries.
+  Query Amount to send to the resolver: 33
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (1) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (2) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+      (3) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (3) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+      (4) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (4) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+      (5) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (5) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (6) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (7) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (7) Sending Query
+      (7) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (7) Sending Query
+      (7) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (7) Sending Query
+      (7) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (7) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+      (8) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+      (8) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (8) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (9) Sending Query
+      (9) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (9) Sending Query
+      (9) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (9) Sending Query
+      (9) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (9) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (9) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+      (10) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+      (10) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (10) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+      (11) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (11) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+      (12) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (12) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (13) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (14) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (15) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+      (16) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (16) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (17) Sending Query
+      (17) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (18) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (19) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (20) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (21) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (22) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (23) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (24) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (25) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (26) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (27) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (28) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (28) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (28) Sending Query
+      (28) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (28) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (28) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (29) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (30) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (31) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (32) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (32) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (32) Sending Query
+      (32) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (32) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (32) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (33) Sending Query
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (33) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (33) Sending Query
+      (33) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (33) Sending Query
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (33) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (34) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (34) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (34) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (34) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (35) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (35) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (35) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (35) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (36) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (36) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (36) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (36) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (37) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (37) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (37) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (37) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (38) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (38) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (38) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (38) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (39) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (39) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (39) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (39) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (40) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (40) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (40) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (40) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (41) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (41) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (41) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (41) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (42) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (42) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (42) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (42) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (43) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (43) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (43) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (43) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (44) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (44) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (44) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (44) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (45) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (45) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (45) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (45) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (46) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (46) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (46) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (46) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (47) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (47) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (47) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (47) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (48) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (48) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (48) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (48) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (49) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (49) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (49) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (49) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (50) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (50) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (50) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (50) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (51) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (51) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (51) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (51) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (52) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (52) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (52) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (52) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (53) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (53) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (53) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (53) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (54) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (54) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (54) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (54) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (55) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (55) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (55) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (55) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (56) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (56) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (56) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (56) Sending Query
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (57) Sending Query
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (57) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (57) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (57) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (58) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (58) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (59) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (59) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (60) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (60) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (61) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (61) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (62) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (62) Sending Query
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (63) Sending Query
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+      (63) Sending Query
+
+PREFETCH PHASE DONE
+
+Sleeping for 130 seconds until the records are stale
+  Remaining time:
+130
+[A                             [A
+129
+[A                             [A
+128
+[A                             [A
+127
+[A                             [A
+126
+[A                             [A
+125
+[A                             [A
+124
+[A                             [A
+123
+[A                             [A
+122
+[A                             [A
+121
+[A                             [A
+120
+[A                             [A
+119
+[A                             [A
+118
+[A                             [A
+117
+[A                             [A
+116
+[A                             [A
+115
+[A                             [A
+114
+[A                             [A
+113
+[A                             [A
+112
+[A                             [A
+111
+[A                             [A
+110
+[A                             [A
+109
+[A                             [A
+108
+[A                             [A
+107
+[A                             [A
+106
+[A                             [A
+105
+[A                             [A
+104
+[A                             [A
+103
+[A                             [A
+102
+[A                             [A
+101
+[A                             [A
+100
+[A                             [A
+99
+[A                             [A
+98
+[A                             [A
+97
+[A                             [A
+96
+[A                             [A
+95
+[A                             [A
+94
+[A                             [A
+93
+[A                             [A
+92
+[A                             [A
+91
+[A                             [A
+90
+[A                             [A
+89
+[A                             [A
+88
+[A                             [A
+87
+[A                             [A
+86
+[A                             [A
+85
+[A                             [A
+84
+[A                             [A
+83
+[A                             [A
+82
+[A                             [A
+81
+[A                             [A
+80
+[A                             [A
+79
+[A                             [A
+78
+[A                             [A
+77
+[A                             [A
+76
+[A                             [A
+75
+[A                             [A
+74
+[A                             [A
+73
+[A                             [A
+72
+[A                             [A
+71
+[A                             [A
+70
+[A                             [A
+69
+[A                             [A
+68
+[A                             [A
+67
+[A                             [A
+66
+[A                             [A
+65
+[A                             [A
+64
+[A                             [A
+63
+[A                             [A
+62
+[A                             [A
+61
+[A                             [A
+60
+[A                             [A
+59
+[A                             [A
+58
+[A                             [A
+57
+[A                             [A
+56
+[A                             [A
+55
+[A                             [A
+54
+[A                             [A
+53
+[A                             [A
+52
+[A                             [A
+51
+[A                             [A
+50
+[A                             [A
+49
+[A                             [A
+48
+[A                             [A
+47
+[A                             [A
+46
+[A                             [A
+45
+[A                             [A
+44
+[A                             [A
+43
+[A                             [A
+42
+[A                             [A
+41
+[A                             [A
+40
+[A                             [A
+39
+[A                             [A
+38
+[A                             [A
+37
+[A                             [A
+36
+[A                             [A
+35
+[A                             [A
+34
+[A                             [A
+33
+[A                             [A
+32
+[A                             [A
+31
+[A                             [A
+30
+[A                             [A
+29
+[A                             [A
+28
+[A                             [A
+27
+[A                             [A
+26
+[A                             [A
+25
+[A                             [A
+24
+[A                             [A
+23
+[A                             [A
+22
+[A                             [A
+21
+[A                             [A
+20
+[A                             [A
+19
+[A                             [A
+18
+[A                             [A
+17
+[A                             [A
+16
+[A                             [A
+15
+[A                             [A
+14
+[A                             [A
+13
+[A                             [A
+12
+[A                             [A
+11
+[A                             [A
+10
+[A                             [A
+9
+[A                             [A
+8
+[A                             [A
+7
+[A                             [A
+6
+[A                             [A
+5
+[A                             [A
+4
+[A                             [A
+3
+[A                             [A
+2
+[A                             [A
+1
+[A                             [A
+  Simulating 100% packetloss on interface bond0 with the following command:
+    sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 1.0 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 1.0 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+  Creating stale zone file with generated chars KGN and packetloss rate 100
+
+Created zone file and A records for stale, 100 Packetloss rate:
+stale-1-1-1-1-100-KGN	IN	A	139.101.101.101
+stale-1-0-0-1-100-KGN	IN	A	139.101.101.101
+stale-216-146-35-35-100-KGN	IN	A	139.101.101.101
+stale-216-146-36-36-100-KGN	IN	A	139.101.101.101
+stale-208-67-222-222-100-KGN	IN	A	139.101.101.101
+stale-208-67-222-2-100-KGN	IN	A	139.101.101.101
+stale-9-9-9-9-100-KGN	IN	A	139.101.101.101
+stale-9-9-9-11-100-KGN	IN	A	139.101.101.101
+
+  Reloading bind9 with the following command:
+    sudo rndc reload
+
+STALE PHASE BEGIN, SENDING QUERIES
+
+  Sending query to IP: 1.1.1.1
+   Query name: stale-1-1-1-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 1.1.1.1
+      Sending Query
+
+  Sending query to IP: 1.0.0.1
+   Query name: stale-1-0-0-1-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 1.0.0.1
+      Sending Query
+
+  Sending query to IP: 216.146.35.35
+   Query name: stale-216-146-35-35-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 216.146.35.35
+      Sending Query
+
+  Sending query to IP: 216.146.36.36
+   Query name: stale-216-146-36-36-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 216.146.36.36
+      Sending Query
+
+  Sending query to IP: 208.67.222.222
+   Query name: stale-208-67-222-222-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 208.67.222.222
+      Sending Query
+
+  Sending query to IP: 208.67.222.2
+   Query name: stale-208-67-222-2-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 208.67.222.2
+      Sending Query
+
+  Sending query to IP: 9.9.9.9
+   Query name: stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 9.9.9.9
+      Sending Query
+
+  Sending query to IP: 9.9.9.11
+   Query name: stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+    1. iteration for 9.9.9.11
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    2. iteration for 9.9.9.9
+      Sending Query
+    2. iteration for 216.146.35.35    2. iteration for 216.146.36.36
+
+      Sending Query      Sending Query
+
+    2. iteration for 1.1.1.1
+      Sending Query
+    2. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100        A record: 139.100.100.100
+
+        TTL:  0        TTL:  0
+
+    2. iteration for 208.67.222.2
+      Sending Query
+    2. iteration for 208.67.222.222
+      Sending Query
+    2. iteration for 9.9.9.11
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    3. iteration for 9.9.9.9
+      Sending Query
+    3. iteration for 216.146.35.35
+      Sending Query
+    3. iteration for 216.146.36.36
+      Sending Query
+    3. iteration for 1.1.1.1    3. iteration for 1.0.0.1
+
+      Sending Query      Sending Query
+
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  0
+    3. iteration for 208.67.222.2
+      Sending Query
+    3. iteration for 208.67.222.222
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    3. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    4. iteration for 216.146.35.35
+      Sending Query
+    4. iteration for 216.146.36.36
+      Sending Query
+    4. iteration for 1.1.1.1
+      Sending Query
+    4. iteration for 1.0.0.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  30
+    4. iteration for 9.9.9.9
+      Sending Query
+    4. iteration for 208.67.222.222
+      Sending Query
+    4. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+        No Answer
+    4. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    5. iteration for 216.146.35.35
+      Sending Query
+    5. iteration for 216.146.36.36
+      Sending Query
+    5. iteration for 1.0.0.1
+      Sending Query
+    5. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  30
+    5. iteration for 208.67.222.222
+      Sending Query
+    5. iteration for 9.9.9.9
+      Sending Query
+    5. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    5. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    6. iteration for 216.146.35.35
+      Sending Query
+    6. iteration for 216.146.36.36
+      Sending Query
+    6. iteration for 1.0.0.1
+      Sending Query
+    6. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  0
+    6. iteration for 208.67.222.2
+      Sending Query
+    6. iteration for 208.67.222.222
+      Sending Query
+    6. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    6. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    7. iteration for 216.146.35.35
+      Sending Query
+    7. iteration for 216.146.36.36
+      Sending Query
+    7. iteration for 1.0.0.1
+      Sending Query
+    7. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    7. iteration for 208.67.222.222
+      Sending Query
+    7. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    7. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    7. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    8. iteration for 216.146.35.35
+      Sending Query
+    8. iteration for 216.146.36.36
+      Sending Query
+    8. iteration for 1.0.0.1
+      Sending Query
+    8. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  0
+    8. iteration for 208.67.222.222
+    8. iteration for 208.67.222.2
+      Sending Query      Sending Query
+
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    8. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    8. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    9. iteration for 216.146.35.35
+      Sending Query
+    9. iteration for 216.146.36.36
+      Sending Query
+    9. iteration for 1.0.0.1
+      Sending Query
+    9. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    9. iteration for 208.67.222.2
+      Sending Query
+    9. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        No Answer
+    9. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    9. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    10. iteration for 216.146.35.35
+      Sending Query
+    10. iteration for 216.146.36.36
+      Sending Query
+    10. iteration for 1.0.0.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    10. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    10. iteration for 208.67.222.222
+      Sending Query
+    10. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    10. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    10. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    11. iteration for 216.146.35.35
+      Sending Query
+    11. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    11. iteration for 1.0.0.1
+      Sending Query
+    11. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    11. iteration for 208.67.222.2
+      Sending Query
+    11. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    11. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    11. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    12. iteration for 216.146.35.35
+      Sending Query
+    12. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    12. iteration for 1.0.0.1
+      Sending Query
+    12. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  0
+    12. iteration for 208.67.222.2
+      Sending Query
+    12. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    12. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    12. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    13. iteration for 216.146.35.35
+      Sending Query
+    13. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    13. iteration for 1.0.0.1
+      Sending Query
+    13. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    13. iteration for 208.67.222.2
+      Sending Query
+    13. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    13. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    13. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    14. iteration for 216.146.35.35
+      Sending Query
+    14. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    14. iteration for 1.0.0.1
+      Sending Query
+    14. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    14. iteration for 208.67.222.222
+      Sending Query
+    14. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    14. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    14. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    15. iteration for 216.146.35.35
+      Sending Query
+    15. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    15. iteration for 1.0.0.1
+      Sending Query
+    15. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    15. iteration for 208.67.222.2
+      Sending Query
+    15. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    15. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    15. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    16. iteration for 216.146.35.35
+      Sending Query
+    16. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    16. iteration for 1.0.0.1
+      Sending Query
+    16. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        No Answer
+    16. iteration for 208.67.222.2
+      Sending Query
+    16. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    16. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    16. iteration for 9.9.9.11
+      Sending Query
+    17. iteration for 216.146.35.35
+      Sending Query
+    17. iteration for 216.146.36.36
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    17. iteration for 1.0.0.1
+      Sending Query
+    17. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        No Answer
+    17. iteration for 208.67.222.222
+      Sending Query
+    17. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    17. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    17. iteration for 9.9.9.11
+      Sending Query
+    18. iteration for 216.146.35.35
+      Sending Query
+    18. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    18. iteration for 1.0.0.1
+      Sending Query
+    18. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    18. iteration for 208.67.222.222
+      Sending Query
+    18. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    18. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    19. iteration for 216.146.35.35
+      Sending Query
+    19. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    19. iteration for 1.0.0.1
+      Sending Query
+    19. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    18. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    19. iteration for 208.67.222.222
+      Sending Query
+    19. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    19. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    20. iteration for 216.146.35.35
+      Sending Query
+    20. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    20. iteration for 1.0.0.1
+      Sending Query
+    20. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    19. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    20. iteration for 208.67.222.222
+      Sending Query
+    20. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    20. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    21. iteration for 216.146.35.35
+      Sending Query
+    21. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    21. iteration for 1.0.0.1
+      Sending Query
+    21. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  30
+    20. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    21. iteration for 208.67.222.222
+      Sending Query
+    21. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    21. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    22. iteration for 216.146.35.35
+      Sending Query
+    22. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    22. iteration for 1.0.0.1
+      Sending Query
+    22. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    21. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    22. iteration for 208.67.222.222
+      Sending Query
+    22. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    22. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    23. iteration for 216.146.35.35
+      Sending Query
+    23. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    23. iteration for 1.0.0.1
+      Sending Query
+    23. iteration for 1.1.1.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        No Answer
+    22. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    23. iteration for 208.67.222.222
+      Sending Query
+    23. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    23. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    24. iteration for 216.146.35.35
+      Sending Query
+    24. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    24. iteration for 1.0.0.1
+      Sending Query
+    24. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        No Answer
+    23. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    24. iteration for 208.67.222.222
+      Sending Query
+    24. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    24. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    25. iteration for 216.146.35.35
+      Sending Query
+    25. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    25. iteration for 1.0.0.1
+      Sending Query
+    25. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  30
+    24. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    25. iteration for 208.67.222.222
+      Sending Query
+    25. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    25. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    26. iteration for 216.146.35.35
+      Sending Query
+    26. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    26. iteration for 1.0.0.1
+      Sending Query
+    26. iteration for 1.1.1.1
+      Sending Query
+        No Answer
+        No Answer
+    25. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    26. iteration for 208.67.222.222
+      Sending Query
+    26. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    26. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    27. iteration for 216.146.35.35
+      Sending Query
+    27. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    27. iteration for 1.1.1.1
+    27. iteration for 1.0.0.1
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    26. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    27. iteration for 208.67.222.2
+      Sending Query
+    27. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+    27. iteration for 9.9.9.9
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    28. iteration for 216.146.35.35
+      Sending Query
+    28. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    28. iteration for 1.1.1.1
+      Sending Query
+    28. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    27. iteration for 9.9.9.11
+      Sending Query
+    28. iteration for 208.67.222.2
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    28. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    28. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    29. iteration for 216.146.35.35
+      Sending Query
+    29. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    29. iteration for 1.0.0.1    29. iteration for 1.1.1.1
+
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    28. iteration for 9.9.9.11
+      Sending Query
+    29. iteration for 208.67.222.2
+      Sending Query
+    29. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    29. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    30. iteration for 216.146.35.35
+      Sending Query
+    30. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    30. iteration for 1.1.1.1
+      Sending Query
+    30. iteration for 1.0.0.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        No Answer
+    30. iteration for 208.67.222.2
+      Sending Query
+    29. iteration for 9.9.9.11
+      Sending Query
+    30. iteration for 9.9.9.9
+      Sending Query
+    30. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    31. iteration for 216.146.35.35
+      Sending Query
+    31. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    31. iteration for 1.1.1.1
+      Sending Query
+    31. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    31. iteration for 9.9.9.9
+      Sending Query
+    31. iteration for 208.67.222.2
+      Sending Query
+    31. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+    30. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    32. iteration for 216.146.35.35
+      Sending Query
+    32. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    32. iteration for 1.1.1.1    32. iteration for 1.0.0.1
+
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    32. iteration for 208.67.222.2
+      Sending Query
+    32. iteration for 9.9.9.9
+      Sending Query
+    32. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    31. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    33. iteration for 216.146.35.35
+      Sending Query
+    33. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    33. iteration for 1.1.1.1
+    33. iteration for 1.0.0.1
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    33. iteration for 208.67.222.2
+      Sending Query
+    33. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+    33. iteration for 9.9.9.9
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+    32. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    34. iteration for 216.146.35.35
+      Sending Query
+    34. iteration for 216.146.36.36
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    34. iteration for 1.1.1.1    34. iteration for 1.0.0.1
+
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    34. iteration for 208.67.222.2
+      Sending Query
+    34. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    34. iteration for 9.9.9.9
+      Sending Query
+    33. iteration for 9.9.9.11
+      Sending Query
+    35. iteration for 216.146.35.35
+      Sending Query
+    35. iteration for 216.146.36.36
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    35. iteration for 1.0.0.1
+    35. iteration for 1.1.1.1
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    35. iteration for 208.67.222.2
+      Sending Query
+    35. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    35. iteration for 9.9.9.9
+      Sending Query
+    36. iteration for 216.146.35.35
+      Sending Query
+    36. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    36. iteration for 1.1.1.1
+    36. iteration for 1.0.0.1
+      Sending Query      Sending Query
+
+    34. iteration for 9.9.9.11
+      Sending Query
+        No Answer
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    36. iteration for 208.67.222.2
+      Sending Query
+    36. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    37. iteration for 216.146.35.35
+      Sending Query
+    37. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    37. iteration for 1.1.1.1    37. iteration for 1.0.0.1
+
+      Sending Query      Sending Query
+
+    36. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+        No Answer
+    35. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    37. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+    37. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+    38. iteration for 216.146.35.35
+      Sending Query
+    38. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    38. iteration for 1.0.0.1
+    38. iteration for 1.1.1.1
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    37. iteration for 9.9.9.9
+      Sending Query
+    36. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    38. iteration for 208.67.222.2
+      Sending Query
+    38. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+    39. iteration for 216.146.35.35
+      Sending Query
+    39. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+    39. iteration for 1.1.1.1
+      Sending Query
+    39. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    38. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    37. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    39. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+    40. iteration for 216.146.35.35
+      Sending Query
+    40. iteration for 216.146.36.36
+      Sending Query
+    39. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    40. iteration for 1.0.0.1    40. iteration for 1.1.1.1
+
+      Sending Query      Sending Query
+
+        No Answer
+        No Answer
+    39. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    38. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    40. iteration for 208.67.222.2
+      Sending Query
+    40. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    41. iteration for 216.146.35.35
+      Sending Query
+    41. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    41. iteration for 1.1.1.1    41. iteration for 1.0.0.1
+
+      Sending Query
+      Sending Query
+        No Answer
+        No Answer
+    40. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    39. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    41. iteration for 208.67.222.222
+      Sending Query
+    41. iteration for 208.67.222.2
+      Sending Query
+    42. iteration for 216.146.35.35
+      Sending Query
+    42. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    42. iteration for 1.1.1.1
+      Sending Query
+    42. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    41. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    40. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    43. iteration for 216.146.35.35
+      Sending Query
+    43. iteration for 216.146.36.36
+      Sending Query
+    42. iteration for 208.67.222.222
+      Sending Query
+    42. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    43. iteration for 1.1.1.1
+      Sending Query
+    43. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    42. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    41. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    44. iteration for 216.146.35.35
+      Sending Query
+    44. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    43. iteration for 208.67.222.222
+      Sending Query
+    43. iteration for 208.67.222.2
+      Sending Query
+    44. iteration for 1.1.1.1
+      Sending Query
+    44. iteration for 1.0.0.1
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+        No Answer
+        No Answer
+    43. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    42. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    45. iteration for 216.146.35.35
+      Sending Query
+    45. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    44. iteration for 208.67.222.222
+      Sending Query
+    45. iteration for 1.1.1.1
+      Sending Query
+    45. iteration for 1.0.0.1
+      Sending Query
+    44. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    44. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    43. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    46. iteration for 216.146.35.35
+      Sending Query
+    46. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    46. iteration for 1.1.1.1
+      Sending Query
+    46. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    45. iteration for 208.67.222.222
+      Sending Query
+    45. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    45. iteration for 9.9.9.9
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-9-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        No Answer
+    44. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    47. iteration for 216.146.35.35
+      Sending Query
+    47. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    47. iteration for 1.1.1.1
+      Sending Query
+    47. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    46. iteration for 208.67.222.222
+      Sending Query
+    46. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    46. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    45. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    48. iteration for 216.146.35.35
+      Sending Query
+    48. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    48. iteration for 1.1.1.1
+      Sending Query
+    48. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    47. iteration for 208.67.222.222
+      Sending Query
+    47. iteration for 208.67.222.2
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    47. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    46. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    49. iteration for 216.146.35.35
+      Sending Query
+    49. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    49. iteration for 1.1.1.1
+      Sending Query
+    49. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    48. iteration for 208.67.222.222
+      Sending Query
+    48. iteration for 208.67.222.2
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    48. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    47. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+    50. iteration for 216.146.35.35
+      Sending Query
+    50. iteration for 216.146.36.36
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  30
+        A record: 139.100.100.100
+        TTL:  30
+    50. iteration for 1.1.1.1
+      Sending Query
+    50. iteration for 1.0.0.1
+      Sending Query
+        No Answer
+        No Answer
+    49. iteration for 208.67.222.2
+      Sending Query
+    49. iteration for 208.67.222.222
+      Sending Query
+        No Answer
+        A record: 139.100.100.100
+        TTL:  0
+    49. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    48. iteration for 9.9.9.11
+      Sending Query
+Ending stale phase for 216.146.35.35, max iteration count reached
+Results of 216.146.35.35:
+  stale_answer_count: 50
+  no_answer_count: 0
+  stale_record_on_iterations: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+Ending stale phase for 216.146.36.36, max iteration count reached
+Results of 216.146.36.36:
+  stale_answer_count: 50
+  no_answer_count: 0
+  stale_record_on_iterations: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Ending stale phase for 1.1.1.1, max iteration count reached
+Results of 1.1.1.1:
+  stale_answer_count: 21
+  no_answer_count: 29
+  stale_record_on_iterations: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+Ending stale phase for 1.0.0.1, max iteration count reached
+Results of 1.0.0.1:
+  stale_answer_count: 20
+  no_answer_count: 30
+  stale_record_on_iterations: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    50. iteration for 208.67.222.2
+      Sending Query
+    50. iteration for 208.67.222.222
+      Sending Query
+        A record: 139.100.100.100
+        TTL:  0
+        No Answer
+    50. iteration for 9.9.9.9
+      Sending Query
+        No Answer
+    49. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+Ending stale phase for 208.67.222.222, max iteration count reached
+Results of 208.67.222.222:
+  stale_answer_count: 46
+  no_answer_count: 4
+  stale_record_on_iterations: [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Ending stale phase for 208.67.222.2, max iteration count reached
+Results of 208.67.222.2:
+  stale_answer_count: 0
+  no_answer_count: 50
+  stale_record_on_iterations: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+Ending stale phase for 9.9.9.9, max iteration count reached
+Results of 9.9.9.9:
+  stale_answer_count: 0
+  no_answer_count: 50
+  stale_record_on_iterations: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    50. iteration for 9.9.9.11
+      Sending Query
+      Exception or timeout occurred for stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de 
+The DNS operation timed out.
+        Error reading the response of query stale-9-9-9-11-100-KGN.packetloss.syssec-research.mmci.uni-saarland.de
+local variable 'response' referenced before assignment
+Ending stale phase for 9.9.9.11, max iteration count reached
+Results of 9.9.9.11:
+  stale_answer_count: 0
+  no_answer_count: 0
+  stale_record_on_iterations: [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+STALE PHASE DONE
+
+Sleeping for 600 seconds between packetloss rate configs (Cooldown)
+  Remaining time:
+600
+[A                             [A
+599
+[A                             [A
+598
+[A                             [A
+597
+[A                             [A
+596
+[A                             [A
+595
+[A                             [A
+594
+[A                             [A
+593
+[A                             [A
+592
+[A                             [A
+591
+[A                             [A
+590
+[A                             [A
+589
+[A                             [A
+588
+[A                             [A
+587
+[A                             [A
+586
+[A                             [A
+585
+[A                             [A
+584
+[A                             [A
+583
+[A                             [A
+582
+[A                             [A
+581
+[A                             [A
+580
+[A                             [A
+579
+[A                             [A
+578
+[A                             [A
+577
+[A                             [A
+576
+[A                             [A
+575
+[A                             [A
+574
+[A                             [A
+573
+[A                             [A
+572
+[A                             [A
+571
+[A                             [A
+570
+[A                             [A
+569
+[A                             [A
+568
+[A                             [A
+567
+[A                             [A
+566
+[A                             [A
+565
+[A                             [A
+564
+[A                             [A
+563
+[A                             [A
+562
+[A                             [A
+561
+[A                             [A
+560
+[A                             [A
+559
+[A                             [A
+558
+[A                             [A
+557
+[A                             [A
+556
+[A                             [A
+555
+[A                             [A
+554
+[A                             [A
+553
+[A                             [A
+552
+[A                             [A
+551
+[A                             [A
+550
+[A                             [A
+549
+[A                             [A
+548
+[A                             [A
+547
+[A                             [A
+546
+[A                             [A
+545
+[A                             [A
+544
+[A                             [A
+543
+[A                             [A
+542
+[A                             [A
+541
+[A                             [A
+540
+[A                             [A
+539
+[A                             [A
+538
+[A                             [A
+537
+[A                             [A
+536
+[A                             [A
+535
+[A                             [A
+534
+[A                             [A
+533
+[A                             [A
+532
+[A                             [A
+531
+[A                             [A
+530
+[A                             [A
+529
+[A                             [A
+528
+[A                             [A
+527
+[A                             [A
+526
+[A                             [A
+525
+[A                             [A
+524
+[A                             [A
+523
+[A                             [A
+522
+[A                             [A
+521
+[A                             [A
+520
+[A                             [A
+519
+[A                             [A
+518
+[A                             [A
+517
+[A                             [A
+516
+[A                             [A
+515
+[A                             [A
+514
+[A                             [A
+513
+[A                             [A
+512
+[A                             [A
+511
+[A                             [A
+510
+[A                             [A
+509
+[A                             [A
+508
+[A                             [A
+507
+[A                             [A
+506
+[A                             [A
+505
+[A                             [A
+504
+[A                             [A
+503
+[A                             [A
+502
+[A                             [A
+501
+[A                             [A
+500
+[A                             [A
+499
+[A                             [A
+498
+[A                             [A
+497
+[A                             [A
+496
+[A                             [A
+495
+[A                             [A
+494
+[A                             [A
+493
+[A                             [A
+492
+[A                             [A
+491
+[A                             [A
+490
+[A                             [A
+489
+[A                             [A
+488
+[A                             [A
+487
+[A                             [A
+486
+[A                             [A
+485
+[A                             [A
+484
+[A                             [A
+483
+[A                             [A
+482
+[A                             [A
+481
+[A                             [A
+480
+[A                             [A
+479
+[A                             [A
+478
+[A                             [A
+477
+[A                             [A
+476
+[A                             [A
+475
+[A                             [A
+474
+[A                             [A
+473
+[A                             [A
+472
+[A                             [A
+471
+[A                             [A
+470
+[A                             [A
+469
+[A                             [A
+468
+[A                             [A
+467
+[A                             [A
+466
+[A                             [A
+465
+[A                             [A
+464
+[A                             [A
+463
+[A                             [A
+462
+[A                             [A
+461
+[A                             [A
+460
+[A                             [A
+459
+[A                             [A
+458
+[A                             [A
+457
+[A                             [A
+456
+[A                             [A
+455
+[A                             [A
+454
+[A                             [A
+453
+[A                             [A
+452
+[A                             [A
+451
+[A                             [A
+450
+[A                             [A
+449
+[A                             [A
+448
+[A                             [A
+447
+[A                             [A
+446
+[A                             [A
+445
+[A                             [A
+444
+[A                             [A
+443
+[A                             [A
+442
+[A                             [A
+441
+[A                             [A
+440
+[A                             [A
+439
+[A                             [A
+438
+[A                             [A
+437
+[A                             [A
+436
+[A                             [A
+435
+[A                             [A
+434
+[A                             [A
+433
+[A                             [A
+432
+[A                             [A
+431
+[A                             [A
+430
+[A                             [A
+429
+[A                             [A
+428
+[A                             [A
+427
+[A                             [A
+426
+[A                             [A
+425
+[A                             [A
+424
+[A                             [A
+423
+[A                             [A
+422
+[A                             [A
+421
+[A                             [A
+420
+[A                             [A
+419
+[A                             [A
+418
+[A                             [A
+417
+[A                             [A
+416
+[A                             [A
+415
+[A                             [A
+414
+[A                             [A
+413
+[A                             [A
+412
+[A                             [A
+411
+[A                             [A
+410
+[A                             [A
+409
+[A                             [A
+408
+[A                             [A
+407
+[A                             [A
+406
+[A                             [A
+405
+[A                             [A
+404
+[A                             [A
+403
+[A                             [A
+402
+[A                             [A
+401
+[A                             [A
+400
+[A                             [A
+399
+[A                             [A
+398
+[A                             [A
+397
+[A                             [A
+396
+[A                             [A
+395
+[A                             [A
+394
+[A                             [A
+393
+[A                             [A
+392
+[A                             [A
+391
+[A                             [A
+390
+[A                             [A
+389
+[A                             [A
+388
+[A                             [A
+387
+[A                             [A
+386
+[A                             [A
+385
+[A                             [A
+384
+[A                             [A
+383
+[A                             [A
+382
+[A                             [A
+381
+[A                             [A
+380
+[A                             [A
+379
+[A                             [A
+378
+[A                             [A
+377
+[A                             [A
+376
+[A                             [A
+375
+[A                             [A
+374
+[A                             [A
+373
+[A                             [A
+372
+[A                             [A
+371
+[A                             [A
+370
+[A                             [A
+369
+[A                             [A
+368
+[A                             [A
+367
+[A                             [A
+366
+[A                             [A
+365
+[A                             [A
+364
+[A                             [A
+363
+[A                             [A
+362
+[A                             [A
+361
+[A                             [A
+360
+[A                             [A
+359
+[A                             [A
+358
+[A                             [A
+357
+[A                             [A
+356
+[A                             [A
+355
+[A                             [A
+354
+[A                             [A
+353
+[A                             [A
+352
+[A                             [A
+351
+[A                             [A
+350
+[A                             [A
+349
+[A                             [A
+348
+[A                             [A
+347
+[A                             [A
+346
+[A                             [A
+345
+[A                             [A
+344
+[A                             [A
+343
+[A                             [A
+342
+[A                             [A
+341
+[A                             [A
+340
+[A                             [A
+339
+[A                             [A
+338
+[A                             [A
+337
+[A                             [A
+336
+[A                             [A
+335
+[A                             [A
+334
+[A                             [A
+333
+[A                             [A
+332
+[A                             [A
+331
+[A                             [A
+330
+[A                             [A
+329
+[A                             [A
+328
+[A                             [A
+327
+[A                             [A
+326
+[A                             [A
+325
+[A                             [A
+324
+[A                             [A
+323
+[A                             [A
+322
+[A                             [A
+321
+[A                             [A
+320
+[A                             [A
+319
+[A                             [A
+318
+[A                             [A
+317
+[A                             [A
+316
+[A                             [A
+315
+[A                             [A
+314
+[A                             [A
+313
+[A                             [A
+312
+[A                             [A
+311
+[A                             [A
+310
+[A                             [A
+309
+[A                             [A
+308
+[A                             [A
+307
+[A                             [A
+306
+[A                             [A
+305
+[A                             [A
+304
+[A                             [A
+303
+[A                             [A
+302
+[A                             [A
+301
+[A                             [A
+300
+[A                             [A
+299
+[A                             [A
+298
+[A                             [A
+297
+[A                             [A
+296
+[A                             [A
+295
+[A                             [A
+294
+[A                             [A
+293
+[A                             [A
+292
+[A                             [A
+291
+[A                             [A
+290
+[A                             [A
+289
+[A                             [A
+288
+[A                             [A
+287
+[A                             [A
+286
+[A                             [A
+285
+[A                             [A
+284
+[A                             [A
+283
+[A                             [A
+282
+[A                             [A
+281
+[A                             [A
+280
+[A                             [A
+279
+[A                             [A
+278
+[A                             [A
+277
+[A                             [A
+276
+[A                             [A
+275
+[A                             [A
+274
+[A                             [A
+273
+[A                             [A
+272
+[A                             [A
+271
+[A                             [A
+270
+[A                             [A
+269
+[A                             [A
+268
+[A                             [A
+267
+[A                             [A
+266
+[A                             [A
+265
+[A                             [A
+264
+[A                             [A
+263
+[A                             [A
+262
+[A                             [A
+261
+[A                             [A
+260
+[A                             [A
+259
+[A                             [A
+258
+[A                             [A
+257
+[A                             [A
+256
+[A                             [A
+255
+[A                             [A
+254
+[A                             [A
+253
+[A                             [A
+252
+[A                             [A
+251
+[A                             [A
+250
+[A                             [A
+249
+[A                             [A
+248
+[A                             [A
+247
+[A                             [A
+246
+[A                             [A
+245
+[A                             [A
+244
+[A                             [A
+243
+[A                             [A
+242
+[A                             [A
+241
+[A                             [A
+240
+[A                             [A
+239
+[A                             [A
+238
+[A                             [A
+237
+[A                             [A
+236
+[A                             [A
+235
+[A                             [A
+234
+[A                             [A
+233
+[A                             [A
+232
+[A                             [A
+231
+[A                             [A
+230
+[A                             [A
+229
+[A                             [A
+228
+[A                             [A
+227
+[A                             [A
+226
+[A                             [A
+225
+[A                             [A
+224
+[A                             [A
+223
+[A                             [A
+222
+[A                             [A
+221
+[A                             [A
+220
+[A                             [A
+219
+[A                             [A
+218
+[A                             [A
+217
+[A                             [A
+216
+[A                             [A
+215
+[A                             [A
+214
+[A                             [A
+213
+[A                             [A
+212
+[A                             [A
+211
+[A                             [A
+210
+[A                             [A
+209
+[A                             [A
+208
+[A                             [A
+207
+[A                             [A
+206
+[A                             [A
+205
+[A                             [A
+204
+[A                             [A
+203
+[A                             [A
+202
+[A                             [A
+201
+[A                             [A
+200
+[A                             [A
+199
+[A                             [A
+198
+[A                             [A
+197
+[A                             [A
+196
+[A                             [A
+195
+[A                             [A
+194
+[A                             [A
+193
+[A                             [A
+192
+[A                             [A
+191
+[A                             [A
+190
+[A                             [A
+189
+[A                             [A
+188
+[A                             [A
+187
+[A                             [A
+186
+[A                             [A
+185
+[A                             [A
+184
+[A                             [A
+183
+[A                             [A
+182
+[A                             [A
+181
+[A                             [A
+180
+[A                             [A
+179
+[A                             [A
+178
+[A                             [A
+177
+[A                             [A
+176
+[A                             [A
+175
+[A                             [A
+174
+[A                             [A
+173
+[A                             [A
+172
+[A                             [A
+171
+[A                             [A
+170
+[A                             [A
+169
+[A                             [A
+168
+[A                             [A
+167
+[A                             [A
+166
+[A                             [A
+165
+[A                             [A
+164
+[A                             [A
+163
+[A                             [A
+162
+[A                             [A
+161
+[A                             [A
+160
+[A                             [A
+159
+[A                             [A
+158
+[A                             [A
+157
+[A                             [A
+156
+[A                             [A
+155
+[A                             [A
+154
+[A                             [A
+153
+[A                             [A
+152
+[A                             [A
+151
+[A                             [A
+150
+[A                             [A
+149
+[A                             [A
+148
+[A                             [A
+147
+[A                             [A
+146
+[A                             [A
+145
+[A                             [A
+144
+[A                             [A
+143
+[A                             [A
+142
+[A                             [A
+141
+[A                             [A
+140
+[A                             [A
+139
+[A                             [A
+138
+[A                             [A
+137
+[A                             [A
+136
+[A                             [A
+135
+[A                             [A
+134
+[A                             [A
+133
+[A                             [A
+132
+[A                             [A
+131
+[A                             [A
+130
+[A                             [A
+129
+[A                             [A
+128
+[A                             [A
+127
+[A                             [A
+126
+[A                             [A
+125
+[A                             [A
+124
+[A                             [A
+123
+[A                             [A
+122
+[A                             [A
+121
+[A                             [A
+120
+[A                             [A
+119
+[A                             [A
+118
+[A                             [A
+117
+[A                             [A
+116
+[A                             [A
+115
+[A                             [A
+114
+[A                             [A
+113
+[A                             [A
+112
+[A                             [A
+111
+[A                             [A
+110
+[A                             [A
+109
+[A                             [A
+108
+[A                             [A
+107
+[A                             [A
+106
+[A                             [A
+105
+[A                             [A
+104
+[A                             [A
+103
+[A                             [A
+102
+[A                             [A
+101
+[A                             [A
+100
+[A                             [A
+99
+[A                             [A
+98
+[A                             [A
+97
+[A                             [A
+96
+[A                             [A
+95
+[A                             [A
+94
+[A                             [A
+93
+[A                             [A
+92
+[A                             [A
+91
+[A                             [A
+90
+[A                             [A
+89
+[A                             [A
+88
+[A                             [A
+87
+[A                             [A
+86
+[A                             [A
+85
+[A                             [A
+84
+[A                             [A
+83
+[A                             [A
+82
+[A                             [A
+81
+[A                             [A
+80
+[A                             [A
+79
+[A                             [A
+78
+[A                             [A
+77
+[A                             [A
+76
+[A                             [A
+75
+[A                             [A
+74
+[A                             [A
+73
+[A                             [A
+72
+[A                             [A
+71
+[A                             [A
+70
+[A                             [A
+69
+[A                             [A
+68
+[A                             [A
+67
+[A                             [A
+66
+[A                             [A
+65
+[A                             [A
+64
+[A                             [A
+63
+[A                             [A
+62
+[A                             [A
+61
+[A                             [A
+60
+[A                             [A
+59
+[A                             [A
+58
+[A                             [A
+57
+[A                             [A
+56
+[A                             [A
+55
+[A                             [A
+54
+[A                             [A
+53
+[A                             [A
+52
+[A                             [A
+51
+[A                             [A
+50
+[A                             [A
+49
+[A                             [A
+48
+[A                             [A
+47
+[A                             [A
+46
+[A                             [A
+45
+[A                             [A
+44
+[A                             [A
+43
+[A                             [A
+42
+[A                             [A
+41
+[A                             [A
+40
+[A                             [A
+39
+[A                             [A
+38
+[A                             [A
+37
+[A                             [A
+36
+[A                             [A
+35
+[A                             [A
+34
+[A                             [A
+33
+[A                             [A
+32
+[A                             [A
+31
+[A                             [A
+30
+[A                             [A
+29
+[A                             [A
+28
+[A                             [A
+27
+[A                             [A
+26
+[A                             [A
+25
+[A                             [A
+24
+[A                             [A
+23
+[A                             [A
+22
+[A                             [A
+21
+[A                             [A
+20
+[A                             [A
+19
+[A                             [A
+18
+[A                             [A
+17
+[A                             [A
+16
+[A                             [A
+15
+[A                             [A
+14
+[A                             [A
+13
+[A                             [A
+12
+[A                             [A
+11
+[A                             [A
+10
+[A                             [A
+9
+[A                             [A
+8
+[A                             [A
+7
+[A                             [A
+6
+[A                             [A
+5
+[A                             [A
+4
+[A                             [A
+3
+[A                             [A
+2
+[A                             [A
+1
+[A                             [A
+  Stopping packet capture
+    Sleeping for 1 seconds for tcpdump to terminate
+  Remaining time:
+1
+[A                             [A
+  Disabling packetloss on bond0 interface with following commands:
+    sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability 1.0 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+    sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability 1.0 --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP
+
+==== Experiment ended ====
+
+Compressing all log files into a logs.zip file with the following command:
+  zip -r logs.zip packet_capture_logs_stale2
+Compressing...
+Compressing done

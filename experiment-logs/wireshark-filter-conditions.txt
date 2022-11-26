@@ -106,6 +106,9 @@ dns.resp.ttl
 
 Stale records filter:
 (dns.flags.rcode) && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
+&& (dns.qry.name matches "stale-") && (dns.qry.type == 1) && (dns.resp.type == 1) && 
+(dns.resp.type != 2) && (dns.resp.type != 6) && 
+(dns.qry.type != 2) && (dns.qry.type != 28)
 
 ((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")) && (dns.flags.response == 1)
 
@@ -113,15 +116,39 @@ Stale records filter:
 
 && (dns.qry.name matches "94-140-14-14" || dns.qry.name matches "94-140-14-15")
 
-dns.a == 139.51.51.51
-dns.a != 139.51.51.51 or better dns.a == 139.50.50.50
+dns.a != 139.51.51.51 or dns.a == 139.50.50.50
 
 10 stale phase 10 Experiment  (*13 bcs 13 pcaps for each pl rate) = 130 stale phase, 130 Experiment
 
 ((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de"))  
-&& (dns.qry.name != "_.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.type != 2)
-
-((dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de"))  
 && (dns.qry.name != "_.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.type != 2) && (dns.qry.name matches "156-154-70-1" || dns.qry.name matches "64-6-64-6")
 
+Filter for open resolvers in the wild (for 0 packetloss rate): (Query A record, )
 
+(dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name matches ".public-pl0") && 
+(dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "_.packetloss.syssec-research.mmci.uni-saarland.de") && (dns.flags.rcode != 1) && (!_ws.malformed) &&
+(ip.src == 139.19.117.11 || ip.dst == 139.19.117.11 || ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)
+
+1 is A, 2 is NS, 28 is SOA
+(dns.qry.type == 1 || dns.qry.type == 28)
+
+1 is A, 6 is SOA
+(dns.resp.type == 1 || dns.resp.type == 6)
+
+(dns.qry.type == 1) && (dns.resp.type == 1) && 
+(dns.resp.type != 2) && (dns.resp.type != 6) && 
+(dns.qry.type != 2) && (dns.qry.type != 28)
+
+Query structure:
+<5 random character>_<hex of IP(8 char)>.public_pl<pl-rate>.packetloss.syssec-research.mmci.uni-saarland.de
+....._........\.public_pl(0|10|20|30|40|50|60|70|80|85|90|95)\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$
+
+-------------
+
+Stale duration wireshark client filter:
+(dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
+&& (dns.qry.name matches "stale-") && (dns.qry.type == 1) && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)
+
+Stale duration wireshark auth filter:
+(dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
+&& (dns.qry.name matches "stale-") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)

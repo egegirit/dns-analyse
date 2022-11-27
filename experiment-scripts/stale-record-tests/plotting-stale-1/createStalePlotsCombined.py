@@ -307,30 +307,44 @@ def create_combined_plots(file_name_prefix, operator_name):
     # print(f"Failure ratio: {values}")
 
     failure_rate_vals = values.copy()
+    failure_rate_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for i in range(len(failure_rate_vals)):
         try:
-            failure_rate_vals[i] = failed_packet_pl_rate[str(packetloss_rates[i])]
+            failure_rate_vals[i] = (failed_packet_pl_rate[str(packetloss_rates[i])] / (
+                    failed_packet_pl_rate[str(packetloss_rates[i])] + norerror_pl_rate[
+                str(packetloss_rates[i])])) * 100
+            failure_rate_counts[i] = failed_packet_pl_rate[str(packetloss_rates[i])]
         except ZeroDivisionError:
             print("Zero division error!")
             failure_rate_vals[i] = 0
+            failure_rate_counts[i] = 0
     failure_rects = ax.bar(arr + width, failure_rate_vals, width, bottom=0, color='red')
 
 
     ok_vals = list(norerror_pl_rate.values())
     ok_rate_vals = ok_vals.copy()
+    ok_rate_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    index = 0
     for i in range(len(ok_rate_vals)):
         try:
-            ok_rate_vals[i] = (ok_rate_vals[i])
+            ok_rate_vals[i] = (ok_rate_vals[i] /
+                               responses_pl_rate[str(packetloss_rates[i])]) * 100
+            ok_rate_counts[index] = ok_rate_vals[i]
         except ZeroDivisionError:
             print("Zero division error!")
             ok_rate_vals[i] = 0
+            ok_rate_counts[index] = 0
+        index += 1
 
     # Calculate stale record values
     stale_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    stale_rate_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     index = 0
     for i in packetloss_rates:
         try:
-            stale_rate_vals[index] = (stale_count_of_pl[str(i)])
+            stale_rate_vals[index] = (stale_count_of_pl[str(i)] / (
+                    stale_count_of_pl[str(i)] + non_stale_count_of_pl[str(i)])) * 100
+            stale_rate_counts[index] = (stale_count_of_pl[str(i)])
         except ZeroDivisionError:
             print("Zero division error!")
             stale_rate_vals[index] = 0
@@ -360,42 +374,45 @@ def create_combined_plots(file_name_prefix, operator_name):
     ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100))
     ax.legend((failure_rects[0], ok_rects[0], stale_rects[0]), ('Failure', 'OK', 'Stale'), framealpha=0.5, bbox_to_anchor=(1, 1))
 
-    def autolabel(rects):
+    def autolabel_fail(rects):
+        index = 0
         for rect in rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., h + 1, '%d' % int(h),
+            ax.text(rect.get_x() + rect.get_width() / 2., h + 1, f"#{failure_rate_counts[index]}",
                     ha='center', va='bottom')
+            index += 1
 
     def autolabel_ok(rects):
+        index = 0
         for rect in rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., h - 1.5, '%d' % int(h),
+            ax.text(rect.get_x() + rect.get_width() / 2., h - 1.5, f"#{norerror_pl_rate[str(packetloss_rates[index])] - stale_rate_counts[index]}",
                     ha='center', va='bottom')
+            index += 1
 
     def autolabel_stale(rects, ok_rects):
         h_of_ok = []
+        index = 0
         for rect in ok_rects:
             h = rect.get_height()
             h_of_ok.append(int(h))
+            index += 1
 
         i = 0
         for rect in rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., (h + 1.5) + h_of_ok[i], '%d' % int(h),
+            ax.text(rect.get_x() + rect.get_width() / 2., (h + 1.5) + h_of_ok[i], f"#{stale_rate_counts[i]}",
                     ha='center', va='bottom')
             i += 1
 
-    autolabel(failure_rects)
+    autolabel_fail(failure_rects)
     autolabel_ok(ok_rects)
     autolabel_stale(stale_rects, ok_rects)
-    # autolabel(refused_rects)
 
     plt.show()
 
     # save plot as png
     # plt.savefig((file_name_prefix + '_StaleRecordPlot.png'), bbox_inches='tight')
-    # show plot
-    # plt.show()
     print(f" Created box plot: {file_name_prefix}")
     # Clear plots
     plt.cla()
@@ -766,6 +783,17 @@ def read_json_file(filename, pl_rate, resolver_filter):
         if 'dns' in json_data[i]['_source']['layers']:
 
             json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
+
+            splitted_type = json_string.split("'dns.qry.type': ")
+            splitted_type2 = str(splitted_type[1])
+            query_type = splitted_type2.split("'")[1]
+            # print(f"QUERY TYPE: {query_type}")
+
+            if query_type != "1":
+                # pkt = json_data[i]['_source']['layers']['dns']
+                # print(pkt)
+                continue
+
             splitted_json1 = json_string.split("'dns.qry.name': ")
             splitted2 = str(splitted_json1[1])
             query_name = splitted2.split("'")[1]
@@ -869,6 +897,16 @@ def read_json_file(filename, pl_rate, resolver_filter):
                             if int(answer_count) >= 1:
                                 # print(f"Answer count: {answer_count}")
                                 answer_string = str(json_data[i]['_source']['layers']['dns']["Answers"])
+                                splitted_resp_type = answer_string.split("'dns.resp.type': ")
+                                splitted_resp_type2 = str(splitted_resp_type[1])
+                                resp_type = splitted_resp_type2.split("'")[1]
+
+                                # print(f"RESPONSE TYPE: {resp_type}")
+                                if resp_type != "1":
+                                    if pl_rate_of_query_name == "100":
+                                        print(f"RESP TYPE: {resp_type} , {query_name_lower} , {frame_number}")
+                                    continue
+
                                 # print(f"answer_string: {answer_string}")
                                 splitted1 = answer_string.split("'dns.a': ")
                                 # print(f"splitted1: {splitted1}")
@@ -880,6 +918,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
                                 splitted4 = str(splitted3[1])
                                 ttl_of_answer = int(splitted4.split("'")[1])
                                 # print(f"TTL: {ttl_of_answer}")
+
 
             is_a_new_query = query_name in all_query_names
             if is_a_new_query:
@@ -960,14 +999,15 @@ def read_json_file(filename, pl_rate, resolver_filter):
             if is_response == "1" and phases[phase_index] == "Stale":
                 if str(rcode) == "2":
                     failed_packet_pl_rate[str(pl_rate)] += 1
-                elif str(rcode) == "0":
+                # Consider only packets where answer count is >= 1 to filter NS type answers
+                elif str(rcode) == "0"  and int(answer_count) >= 1:
                     norerror_pl_rate[str(pl_rate)] += 1
                 elif str(rcode) == "5":
                     refused_packet_pl_rate[str(pl_rate)] += 1
 
             # Get all response and queries count
             if phases[phase_index] == "Stale":
-                if is_response == "1":
+                if is_response == "1" and int(answer_count) >= 1:
                     responses_pl_rate[str(pl_rate)] += 1
                 elif is_response == "0":
                     queries_pl_rate[str(pl_rate)] += 1
@@ -982,8 +1022,11 @@ def read_json_file(filename, pl_rate, resolver_filter):
             #        # time.sleep(20)
 
             # Store packet to operator list
-            if is_response == "1" and phases[phase_index] == "Stale":
+            if is_response == "1" and phases[phase_index] == "Stale" and int(answer_count) >= 1:
                 operator_stale_packets[operator].append(json_data[i])
+                # if pl_rate_of_query_name == "100":
+                #     print(f"{query_name_lower} , {frame_number}")
+
 
 
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"

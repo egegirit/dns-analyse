@@ -98,7 +98,7 @@ WARNING: dns.qry.name matches "8-8-8-8" also shows the packets for Yandex2 with 
 ========================
 
 Filter for faster tests of plotting scripts:
-((dns.qry.name matches "94-140-14-14") || (dns.qry.name matches "8-8-4-4")) && ((dns.qry.name matches "1-pl") || (dns.qry.name matches "2-pl") || (dns.qry.name matches "3-pl"))
+((dns.qry.name matches "94-140-14-14") || (dns.qry.name matches "94-140-14-15")) && ((dns.qry.name matches "1-pl") || (dns.qry.name matches "2-pl") || (dns.qry.name matches "3-pl"))
 
 
 TTL Value in wireshark:
@@ -152,3 +152,14 @@ Stale duration wireshark client filter:
 Stale duration wireshark auth filter:
 (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
 && (dns.qry.name matches "stale-") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)
+
+
+Dyn stale phases
+
+((dns.qry.name matches "216-146-35-35") || (dns.qry.name matches "216-146-36-36")) && (dns.flags.rcode == 0) && 
+((frame.time_relative > 130 && frame.time_relative < 194 ) || (frame.time_relative > 10529 && frame.time_relative < 10539) || 
+(frame.time_relative > 20866 && frame.time_relative < 20883)  || (frame.time_relative > 31205 && frame.time_relative < 31216) || 
+(frame.time_relative > 41543 && frame.time_relative < 41561) || (frame.time_relative > 51882 && frame.time_relative < 51893) ||
+(frame.time_relative > 62226 && frame.time_relative < 62236) || (frame.time_relative > 72573 && frame.time_relative < 72591) ||
+(frame.time_relative > 82916 && frame.time_relative < 82927) || (frame.time_relative > 93260 && frame.time_relative < 93271)
+)

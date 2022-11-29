@@ -739,7 +739,7 @@ latency_of_stales_pl = {
 auth_json_prefix = "auth_stale_pl"
 client_json_prefix = "client_stale_pl"
 
-ttl_wait_time = 108
+ttl_wait_time = 115
 wait_packetloss_config = 595
 
 # Debug
@@ -833,6 +833,13 @@ def read_json_file(filename, pl_rate, resolver_filter):
                     ip_dst = json_data[i]['_source']['layers']["ip"]["ip.dst"]
                     # print(f"IP DST: {ip_dst}")
 
+            if "client" in filename:
+                if ip_dst != "139.19.117.1":
+                    continue
+            elif "auth" in filename:
+                if ip_src != "139.19.117.1":
+                    continue
+
             # Filter specific resolver packets by the query's IP Address
 
             try:
@@ -880,6 +887,11 @@ def read_json_file(filename, pl_rate, resolver_filter):
             if "dns.id" in json_data[i]['_source']['layers']['dns']:
                 dns_id = json_data[i]['_source']['layers']['dns']["dns.id"]
                 # print(f"DNS ID: {dns_id}")
+
+            has_answer = False
+            if "Answers" in json_data[i]['_source']['layers']['dns']:
+                # Possible NS Answer or error packet or query
+                has_answer = True
 
             if "dns.flags_tree" in json_data[i]['_source']['layers']['dns']:
                 if "dns.flags.response" in json_data[i]['_source']['layers']['dns']["dns.flags_tree"]:
@@ -1000,7 +1012,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
                 if str(rcode) == "2":
                     failed_packet_pl_rate[str(pl_rate)] += 1
                 # Consider only packets where answer count is >= 1 to filter NS type answers
-                elif str(rcode) == "0"  and int(answer_count) >= 1:
+                elif str(rcode) == "0" and int(answer_count) >= 1:
                     norerror_pl_rate[str(pl_rate)] += 1
                 elif str(rcode) == "5":
                     refused_packet_pl_rate[str(pl_rate)] += 1
@@ -1030,7 +1042,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
 
 
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
+filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
 
 # Stale record supporting resolvers
 # "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92"
@@ -1046,7 +1058,7 @@ for current_pl_rate in packetloss_rates:
 
     read_json_file(client_json_file_name, current_pl_rate, filtered_resolvers)
 
-name = "AdGuard"
+name = "Google"
 
 directory_name = name
 

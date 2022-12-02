@@ -1,0 +1,355 @@
+Current time: 2022-12-02 22:01:10.372581
+Query count to send: 65
+sleep_time: 1.1
+query_name: cachetest.hill111.messwithdns.com
+
+Press "a" to skip the current Resolver IP
+
+  Current Open Resolver: 94.140.14.14
+(0): 650, First (Max?) TTL for 94.140.14.14 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 647, (2): 646, (3): 645, (4): 644, (5): 643, (6): 641, (7): 640, (8): 639, (9): 638, (10): 639, (11): 636, (12): 635, (13): 634, (14): 632, (15): 631, (16): 631, (17): 629, (18): 628, (19): 627, (20): 626, (21): 625, (22): 626, (23): 623, (24): 621, (25): 621, (26): 620, (27): 620, (28): 617, (29): 618, (30): 615, (31): 616, (32): 612, (33): 612, (34): 611, (35): 609, (36): 608, (37): 607, (38): 606, (39): 605, (40): 603, (41): 603, (42): 603, (43): 601, (44): 600, (45): 598, (46): 597, (47): 596, (48): 595, (49): 593, (50): 592, (51): 591, (52): 592, (53): 589, (54): 588, (55): 587, (56): 586, (57): 585, (58): 584, (59): 582, (60): 582, (61): 581, (62): 579, (63): 578, (64): 577, 
+Done sending queries to 94.140.14.14
+
+
+  Observed Max TTL count of 94.140.14.14: 1
+  Estimated cache count of 94.140.14.14: 1
+
+
+  Current Open Resolver: 94.140.14.15
+(0): 576, First (Max?) TTL for 94.140.14.15 set to 576, 
+  Possible shared cache or reduced cache TTL for: 94.140.14.15 
+
+Observed Max TTL count incremented: 1, (1): 575, (2): 574, (3): 573, (4): 572, (5): 571, (6): 570, (7): 570, (8): 567, (9): 566, (10): 565, (11): 564, (12): 563, (13): 562, (14): 561, (15): 559, (16): 558, (17): 559, (18): 556, (19): 555, (20): 556, (21): 553, (22): 552, (23): 550, (24): 550, (25): 550, (26): 547, (27): 546, (28): 545, (29): 544, (30): 543, (31): 541, (32): 540, (33): 539, (34): 539, (35): 537, (36): 536, (37): 535, (38): 534, (39): 533, (40): 531, (41): 531, (42): 529, (43): 530, (44): 527, (45): 526, (46): 525, (47): 524, (48): 523, (49): 522, (50): 521, (51): 519, (52): 518, (53): 517, (54): 516, (55): 515, (56): 514, (57): 513, (58): 512, (59): 511, (60): 510, (61): 508, (62): 507, (63): 506, (64): 505, 
+Done sending queries to 94.140.14.15
+
+
+  Observed Max TTL count of 94.140.14.15: 1
+  Estimated cache count of 94.140.14.15: 0
+
+
+  Current Open Resolver: 94.140.14.140
+(0): 506, First (Max?) TTL for 94.140.14.140 set to 506, 
+  Possible shared cache or reduced cache TTL for: 94.140.14.140 
+
+Observed Max TTL count incremented: 1, (1): 503, (2): 502, (3): 501, (4): 500, (5): 498, (6): 497, (7): 496, (8): 495, (9): 494, (10): 493, (11): 492, (12): 491, (13): 490, (14): 488, (15): 487, (16): 486, (17): 485, (18): 486, (19): 483, (20): 482, (21): 482, (22): 480, (23): 478, (24): 477, (25): 476, (26): 477, (27): 474, (28): 475, (29): 474, (30): 471, (31): 470, (32): 468, (33): 468, (34): 466, (35): 465, (36): 464, (37): 465, (38): 461, (39): 461, (40): 461, (41): 458, (42): 457, (43): 456, (44): 455, (45): 454, (46): 453, (47): 452, (48): 451, (49): 450, (50): 449, (51): 447, (52): 446, (53): 445, (54): 446, (55): 443, (56): 442, (57): 441, (58): 439, (59): 439, (60): 437, (61): 436, (62): 435, (63): 434, (64): 433, 
+Done sending queries to 94.140.14.140
+
+
+  Observed Max TTL count of 94.140.14.140: 1
+  Estimated cache count of 94.140.14.140: 0
+
+
+  Current Open Resolver: 185.228.168.168
+(0): 650, First (Max?) TTL for 185.228.168.168 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 648, (2): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (3): 649, (4): 648, (5): 644, (6): 646, (7): 642, (8): 640, (9): 642, (10): 638, (11): 640, (12): 636, (13): 638, (14): 634, (15): 636, (16): 632, (17): 630, (18): 629, (19): 628, (20): 627, (21): 629, (22): 628, (23): 624, (24): 623, (25): 622, (26): 620, (27): 619, (28): 618, (29): 617, (30): 616, (31): 618, (32): 614, (33): 616, (34): 611, (35): 613, (36): 609, (37): 611, (38): 610, (39): 606, (40): 605, (41): 607, (42): 606, (43): 604, (44): 600, (45): 602, (46): 598, (47): 600, (48): 596, (49): 595, (50): 594, (51): 593, (52): 594, (53): 593, (54): 589, (55): 588, (56): 590, (57): 589, (58): 585, (59): 587, (60): 583, (61): 585, (62): 580, (63): 579, (64): 581, 
+Done sending queries to 185.228.168.168
+
+
+  Observed Max TTL count of 185.228.168.168: 2
+  Estimated cache count of 185.228.168.168: 2
+
+
+  Current Open Resolver: 185.228.168.10
+(0): 577, First (Max?) TTL for 185.228.168.10 set to 577, 
+  Possible shared cache or reduced cache TTL for: 185.228.168.10 
+
+Observed Max TTL count incremented: 1, (1): 579, (2): 578, (3): 574, (4): 573, (5): 572, (6): 573, (7): 569, (8): 568, (9): 567, (10): 569, (11): 565, (12): 567, (13): 563, (14): 565, (15): 560, (16): 559, (17): 561, (18): 557, (19): 556, (20): 558, (21): 557, (22): 553, (23): 555, (24): 550, (25): 552, (26): 548, (27): 550, (28): 549, (29): 548, (30): 544, (31): 546, (32): 545, (33): 544, (34): 539, (35): 538, (36): 537, (37): 539, (38): 535, (39): 534, (40): 533, (41): 535, (42): 534, (43): 529, (44): 531, (45): 527, (46): 529, (47): 650, Cache count incremented: 1, (48): 649, (49): 526, (50): 521, (51): 523, (52): 519, (53): 521, (54): 517, (55): 519, (56): 518, (57): 514, (58): 516, (59): 511, (60): 510, (61): 509, (62): 508, (63): 507, (64): 506, 
+Done sending queries to 185.228.168.10
+
+
+  Observed Max TTL count of 185.228.168.10: 1
+  Estimated cache count of 185.228.168.10: 1
+
+
+  Current Open Resolver: 185.228.168.9
+(0): 508, First (Max?) TTL for 185.228.168.9 set to 508, 
+  Possible shared cache or reduced cache TTL for: 185.228.168.9 
+
+Observed Max TTL count incremented: 1, (1): 504, (2): 506, (3): 501, (4): 500, (5): 502, (6): 498, (7): 500, (8): 496, (9): 495, (10): 497, (11): 493, (12): 494, (13): 490, (14): 492, (15): 488, (16): 490, (17): 486, (18): 485, (19): 484, (20): 483, (21): 485, (22): 483, (23): 479, (24): 478, (25): 480, (26): 476, (27): 475, (28): 474, (29): 476, (30): 475, (31): 473, (32): 472, (33): 468, (34): 467, (35): 469, (36): 465, (37): 467, (38): 466, (39): 462, (40): 463, (41): 459, (42): 458, (43): 457, (44): 650, Cache count incremented: 1, (45): 455, (46): 457, (47): 456, (48): 454, (49): 450, (50): 449, (51): 448, (52): 450, (53): 449, (54): 445, (55): 447, (56): 443, (57): 441, (58): 443, (59): 442, (60): 438, (61): 437, (62): 436, (63): 438, (64): 434, 
+Done sending queries to 185.228.168.9
+
+
+  Observed Max TTL count of 185.228.168.9: 1
+  Estimated cache count of 185.228.168.9: 1
+
+
+  Current Open Resolver: 1.1.1.1
+(0): 650, First (Max?) TTL for 1.1.1.1 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 649, (3): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (4): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (5): 650, Cache count incremented: 5, Observed Max TTL count incremented: 5, (6): 650, Cache count incremented: 6, Observed Max TTL count incremented: 6, (7): 642, (8): 650, Cache count incremented: 7, Observed Max TTL count incremented: 7, (9): 650, Cache count incremented: 8, Observed Max TTL count incremented: 8, (10): 650, Cache count incremented: 9, Observed Max TTL count incremented: 9, (11): 650, Cache count incremented: 10, Observed Max TTL count incremented: 10, (12): 650, Cache count incremented: 11, Observed Max TTL count incremented: 11, (13): 650, Cache count incremented: 12, Observed Max TTL count incremented: 12, (14): 649, (15): 647, (16): 650, Cache count incremented: 13, Observed Max TTL count incremented: 13, (17): 650, Cache count incremented: 14, Observed Max TTL count incremented: 14, (18): 650, Cache count incremented: 15, Observed Max TTL count incremented: 15, (19): 627, (20): 626, (21): 650, Cache count incremented: 16, Observed Max TTL count incremented: 16, (22): 646, (23): 644, (24): 636, (25): 621, (26): 634, (27): 631, (28): 640, (29): 626, (30): 616, (31): 637, (32): 628, (33): 613, (34): 634, (35): 611, (36): 630, (37): 650, Cache count incremented: 17, Observed Max TTL count incremented: 17, (38): 619, (39): 627, (40): 626, (41): 605, (42): 615, (43): 623, (44): 625, (45): 601, (46): 607, (47): 622, (48): 605, (49): 608, (50): 604, (51): 606, (52): 606, (53): 593, (54): 615, (55): 603, (56): 597, (57): 600, (58): 599, (59): 606, (60): 597, (61): 585, (62): 596, (63): 595, (64): 594, 
+Done sending queries to 1.1.1.1
+
+
+  Observed Max TTL count of 1.1.1.1: 17
+  Estimated cache count of 1.1.1.1: 17
+
+
+  Current Open Resolver: 1.1.1.2
+(0): 650, First (Max?) TTL for 1.1.1.2 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 580, (2): 590, (3): 647, (4): 587, (5): 645, (6): 586, (7): 595, (8): 592, (9): 578, (10): 589, (11): 591, (12): 575, (13): 574, (14): 635, (15): 584, (16): 569, (17): 574, (18): 580, (19): 572, (20): 559, (21): 578, (22): 569, (23): 576, (24): 577, (25): 559, (26): 565, (27): 574, (28): 551, (29): 572, (30): 561, (31): 568, (32): 615, (33): 555, (34): 613, (35): 553, (36): 563, (37): 564, (38): 553, (39): 560, (40): 551, (41): 547, (42): 557, (43): 603, (44): 538, (45): 556, (46): 544, (47): 537, (48): 542, (49): 552, (50): 532, (51): 536, (52): 535, (53): 534, (54): 544, (55): 590, (56): 531, (57): 525, (58): 542, (59): 541, (60): 522, (61): 528, (62): 521, (63): 526, (64): 580, 
+Done sending queries to 1.1.1.2
+
+
+  Observed Max TTL count of 1.1.1.2: 1
+  Estimated cache count of 1.1.1.2: 1
+
+
+  Current Open Resolver: 1.1.1.3
+(0): 518, First (Max?) TTL for 1.1.1.3 set to 518, 
+  Possible shared cache or reduced cache TTL for: 1.1.1.3 
+
+Observed Max TTL count incremented: 1, (1): 534, (2): 516, (3): 521, (4): 524, (5): 505, (6): 529, (7): 513, (8): 527, (9): 522, (10): 500, (11): 509, (12): 516, (13): 504, (14): 521, (15): 495, (16): 499, (17): 560, (18): 492, (19): 516, (20): 503, (21): 502, (22): 501, (23): 493, (24): 506, (25): 489, (26): 492, (27): 500, (28): 548, (29): 505, (30): 546, (31): 499, (32): 495, (33): 501, (34): 496, (35): 541, (36): 496, (37): 539, (38): 475, (39): 537, (40): 536, (41): 493, (42): 492, (43): 483, (44): 490, (45): 476, (46): 470, (47): 487, (48): 466, (49): 463, (50): 462, (51): 470, (52): 473, (53): 475, (54): 452, (55): 473, (56): 458, (57): 476, (58): 454, (59): 456, (60): 514, (61): 467, (62): 471, (63): 458, (64): 451, 
+Done sending queries to 1.1.1.3
+
+
+  Observed Max TTL count of 1.1.1.3: 1
+  Estimated cache count of 1.1.1.3: 0
+
+
+  Current Open Resolver: 216.146.35.35
+(0): 650, First (Max?) TTL for 216.146.35.35 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 649, (3): 646, (4): 646, (5): 644, (6): 644, (7): 642, (8): 641, (9): 640, (10): 640, (11): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (12): 649, (13): 648, (14): 634, (15): 634, (16): 632, (17): 632, (18): 630, (19): 630, (20): 628, (21): 639, (22): 626, (23): 637, (24): 623, (25): 635, (26): 622, (27): 633, (28): 619, (29): 617, (30): 616, (31): 628, (32): 627, (33): 626, (34): 625, (35): 611, (36): 611, (37): 609, (38): 607, (39): 607, (40): 605, (41): 604, (42): 604, (43): 615, (44): 614, (45): 613, (46): 600, (47): 599, (48): 609, (49): 596, (50): 594, (51): 594, (52): 593, (53): 604, (54): 591, (55): 590, (56): 589, (57): 599, (58): 586, (59): 584, (60): 583, (61): 583, (62): 582, (63): 580, (64): 592, 
+Done sending queries to 216.146.35.35
+
+
+  Observed Max TTL count of 216.146.35.35: 3
+  Estimated cache count of 216.146.35.35: 3
+
+
+  Current Open Resolver: 8.8.8.8
+(0): 650, First (Max?) TTL for 8.8.8.8 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (3): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (4): 645, (5): 641, (6): 650, Cache count incremented: 5, Observed Max TTL count incremented: 5, (7): 638, (8): 640, (9): 643, (10): 639, (11): 650, Cache count incremented: 6, Observed Max TTL count incremented: 6, (12): 633, (13): 650, Cache count incremented: 7, Observed Max TTL count incremented: 7, (14): 631, (15): 631, (16): 626, (17): 646, (18): 640, (19): 626, (20): 625, (21): 637, (22): 640, (23): 650, Cache count incremented: 8, Observed Max TTL count incremented: 8, (24): 631, (25): 625, (26): 634, (27): 633, (28): 627, (29): 644, (30): 612, (31): 618, (32): 610, (33): 626, (34): 620, (35): 606, (36): 606, (37): 612, (38): 603, (39): 633, (40): 597, (41): 607, (42): 611, (43): 598, (44): 596, (45): 603, (46): 625, (47): 611, (48): 596, (49): 603, (50): 590, (51): 606, (52): 605, (53): 583, (54): 598, (55): 597, (56): 584, (57): 600, (58): 611, (59): 583, (60): 582, (61): 608, (62): 573, (63): 575, (64): 587, 
+Done sending queries to 8.8.8.8
+
+
+  Observed Max TTL count of 8.8.8.8: 8
+  Estimated cache count of 8.8.8.8: 8
+
+
+  Current Open Resolver: 64.6.64.6
+(0): 650, First (Max?) TTL for 64.6.64.6 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (3): 649, (4): 645, (5): 647, (6): 643, (7): 644, (8): 642, (9): 641, Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(11): 629, (12): 626, (13): 628, (14): 624, (15): 625, (16): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (17): 620, (18): 619, (19): 620, (20): 646, (21): 645, (22): 644, (23): 642, (24): 612, (25): 614, (26): 639, (27): 611, (28): 608, (29): 607, (30): 635, (31): 605, (32): 603, (33): 604, (34): 604, (35): 600, (36): 599, (37): 600, (38): 599, (39): 598, (40): 597, (41): 622, (42): 595, (43): 593, (44): 619, (45): 618, (46): 588, (47): 616, (48): 615, (49): 614, (50): 584, (51): 611, (52): 581, (53): 583, (54): 581, (55): 581, (56): 580, (57): 576, (58): 604, (59): 603, (60): 601, (61): 571, (62): 573, (63): 571, (64): 570, 
+Done sending queries to 64.6.64.6
+
+
+  Observed Max TTL count of 64.6.64.6: 4
+  Estimated cache count of 64.6.64.6: 4
+
+
+  Current Open Resolver: 156.154.70.2
+(0): 567, First (Max?) TTL for 156.154.70.2 set to 567, 
+  Possible shared cache or reduced cache TTL for: 156.154.70.2 
+
+Observed Max TTL count incremented: 1, (1): 595, (2): 567, Observed Max TTL count incremented: 2, (3): 566, (4): 562, (5): 564, (6): 563, (7): 561, (8): 558, (9): 559, (10): 558, (11): 557, (12): 583, (13): 556, (14): 551, (15): 553, (16): 549, (17): 577, (18): 547, (19): 549, (20): 574, (21): 573, (22): 543, (23): 570, (24): 569, (25): 542, Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(27): 529, (28): 529, (29): 525, (30): 527, (31): 525, (32): 550, (33): 522, (34): 522, (35): 547, (36): 519, (37): 519, (38): 517, (39): 517, (40): 513, (41): 513, (42): 539, (43): 538, (44): 511, (45): 510, (46): 535, (47): 508, (48): 533, (49): 506, (50): 504, (51): 529, (52): 528, (53): 501, (54): 500, (55): 496, (56): 497, (57): 523, (58): 496, (59): 493, (60): 493, (61): 491, (62): 490, (63): 516, (64): 515, 
+Done sending queries to 156.154.70.2
+
+
+  Observed Max TTL count of 156.154.70.2: 2
+  Estimated cache count of 156.154.70.2: 0
+
+
+  Current Open Resolver: 156.154.70.3
+(0): 514, First (Max?) TTL for 156.154.70.3 set to 514, 
+  Possible shared cache or reduced cache TTL for: 156.154.70.3 
+
+Observed Max TTL count incremented: 1, (1): 487, (2): 512, (3): 484, (4): 480, (5): 482, (6): 481, (7): 506, (8): 479, (9): 477, (10): 474, (11): 476, (12): 475, (13): 473, (14): 469, (15): 468, (16): 470, (17): 469, (18): 468, (19): 466, (20): 463, (21): 465, (22): 462, (23): 488, (24): 487, (25): 459, (26): 458, (27): 457, (28): 457, (29): 456, (30): 452, (31): 452, (32): 452, (33): 448, (34): 476, (35): 446, (36): 448, (37): 444, (38): 472, (39): 471, (40): 443, (41): 439, (42): 438, (43): 437, (44): 439, (45): 435, (46): 436, (47): 436, (48): 435, (49): 433, (50): 432, (51): 428, (52): 456, (53): 426, (54): 428, (55): 424, (56): 425, (57): 424, (58): 423, (59): 419, (60): 418, (61): 446, (62): 419, (63): 417, (64): 443, 
+Done sending queries to 156.154.70.3
+
+
+  Observed Max TTL count of 156.154.70.3: 1
+  Estimated cache count of 156.154.70.3: 0
+
+
+  Current Open Resolver: 156.154.70.4
+(0): 415, First (Max?) TTL for 156.154.70.4 set to 415, 
+  Possible shared cache or reduced cache TTL for: 156.154.70.4 
+
+Observed Max TTL count incremented: 1, (1): 415, Observed Max TTL count incremented: 2, (2): 440, (3): 410, (4): 411, (5): 436, (6): 435, (7): 405, (8): 404, (9): 406, (10): 405, (11): 403, (12): 429, (13): 400, (14): 426, (15): 396, (16): 397, (17): 397, (18): 396, (19): 392, (20): 393, (21): 393, (22): 391, (23): 389, (24): 386, (25): 414, (26): 387, (27): 386, (28): 382, (29): 410, (30): 383, (31): 381, (32): 379, (33): 379, (34): 375, (35): 377, (36): 373, (37): 375, (38): 400, (39): 373, (40): 369, (41): 370, (42): 368, (43): 367, (44): 367, (45): 392, (46): 362, (47): 361, (48): 362, (49): 388, (50): 357, (51): 358, (52): 355, (53): 383, (54): 353, (55): 354, (56): 354, (57): 350, (58): 378, (59): 350, (60): 349, (61): 348, (62): 344, (63): 343, (64): 371, 
+Done sending queries to 156.154.70.4
+
+
+  Observed Max TTL count of 156.154.70.4: 2
+  Estimated cache count of 156.154.70.4: 0
+
+
+  Current Open Resolver: 156.154.70.5
+(0): 341, First (Max?) TTL for 156.154.70.5 set to 341, 
+  Possible shared cache or reduced cache TTL for: 156.154.70.5 
+
+Observed Max TTL count incremented: 1, (1): 343, (2): 341, Observed Max TTL count incremented: 2, (3): 338, (4): 336, (5): 335, (6): 336, (7): 335, (8): 335, (9): 334, (10): 333, (11): 332, (12): 328, (13): 328, (14): 328, (15): 327, (16): 325, (17): 322, (18): 350, (19): 323, (20): 348, (21): 320, (22): 316, (23): 344, (24): 316, (25): 313, (26): 315, (27): 313, (28): 339, (29): 312, (30): 311, (31): 307, (32): 334, (33): 306, (34): 303, (35): 302, (36): 303, (37): 303, (38): 302, (39): 300, (40): 326, (41): 324, Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(43): 283, (44): 284, (45): 281, (46): 280, (47): 282, (48): 307, (49): 278, (50): 277, (51): 274, (52): 275, (53): 274, Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(55): 260, (56): 259, (57): 261, (58): 258, (59): 257, (60): 257, (61): 255, (62): 254, (63): 280, (64): 279, 
+Done sending queries to 156.154.70.5
+
+
+  Observed Max TTL count of 156.154.70.5: 2
+  Estimated cache count of 156.154.70.5: 0
+
+
+  Current Open Resolver: 208.67.222.222
+(0): 650, First (Max?) TTL for 208.67.222.222 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (3): 649, (4): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (5): 650, Cache count incremented: 5, Observed Max TTL count incremented: 5, (6): 650, Cache count incremented: 6, Observed Max TTL count incremented: 6, (7): 650, Cache count incremented: 7, Observed Max TTL count incremented: 7, (8): 650, Cache count incremented: 8, Observed Max TTL count incremented: 8, (9): 650, Cache count incremented: 9, Observed Max TTL count incremented: 9, (10): 642, (11): 646, (12): 650, Cache count incremented: 10, Observed Max TTL count incremented: 10, (13): 649, (14): 650, Cache count incremented: 11, Observed Max TTL count incremented: 11, (15): 650, Cache count incremented: 12, Observed Max TTL count incremented: 12, (16): 640, (17): 631, (18): 645, (19): 626, (20): 650, Cache count incremented: 13, Observed Max TTL count incremented: 13, (21): 650, Cache count incremented: 14, Observed Max TTL count incremented: 14, (22): 650, Cache count incremented: 15, Observed Max TTL count incremented: 15, (23): 641, (24): 645, (25): 634, (26): 629, (27): 628, (28): 627, (29): 626, (30): 622, (31): 623, (32): 622, (33): 637, (34): 624, (35): 635, (36): 617, (37): 621, (38): 607, (39): 611, (40): 612, (41): 626, (42): 606, (43): 614, (44): 613, (45): 605, (46): 600, (47): 621, (48): 605, (49): 612, (50): 593, (51): 605, (52): 650, Cache count incremented: 16, Observed Max TTL count incremented: 16, (53): 593, (54): 650, Cache count incremented: 17, Observed Max TTL count incremented: 17, (55): 587, (56): 599, (57): 650, Cache count incremented: 18, Observed Max TTL count incremented: 18, (58): 582, (59): 607, (60): 604, (61): 585, (62): 604, (63): 603, (64): 586, 
+Done sending queries to 208.67.222.222
+
+
+  Observed Max TTL count of 208.67.222.222: 18
+  Estimated cache count of 208.67.222.222: 18
+
+
+  Current Open Resolver: 208.67.222.2
+(0): 581, First (Max?) TTL for 208.67.222.2 set to 581, 
+  Possible shared cache or reduced cache TTL for: 208.67.222.2 
+
+Observed Max TTL count incremented: 1, (1): 592, (2): 597, (3): 580, (4): 584, (5): 587, (6): 594, (7): 576, (8): 575, (9): 572, (10): 588, (11): 587, (12): 569, (13): 570, (14): 622, (15): 650, Cache count incremented: 1, (16): 650, Cache count incremented: 2, (17): 562, (18): 580, (19): 554, (20): 551, (21): 560, (22): 559, (23): 548, (24): 574, (25): 556, (26): 569, (27): 547, (28): 569, (29): 551, (30): 567, (31): 549, (32): 563, (33): 552, (34): 543, (35): 545, (36): 548, (37): 543, (38): 556, (39): 541, (40): 533, (41): 538, (42): 527, (43): 535, (44): 526, (45): 530, (46): 532, (47): 521, (48): 520, (49): 526, (50): 537, (51): 525, (52): 530, (53): 575, (54): 513, (55): 512, (56): 517, (57): 514, (58): 517, (59): 535, (60): 533, (61): 505, (62): 531, (63): 509, (64): 502, 
+Done sending queries to 208.67.222.2
+
+
+  Observed Max TTL count of 208.67.222.2: 1
+  Estimated cache count of 208.67.222.2: 2
+
+
+  Current Open Resolver: 208.67.222.123
+(0): 595, First (Max?) TTL for 208.67.222.123 set to 595, 
+  Possible shared cache or reduced cache TTL for: 208.67.222.123 
+
+Observed Max TTL count incremented: 1, (1): 510, (2): 509, (3): 559, (4): 499, (5): 505, (6): 498, (7): 520, (8): 507, (9): 502, (10): 507, (11): 489, (12): 503, (13): 513, (14): 491, (15): 511, (16): 498, (17): 490, (18): 508, (19): 485, (20): 543, (21): 476, (22): 541, (23): 484, (24): 485, (25): 483, (26): 472, (27): 498, (28): 481, (29): 469, (30): 485, (31): 478, (32): 476, (33): 479, (34): 557, (35): 479, (36): 469, (37): 471, (38): 467, (39): 485, (40): 457, (41): 482, (42): 456, (43): 452, (44): 463, (45): 545, (46): 476, (47): 459, (48): 459, (49): 447, (50): 472, (51): 444, (52): 442, (53): 446, (54): 468, (55): 440, (56): 441, (57): 449, (58): 437, (59): 434, (60): 449, (61): 443, (62): 442, (63): 439, (64): 429, 
+Done sending queries to 208.67.222.123
+
+
+  Observed Max TTL count of 208.67.222.123: 1
+  Estimated cache count of 208.67.222.123: 0
+
+
+  Current Open Resolver: 185.121.177.177
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+
+Done sending queries to 185.121.177.177
+
+
+  Observed Max TTL count of 185.121.177.177: 0
+  Estimated cache count of 185.121.177.177: 0
+
+
+  Current Open Resolver: 9.9.9.9
+(0): 650, First (Max?) TTL for 9.9.9.9 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (3): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (4): 650, Cache count incremented: 5, Observed Max TTL count incremented: 5, (5): 643, (6): 640, (7): 639, (8): 646, (9): 650, Cache count incremented: 6, Observed Max TTL count incremented: 6, (10): 649, (11): 648, (12): 635, (13): 629, (14): 630, (15): 629, (16): 650, Cache count incremented: 7, Observed Max TTL count incremented: 7, (17): 640, (18): 650, Cache count incremented: 8, Observed Max TTL count incremented: 8, (19): 627, (20): 620, (21): 643, (22): 633, (23): 614, (24): 639, (25): 617, (26): 619, (27): 627, (28): 611, (29): 634, (30): 609, (31): 631, (32): 612, (33): 603, (34): 628, (35): 603, (36): 650, Cache count incremented: 9, Observed Max TTL count incremented: 9, (37): 598, (38): 623, (39): 598, (40): 603, (41): 598, (42): 618, (43): 621, (44): 607, (45): 591, (46): 590, (47): 617, (48): 612, (49): 615, (50): 583, (51): 608, (52): 598, (53): 606, (54): 579, (55): 580, (56): 582, (57): 578, (58): 575, (59): 578, (60): 572, (61): 597, (62): 572, (63): 569, (64): 594, 
+Done sending queries to 9.9.9.9
+
+
+  Observed Max TTL count of 9.9.9.9: 9
+  Estimated cache count of 9.9.9.9: 9
+
+
+  Current Open Resolver: 9.9.9.11
+Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(1): 650, Cache count incremented: 1, (2): 650, Cache count incremented: 2, (3): 634, (4): 650, Cache count incremented: 3, (5): 641, (6): 644, (7): 639, (8): 646, (9): 626, (10): 650, Cache count incremented: 4, (11): 641, (12): 636, (13): 647, (14): 618, (15): 617, (16): 643, (17): 626, (18): 614, (19): 613, (20): 631, (21): 626, (22): 636, (23): 635, (24): 607, (25): 606, (26): 632, (27): 619, (28): 614, (29): 613, (30): 628, (31): 600, (32): 625, (33): 612, (34): 615, (35): 610, (36): 605, (37): 603, (38): 591, (39): 617, (40): 604, (41): 615, (42): 614, (43): 597, (44): 585, (45): 584, (46): 582, (47): 581, (48): 599, (49): 606, (50): 605, (51): 588, (52): 595, (53): 575, (54): 600, (55): 572, (56): 571, (57): 581, (58): 584, (59): 579, (60): 594, (61): 577, (62): 580, (63): 578, (64): 562, 
+Done sending queries to 9.9.9.11
+
+
+  Observed Max TTL count of 9.9.9.11: 0
+  Estimated cache count of 9.9.9.11: 4
+
+
+  Current Open Resolver: 9.9.9.10
+(0): 650, First (Max?) TTL for 9.9.9.10 set to 650, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 650, Cache count incremented: 2, Observed Max TTL count incremented: 2, (2): 484, (3): 474, (4): 482, (5): 514, (6): 462, (7): 639, (8): 460, (9): 650, Cache count incremented: 3, Observed Max TTL count incremented: 3, (10): 650, Cache count incremented: 4, Observed Max TTL count incremented: 4, (11): 630, (12): 648, (13): 650, Cache count incremented: 5, Observed Max TTL count incremented: 5, (14): 445, (15): 461, (16): 443, (17): 650, Cache count incremented: 6, Observed Max TTL count incremented: 6, (18): 648, (19): 444, (20): 639, (21): 451, (22): 644, (23): 449, (24): 431, (25): 641, (26): 607, (27): 427, (28): 426, (29): 622, (30): 432, (31): 423, (32): 600, (33): 625, (34): 437, (35): 629, (36): 595, (37): 424, (38): 432, (39): 592, (40): 430, (41): 606, (42): 615, (43): 607, (44): 650, Cache count incremented: 7, Observed Max TTL count incremented: 7, (45): 582, (46): 597, (47): 402, (48): 605, (49): 597, (50): 644, (51): 643, (52): 607, (53): 573, (54): 588, (55): 571, (56): 595, (57): 390, (58): 397, (59): 566, (60): 395, (61): 563, (62): 581, (63): 587, (64): 399, 
+Done sending queries to 9.9.9.10
+
+
+  Observed Max TTL count of 9.9.9.10: 7
+  Estimated cache count of 9.9.9.10: 7
+
+
+  Current Open Resolver: 77.88.8.1
+(0): 567, First (Max?) TTL for 77.88.8.1 set to 567, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.1 
+
+Observed Max TTL count incremented: 1, (1): 425, (2): 364, (3): 373, (4): 416, (5): 586, (6): 473, (7): 528, (8): 394, (9): 387, (10): 343, (11): 527, (12): 363, (13): 340, (14): 325, (15): 641, (16): 633, (17): 378, (18): 603, (19): 545, (20): 350, (21): 479, (22): 427, (23): 584, (24): 461, (25): 342, (26): 573, (27): 535, (28): 445, (29): 380, (30): 557, (31): 535, (32): 627, (33): 542, (34): 365, (35): 405, (36): 587, (37): 434, (38): 637, (39): 407, (40): 547, (41): 607, (42): 403, (43): 558, (44): 333, (45): 422, (46): 625, (47): 513, (48): 362, (49): 580, (50): 417, (51): 456, (52): 331, (53): 542, (54): 433, (55): 545, (56): 330, (57): 449, (58): 332, (59): 563, (60): 450, (61): 466, (62): 595, (63): 534, (64): 531, 
+Done sending queries to 77.88.8.1
+
+
+  Observed Max TTL count of 77.88.8.1: 1
+  Estimated cache count of 77.88.8.1: 0
+
+
+  Current Open Resolver: 77.88.8.2
+(0): 644, First (Max?) TTL for 77.88.8.2 set to 644, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.2 
+
+Observed Max TTL count incremented: 1, (1): 408, (2): 528, (3): 454, (4): 361, (5): 376, (6): 331, (7): 448, (8): 357, (9): 592, (10): 496, (11): 517, (12): 564, (13): 611, (14): 620, (15): 388, Exception or timeout occurred for cachetest.hill111.messwithdns.com 
+(17): 592, (18): 378, (19): 342, (20): 540, (21): 642, (22): 558, (23): 520, (24): 607, (25): 442, (26): 535, (27): 501, (28): 606, (29): 577, (30): 454, (31): 411, (32): 384, (33): 496, (34): 341, (35): 619, (36): 600, (37): 490, (38): 422, (39): 333, (40): 609, (41): 427, (42): 538, (43): 568, (44): 643, (45): 648, (46): 418, (47): 626, (48): 462, (49): 468, (50): 624, (51): 349, (52): 393, (53): 523, (54): 484, (55): 559, (56): 369, (57): 513, (58): 646, (59): 558, (60): 333, (61): 559, (62): 382, (63): 633, (64): 388, 
+Done sending queries to 77.88.8.2
+
+
+  Observed Max TTL count of 77.88.8.2: 1
+  Estimated cache count of 77.88.8.2: 0
+
+
+  Current Open Resolver: 77.88.8.3
+(0): 330, First (Max?) TTL for 77.88.8.3 set to 330, 
+  Possible shared cache or reduced cache TTL for: 77.88.8.3 
+
+Observed Max TTL count incremented: 1, (1): 431, (2): 505, (3): 393, (4): 417, (5): 594, (6): 325, (7): 529, (8): 364, (9): 370, (10): 463, (11): 478, (12): 443, (13): 503, (14): 528, (15): 353, (16): 433, (17): 434, (18): 497, (19): 608, (20): 478, (21): 408, (22): 540, (23): 438, (24): 608, (25): 399, (26): 416, (27): 397, (28): 510, (29): 344, (30): 331, (31): 519, (32): 604, (33): 605, (34): 402, (35): 602, (36): 646, (37): 640, (38): 343, (39): 351, (40): 383, (41): 552, (42): 619, (43): 620, (44): 470, (45): 418, (46): 386, (47): 623, (48): 327, (49): 592, (50): 462, (51): 609, (52): 470, (53): 374, (54): 505, (55): 507, (56): 597, (57): 499, (58): 427, (59): 451, (60): 492, (61): 526, (62): 493, (63): 360, (64): 478, 
+Done sending queries to 77.88.8.3
+
+
+  Observed Max TTL count of 77.88.8.3: 1
+  Estimated cache count of 77.88.8.3: 0
+
+
+END

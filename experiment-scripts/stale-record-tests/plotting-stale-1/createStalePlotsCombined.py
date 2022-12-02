@@ -1042,13 +1042,13 @@ def read_json_file(filename, pl_rate, resolver_filter):
 
 
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
+filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92"]
 
 # Stale record supporting resolvers
-# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92"
+# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "OpenDNS2"
 
 # No record support
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2"
+# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92"
 
 for current_pl_rate in packetloss_rates:
     print(f"Current packetloss rate: {current_pl_rate}")
@@ -1058,7 +1058,7 @@ for current_pl_rate in packetloss_rates:
 
     read_json_file(client_json_file_name, current_pl_rate, filtered_resolvers)
 
-name = "Google"
+name = "Stale record supporting resolver only"
 
 directory_name = name
 

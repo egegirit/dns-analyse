@@ -1,13 +1,13 @@
 Selected open resolver IP Adresses pro configuration from https://en.wikipedia.org/wiki/Public_recursive_name_server :
 (25 IP Adresses/Configurations in total, 9 DNS Operators)
 
-AdGuard (All IPs use the same cache, cache count: 1):
+AdGuard (All IPs use the same cache, cache count: 1, No stale record support):
 - 94.140.14.14  (dns.adguard.com, Default: ads and trackers) 	
 - 94.140.14.15  (dns-family.adguard.com, Family: ads, trackers, and adult content)
 - 94.140.14.140 (dns-unfiltered.adguard.com, No filter) 	
 
 
-CleanBrowsing (All IPs use the same cache, cache count: 2):
+CleanBrowsing (All IPs use the same cache, cache count: 2, No stale record support):
 - 185.228.168.168  (family-filter-dns.cleanbrowsing.org, Family, Designed to be used on devices of kids under 13)
 - 185.228.168.10  (adult-filter-dns.cleanbrowsing.org, Adult)
 - 185.228.168.9 (security-filter-dns.cleanbrowsing.org , Security)
@@ -23,11 +23,11 @@ Dyn (Cache count: 3, Stale record supported):
 - 216.146.35.35  (resolver1.dyndnsinternetguide.com, Unknown + planned shutdown on May 31 2023)
 
 
-Google (Cache count: 8):
+Google (Cache count: 8, No stale record support):
 - 8.8.8.8  (dns.google, None)
 
 
-Neustar (All IPs use the same cache, cache count: 4):
+Neustar (All IPs use the same cache, cache count: 4, No stale record support):
 - 64.6.64.6  (None)
 - 156.154.70.2  (Malware, ransomware, spyware, phishing)
 - 156.154.70.3  (Low security + gambling, pornography, violence, hate)
@@ -41,13 +41,13 @@ OpenDNS (All IPs use the same cache, cache count: 18, Stale record supported):
 - 208.67.222.2  (sandbox.opendns.com, None, Sandbox addresses that provide no filtering)
 
 
-Quad9 (Separate caches):
+Quad9 (Separate caches, No stale record support):
 - 9.9.9.9 (dns9.quad9.net, Phishing, malware, and exploit kit domains) (Cache count: 9)
 - 9.9.9.11 (dns11.quad9.net, Phishing, malware, and exploit kit domains, Passes EDNS Client Subnet) (Cache count: 4)
 - 9.9.9.10 (dns10.quad9.net, None) (Cache count: 7)
 
 
-Yandex (Very random TTLs, cache count not estimatable, stale records not supported):
+Yandex (Very random TTLs, cache count not estimatable, No stale record support):
 - 77.88.8.1  (dns.yandex.ru, None)
 - 77.88.8.2  (safe.dns.yandex.ru, Safe: fraudulent / infected / bot sites)
 - 77.88.8.3  (family.dns.yandex.ru, Family: fraudulent / infected / bot / adult sites)

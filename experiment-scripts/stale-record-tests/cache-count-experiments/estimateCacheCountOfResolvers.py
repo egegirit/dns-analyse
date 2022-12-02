@@ -8,46 +8,51 @@ import msvcrt
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
-    "94.140.14.14",  # AdGuard 1  -> 1
-    "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
-    "94.140.14.140",
-    "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
-    "185.228.168.10",
-    "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
-    "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
-    "1.1.1.2",
-    "1.1.1.3",
-    "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
-    "8.8.8.8",  # Google 1  (dns.google )
-    "64.6.64.6",  # Neustar 1  (?)  ERROR
-    "156.154.70.2",  # Neustar 2  (?)  ERROR
-    "156.154.70.3",
-    "156.154.70.4",
-    "156.154.70.5",
-    "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
-    "208.67.222.2",  # OpenDNS 2  (sandbox.opendns.com )
-    "208.67.222.123",
-    "9.9.9.9",  # Quad9 1    (dns9.quad9.net )
-    "9.9.9.11",  # Quad9 2    (dns11.quad9.net)
-    "9.9.9.10",
-    "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
-    "77.88.8.2",  # Yandex 2   (secondary.dns.yandex.ru)
-    "77.88.8.3"
+    # "94.140.14.14",  # AdGuard 1  -> 1
+    # "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
+    # "94.140.14.140",
+    # "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
+    # "185.228.168.10",
+    # "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
+    # "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
+    # "1.1.1.2",
+    # "1.1.1.3",
+    # "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
+    # "8.8.8.8",  # Google 1  (dns.google )
+    # "64.6.64.6",  # Neustar 1  (?)  ERROR
+    # "156.154.70.2",  # Neustar 2  (?)  ERROR
+    # "156.154.70.3",
+    # "156.154.70.4",
+    # "156.154.70.5",
+    # "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
+    # "208.67.222.2",  # OpenDNS 2  (sandbox.opendns.com )
+    # "208.67.222.123",
+    # "9.9.9.9",  # Quad9 1    (dns9.quad9.net )
+    # "9.9.9.11",  # Quad9 2    (dns11.quad9.net)
+    # "9.9.9.10",
+    # "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
+    # "77.88.8.2",  # Yandex 2   (secondary.dns.yandex.ru)
+    # "77.88.8.3"
+    "76.76.2.0",  # Control D
+    "76.76.10.0",
+    "76.76.2.1",
+    "76.76.2.2",
+    "76.76.2.3",
 ]
 
 skip_to_next = False
 
-file_name = "cache_count_logs.txt"
+file_name = "cache_count_logs_76.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "cachetest.hill111.messwithdns.com"
+query_name = "hoppa.ocean134.messwithdns.com"
 sleep_time = 1.1
 max_ttl_of_record = 650
-query_count = 65
+query_count = 30
 
 print(f"Current time: {datetime.utcnow()}")
 f.write(f"Current time: {datetime.utcnow()}\n")

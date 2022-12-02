@@ -1,5 +1,5 @@
 Selected open resolver IP Adresses pro configuration from https://en.wikipedia.org/wiki/Public_recursive_name_server :
-(25 IP Addresses/Configurations in total, 9 DNS Operators)
+(31 IP Addresses/Configurations in total, 11 DNS Operators)
 
 AdGuard (All IPs use the same cache, cache count: 1, No stale record support):
 - 94.140.14.14  (dns.adguard.com, Default: ads and trackers) 	
@@ -57,13 +57,13 @@ Yandex (Very random TTLs, cache count not estimatable, No stale record support):
 
 Alternate DNS (All IPs use the same cache, cache count: 1):
 - 76.76.19.19  (Primary, faster anycast IP is now) 	
-- 76.223.122.150 (Secondary)
+- 76.223.122.150 (Secondary)  # Delete?
 
 
 Control D (All IPs use the same cache, cache count: 1):
 - 76.76.2.0  (Unfiltered)
-- 76.76.2.1  (Block Malware)
-- 76.76.2.2  (Block Malware, Ads)
+- 76.76.2.1  (Block Malware)  # Delete?
+- 76.76.2.2  (Block Malware, Ads)  # Delete?
 - 76.76.2.3 (Block Malware, Ads and Social)
 
  	

@@ -146,7 +146,7 @@ Query structure:
 -------------
 
 Stale duration wireshark client filter:
-(dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name != "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
+(dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && ((dns.qry.name matches "208-67-222-222") || (dns.qry.name matches "208-67-222-2"))
 && (dns.qry.name matches "stale-") && (dns.qry.type == 1) && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)
 
 Stale duration wireshark auth filter:

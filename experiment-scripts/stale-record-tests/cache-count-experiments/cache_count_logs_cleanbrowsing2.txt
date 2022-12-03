@@ -1,0 +1,41 @@
+Current time: 2022-12-03 21:27:43.486550
+Query count to send: 55
+sleep_time: 1.1
+query_name: hoopala.ocean134.messwithdns.com
+
+Press "a" to skip the current Resolver IP
+
+  Current Open Resolver: 185.228.168.168
+(0): 700, First (Max?) TTL for 185.228.168.168 set to 700, Cache count incremented: 1, Observed Max TTL count incremented: 1, (1): 698, (2): 697, (3): 700, Cache count incremented: 2, Observed Max TTL count incremented: 2, (4): 699, (5): 700, Cache count incremented: 3, Observed Max TTL count incremented: 3, (6): 700, Cache count incremented: 4, Observed Max TTL count incremented: 4, (7): 698, (8): 696, (9): 696, (10): 692, (11): 694, (12): 693, (13): 689, (14): 688, (15): 690, (16): 685, (17): 687, (18): 683, (19): 682, (20): 684, (21): 683, (22): 679, (23): 678, (24): 676, (25): 675, (26): 674, (27): 673, (28): 675, (29): 674, (30): 670, (31): 669, (32): 671, (33): 669, (34): 700, Cache count incremented: 5, Observed Max TTL count incremented: 5, (35): 699, (36): 666, (37): 697, (38): 696, (39): 663, (40): 662, (41): 660, (42): 700, Cache count incremented: 6, Observed Max TTL count incremented: 6, (43): 658, (44): 657, (45): 697, (46): 696, (47): 695, (48): 652, (49): 692, (50): 650, (51): 690, (52): 689, (53): 688, (54): 687, 
+Done sending queries to 185.228.168.168
+
+
+  Observed Max TTL count of 185.228.168.168: 6
+  Estimated cache count of 185.228.168.168: 6
+
+
+  Current Open Resolver: 185.228.168.10
+(0): 645, First (Max?) TTL for 185.228.168.10 set to 645, 
+  Possible shared cache or reduced cache TTL for: 185.228.168.10 
+
+Observed Max TTL count incremented: 1, (1): 644, (2): 683, (3): 641, (4): 681, (5): 639, (6): 679, (7): 678, (8): 677, (9): 676, (10): 633, (11): 632, (12): 672, (13): 630, (14): 670, (15): 669, (16): 668, (17): 626, (18): 666, (19): 665, (20): 663, (21): 662, (22): 620, (23): 660, (24): 618, (25): 617, (26): 616, (27): 615, (28): 614, (29): 653, (30): 652, (31): 651, (32): 609, (33): 608, (34): 607, (35): 647, (36): 646, (37): 604, (38): 602, (39): 642, (40): 641, (41): 599, (42): 598, (43): 597, (44): 700, Cache count incremented: 1, (45): 594, (46): 700, Cache count incremented: 2, (47): 592, (48): 698, (49): 590, (50): 696, (51): 588, (52): 587, (53): 692, (54): 584, 
+Done sending queries to 185.228.168.10
+
+
+  Observed Max TTL count of 185.228.168.10: 1
+  Estimated cache count of 185.228.168.10: 2
+
+
+  Current Open Resolver: 185.228.168.9
+(0): 690, First (Max?) TTL for 185.228.168.9 set to 690, 
+  Possible shared cache or reduced cache TTL for: 185.228.168.9 
+
+Observed Max TTL count incremented: 1, (1): 689, (2): 581, (3): 687, (4): 579, (5): 685, (6): 684, (7): 682, (8): 681, (9): 573, (10): 700, Cache count incremented: 1, (11): 698, (12): 569, (13): 696, (14): 695, (15): 566, (16): 565, (17): 564, (18): 563, (19): 562, (20): 700, Cache count incremented: 2, (21): 699, (22): 558, (23): 557, (24): 556, (25): 700, Cache count incremented: 3, (26): 553, (27): 552, (28): 551, (29): 550, (30): 700, Cache count incremented: 4, (31): 699, (32): 547, (33): 546, (34): 700, Cache count incremented: 5, (35): 699, (36): 698, (37): 541, (38): 696, (39): 539, (40): 700, Cache count incremented: 6, (41): 537, (42): 697, (43): 534, (44): 695, (45): 694, (46): 693, (47): 530, (48): 691, (49): 690, Observed Max TTL count incremented: 2, (50): 689, (51): 525, (52): 686, (53): 523, (54): 522, 
+Done sending queries to 185.228.168.9
+
+
+  Observed Max TTL count of 185.228.168.9: 2
+  Estimated cache count of 185.228.168.9: 6
+
+
+END

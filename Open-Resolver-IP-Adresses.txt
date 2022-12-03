@@ -2,68 +2,158 @@ Selected open resolver IP Adresses pro configuration from https://en.wikipedia.o
 (31 IP Addresses/Configurations in total, 11 DNS Operators)
 
 AdGuard (All IPs use the same cache, cache count: 1, No stale record support):
-- 94.140.14.14  (dns.adguard.com, Default: ads and trackers) 	
-- 94.140.14.15  (dns-family.adguard.com, Family: ads, trackers, and adult content)
-- 94.140.14.140 (dns-unfiltered.adguard.com, No filter) 	
+- 94.140.14.14  (AdGuard_1, dns.adguard.com, Default: ads and trackers) 	
+- 94.140.14.15  (AdGuard_2, dns-family.adguard.com, Family: ads, trackers, and adult content)
+- 94.140.14.140 (AdGuard_3, dns-unfiltered.adguard.com, No filter) 	
 
 
-CleanBrowsing (All IPs use the same cache, cache count: 2, No stale record support):
-- 185.228.168.168  (family-filter-dns.cleanbrowsing.org, Family, Designed to be used on devices of kids under 13)
-- 185.228.168.10  (adult-filter-dns.cleanbrowsing.org, Adult)
-- 185.228.168.9 (security-filter-dns.cleanbrowsing.org , Security)
+CleanBrowsing (All IPs share some caches but there might be separate caches, cache count: varies during the day between 2 and 6, No stale record support):
+- 185.228.168.168  (CleanBrowsing_1, family-filter-dns.cleanbrowsing.org, Family, Designed to be used on devices of kids under 13)
+- 185.228.168.9  (CleanBrowsing_2, security-filter-dns.cleanbrowsing.org , Security)
+- 185.228.168.10  (CleanBrowsing_3, adult-filter-dns.cleanbrowsing.org, Adult)
 
 
 Cloudflare (All IPs use the same cache, cache count: 17, Stale record supported):
-- 1.1.1.1  (one.one.one.one, No filter)
-- 1.1.1.2  (security.cloudflare-dns.com, Malware and Phishing filter)
-- 1.1.1.3  (family.cloudflare-dns.com, Malware, Phishing, Adult content)
+- 1.1.1.1  (Cloudflare_1, one.one.one.one, No filter)
+- 1.1.1.2  (Cloudflare_(2), security.cloudflare-dns.com, Malware and Phishing filter)
+- 1.1.1.3  (Cloudflare_3, family.cloudflare-dns.com, Malware, Phishing, Adult content)
 
 
 Dyn (Cache count: 3, Stale record supported):
-- 216.146.35.35  (resolver1.dyndnsinternetguide.com, Unknown + planned shutdown on May 31 2023)
+- 216.146.35.35  (Dyn_1, resolver1.dyndnsinternetguide.com, Unknown + planned shutdown on May 31 2023)
 
 
 Google (Cache count: 8, No stale record support):
-- 8.8.8.8  (dns.google, None)
+- 8.8.8.8  (Google_1, dns.google, None)
 
 
 Neustar (All IPs use the same cache, cache count: 4, No stale record support):
-- 64.6.64.6  (None)
-- 156.154.70.2  (Malware, ransomware, spyware, phishing)
-- 156.154.70.3  (Low security + gambling, pornography, violence, hate)
-- 156.154.70.4  (Medium security + gaming, adult, drugs, alcohol, anonymous proxies)
-- 156.154.70.5  (None, Will not redirect non-existent domains to a landing page)
+- 64.6.64.6  (Neustar_1, None)
+- 156.154.70.2  (Neustar_(2), Malware, ransomware, spyware, phishing)
+- 156.154.70.3  (Neustar_3, Low security + gambling, pornography, violence, hate)
+- 156.154.70.4  (Neustar_4, Medium security + gaming, adult, drugs, alcohol, anonymous proxies)
+- 156.154.70.5  (Neustar_5, None, Will not redirect non-existent domains to a landing page)
 
 
 OpenDNS (All IPs use the same cache, cache count: 18, Stale record supported):
-- 208.67.222.222  (dns.opendns.com, Basic Security filtering + user defined policies)
-- 208.67.222.123  (familyshield.opendns.com,  FamilyShield: adult content.)
-- 208.67.222.2  (sandbox.opendns.com, None, Sandbox addresses that provide no filtering)
+- 208.67.222.222  (OpenDNS_1, dns.opendns.com, Basic Security filtering + user defined policies)
+- 208.67.222.2  (OpenDNS_2, sandbox.opendns.com, None, Sandbox addresses that provide no filtering)
+- 208.67.222.123  (OpenDNS_3, familyshield.opendns.com,  FamilyShield: adult content.)
 
 
 Quad9 (Separate caches, No stale record support):
-- 9.9.9.9 (dns9.quad9.net, Phishing, malware, and exploit kit domains) (Cache count: 9)
-- 9.9.9.11 (dns11.quad9.net, Phishing, malware, and exploit kit domains, Passes EDNS Client Subnet) (Cache count: 4)
-- 9.9.9.10 (dns10.quad9.net, None) (Cache count: 7)
+- 9.9.9.9 (Quad9_1, dns9.quad9.net, Phishing, malware, and exploit kit domains) (Cache count: 9)
+- 9.9.9.11 (Quad9_2, dns11.quad9.net, Phishing, malware, and exploit kit domains, Passes EDNS Client Subnet) (Cache count: 4)
+- 9.9.9.10 (Quad9_3, dns10.quad9.net, None) (Cache count: 7)
 
 
 Yandex (Very random TTLs, cache count not estimatable, No stale record support):
-- 77.88.8.1  (dns.yandex.ru, None)
-- 77.88.8.2  (safe.dns.yandex.ru, Safe: fraudulent / infected / bot sites)
-- 77.88.8.3  (family.dns.yandex.ru, Family: fraudulent / infected / bot / adult sites)
+- 77.88.8.1  (Yandex_1, dns.yandex.ru, None)
+- 77.88.8.2  (Yandex_(2), safe.dns.yandex.ru, Safe: fraudulent / infected / bot sites)
+- 77.88.8.3  (Yandex_3, family.dns.yandex.ru, Family: fraudulent / infected / bot / adult sites)
 
 
 ####### New ####### (Check if stale record is supported or not)
 
 Alternate DNS (All IPs use the same cache, cache count: 1):
-- 76.76.19.19  (Primary, faster anycast IP is now) 	
-- 76.223.122.150 (Secondary)  # Delete?
+- 76.76.19.19  (AlternateDNS_1, Primary, faster anycast IP is now) 	
+- 76.223.122.150 (AlternateDNS_2, Secondary)  # Delete?
 
 
 Control D (All IPs use the same cache, cache count: 1):
-- 76.76.2.0  (Unfiltered)
-- 76.76.2.1  (Block Malware)  # Delete?
-- 76.76.2.2  (Block Malware, Ads)  # Delete?
-- 76.76.2.3 (Block Malware, Ads and Social)
+- 76.76.2.0  (ControlD_1, Unfiltered)
+- 76.76.2.1  (ControlD_2, Block Malware)  # Delete?
+- 76.76.2.2  (ControlD_3, Block Malware, Ads)  # Delete?
+- 76.76.2.3 (ControlD_4, Block Malware, Ads and Social)
 
- 	
+
+-----------------------------------------------------------
+
+operators = {
+    "AdGuard_1": "94-140-14-14",
+    "AdGuard_2": "94-140-14-15",
+	"AdGuard_3": "94-140-14-140",
+	
+    "CleanBrowsing_1": "185-228-168-168",
+    "CleanBrowsing_2": "185-228-168-9",
+	"CleanBrowsing_3": "185-228-168-10",
+	
+    "Cloudflare_1": "1-1-1-1",
+    "Cloudflare_2": "1-1-1-2",
+	"Cloudflare_3": "1-1-1-3",
+	
+    "Dyn_1": "216-146-35-35",
+
+    "Google_1": "8-8-8-8",
+
+    "Neustar_1": "64-6-64-6",
+    "Neustar_2": "156-154-70-2",
+	"Neustar_3": "156-154-70-3",
+	"Neustar_4": "156-154-70-4",
+	"Neustar_5": "156-154-70-5",
+	
+    "OpenDNS_1": "208-67-222-222",
+    "OpenDNS_2": "208-67-222-2",
+	"OpenDNS_3": "208-67-222-123",
+	
+    "Quad9_1": "9-9-9-9",
+    "Quad9_2": "9-9-9-11",
+	"Quad9_3": "9-9-9-10",	
+	
+    "Yandex_1": "77-88-8-1",
+    "Yandex_2": "77-88-8-2",
+	"Yandex_3": "77-88-8-3",
+	
+	"AlternateDNS_1": "76-76-19-19",
+	"AlternateDNS_2": "76-223-122-150",
+	
+	"ControlD_1": "76-76-2-0",
+	"ControlD_2": "76-76-2-1",
+	"ControlD_3": "76-76-2-2",
+	"ControlD_4": "76-76-2-3"	
+}
+
+caches_of_resolvers = {
+    "94.140.14.14": 1,  # AdGuard_1
+    "94.140.14.15": 1,  # AdGuard_2
+	"94.140.14.140": 1,  # AdGuard_2
+	
+    "185.228.168.168": 6,  # CleanBrowsing_1
+    "185.228.168.9": 6,  # CleanBrowsing_2
+	"185.228.168.10": 6,  # CleanBrowsing_3
+	
+    "1.1.1.1": 18,  # Cloudflare_1
+    "1.1.1.2": 18,  # Cloudflare_2
+	"1.1.1.3": 18,  # Cloudflare_3
+	
+    "216.146.35.35": 3,  # Dyn_1
+
+    "8.8.8.8": 8,  # Google_1
+
+    "64.6.64.6": 4,  # Neustar_1
+    "156.154.70.2": 4,  # Neustar_2
+	"156.154.70.3": 4,  # Neustar_3
+	"156.154.70.4": 4,  # Neustar_4
+	"156.154.70.5": 4,  # Neustar_5	
+	
+    "208.67.222.222": 18,  # OpenDNS_1
+    "208.67.222.2": 18,  # OpenDNS_2
+	"208.67.222.123": 18,  # OpenDNS_3	
+	
+    "9.9.9.9": 9,  # Quad9_1
+    "9.9.9.11": 4,  # Quad9_2
+	"9.9.9.10": 7,  # Quad9_3	
+	
+    "77.88.8.1": 10,  # Yandex_1
+    "77.88.8.2": 10,  # Yandex_2
+	"77.88.8.3": 10,  # Yandex_3
+	
+	"76.76.19.19": 1,  # AlternateDNS_1
+    "76.223.122.150": 1,  # AlternateDNS_2
+
+	"76.76.2.0": 1,  # ControlD_1
+	"76.76.2.1": 1,  # ControlD_2
+	"76.76.2.2": 1,  # ControlD_3
+	"76.76.2.3": 1,  # ControlD_4	
+	
+}

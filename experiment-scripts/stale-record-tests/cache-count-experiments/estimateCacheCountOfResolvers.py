@@ -11,9 +11,9 @@ resolver_ip_addresses = [
     # "94.140.14.14",  # AdGuard 1  -> 1
     # "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
     # "94.140.14.140",
-    # "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
-    # "185.228.168.10",
-    # "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
+    "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
+    "185.228.168.10",
+    "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
     # "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
     # "1.1.1.2",
     # "1.1.1.3",
@@ -33,26 +33,26 @@ resolver_ip_addresses = [
     # "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
     # "77.88.8.2",  # Yandex 2   (secondary.dns.yandex.ru)
     # "77.88.8.3"
-    "76.76.2.0",  # Control D
-    "76.76.10.0",
-    "76.76.2.1",
-    "76.76.2.2",
-    "76.76.2.3",
+    # "76.76.2.0",  # Control D
+    # "76.76.10.0",
+    # "76.76.2.1",
+    # "76.76.2.2",
+    # "76.76.2.3",
 ]
 
 skip_to_next = False
 
-file_name = "cache_count_logs_76.txt"
+file_name = "cache_count_logs_cleanbrowsing2.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "hoppa.ocean134.messwithdns.com"
+query_name = "hoopala.ocean134.messwithdns.com"
 sleep_time = 1.1
-max_ttl_of_record = 650
-query_count = 30
+max_ttl_of_record = 700
+query_count = 55
 
 print(f"Current time: {datetime.utcnow()}")
 f.write(f"Current time: {datetime.utcnow()}\n")
@@ -65,18 +65,6 @@ f.write(f"sleep_time: {sleep_time}\n")
 
 print(f"query_name: {query_name}\n")
 f.write(f"query_name: {query_name}\n\n")
-
-def wait_for_esc():
-    print("Press \"a\" to skip the current Resolver IP")
-    f.write("Press \"a\" to skip the current Resolver IP\n")
-
-    global skip_to_next
-    while True:
-        key = msvcrt.getch().decode('ASCII')  # ord(msvcrt.getch())
-        if key == "a" or key.lower() == "a":
-            print("Skip key pressed!")
-            f.write("Skip key pressed!\n")
-            skip_to_next = True
 
 
 def send_queries():
@@ -192,9 +180,4 @@ def send_queries():
     print(f"\nEND\n")
     sys.exit()
 
-
-thread_1 = threading.Thread(name="wait_for_esc", target=wait_for_esc)
-thread_2 = threading.Thread(name="send_queries", target=send_queries)
-
-thread_1.start()
-thread_2.start()
+send_queries()

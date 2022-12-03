@@ -3,10 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
 import json
-import re
 import os
-import time
-import statistics
 
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
@@ -266,34 +263,12 @@ def get_index_of_packetloss_rate(pl_rate):
     return None
 
 
-# File prefixes of JSON files
-# file_names = ["auth1", "client"]
-
 client_only_source_ips = ["139.19.117.1"]
 client_only_dest_ips = ["139.19.117.1"]
 auth_only_dest_ips = ["139.19.117.11"]
 
-# Write text onto plots using this coordinates
-x_axis_for_text = 0
-y_axis_for_text = 0
 
-# Filtering options
-# rcodes_to_get = ["0", "2"]
-# ["0", "2"] -> Calculate latencies of ONLY valid answers
-# ["0"] -> Calculate latencies of valid answers AND ServFails
-# ["2"] -> Calculate latencies of ONLY ServFails
-
-client_bottom_limit = 0
-client_upper_limit = 30
-auth_bottom_limit = 0
-auth_upper_limit = 30
-overall_directory_name = "Overall-plot-results"
-resolver_directory_name = "Resolver-plot-results"
-
-
-# ---------------------------
-
-def create_combined_plots(file_name_prefix, operator_name):
+def create_combined_plots(file_name_prefix, operator_name, directory_name):
     n = 13
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
@@ -318,8 +293,6 @@ def create_combined_plots(file_name_prefix, operator_name):
             print("Zero division error!")
             failure_rate_vals[i] = 0
             failure_rate_counts[i] = 0
-    failure_rects = ax.bar(arr + width, failure_rate_vals, width, bottom=0, color='red')
-
 
     ok_vals = list(norerror_pl_rate.values())
     ok_rate_vals = ok_vals.copy()
@@ -328,7 +301,8 @@ def create_combined_plots(file_name_prefix, operator_name):
     for i in range(len(ok_rate_vals)):
         try:
             ok_rate_vals[i] = (ok_rate_vals[i] /
-                               responses_pl_rate[str(packetloss_rates[i])]) * 100
+                               (failed_packet_pl_rate[str(packetloss_rates[i])] + norerror_pl_rate[
+                                   str(packetloss_rates[i])])) * 100
             ok_rate_counts[index] = ok_rate_vals[i]
         except ZeroDivisionError:
             print("Zero division error!")
@@ -343,7 +317,8 @@ def create_combined_plots(file_name_prefix, operator_name):
     for i in packetloss_rates:
         try:
             stale_rate_vals[index] = (stale_count_of_pl[str(i)] / (
-                    stale_count_of_pl[str(i)] + non_stale_count_of_pl[str(i)])) * 100
+                    failed_packet_pl_rate[str(packetloss_rates[index])] + norerror_pl_rate[
+                str(packetloss_rates[index])])) * 100
             stale_rate_counts[index] = (stale_count_of_pl[str(i)])
         except ZeroDivisionError:
             print("Zero division error!")
@@ -359,13 +334,18 @@ def create_combined_plots(file_name_prefix, operator_name):
     for item1, item2 in zip(ok_rate_vals, subtracted):
         subtracted1.append(item1 - item2)
 
-    ok_rects = ax.bar(arr, subtracted, width, bottom=0, color='green')
-    stale_rects = ax.bar(arr, stale_rate_vals, width, bottom=subtracted, color='yellow')
+    stale_plus_subtracted = list()
+    for item1, item2 in zip(stale_rate_vals, subtracted):
+        stale_plus_subtracted.append(item1 + item2)
+
+    ok_rects = ax.bar(arr + width/2, subtracted, width, bottom=0, color='green')
+    stale_rects = ax.bar(arr + width/2, stale_rate_vals, width, bottom=subtracted, color='yellow')
+    failure_rects = ax.bar(arr + width/2, failure_rate_vals, width, bottom=stale_plus_subtracted, color='red')
 
     plot_title = f"Stale Record Experiment ({operator_name})"
 
     plt.xlabel("Packetloss rate")
-    plt.ylabel("Results")
+    plt.ylabel("Rate of results")
     # ax.set_ylabel('Results')
     plt.title(plot_title, x=0.5, y=1.1)
     plt.ylim(bottom=0)
@@ -374,20 +354,36 @@ def create_combined_plots(file_name_prefix, operator_name):
     ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100))
     ax.legend((failure_rects[0], ok_rects[0], stale_rects[0]), ('Failure', 'OK', 'Stale'), framealpha=0.5, bbox_to_anchor=(1, 1))
 
-    def autolabel_fail(rects):
+    def autolabel_fail(fail_rects, ok_rects, stale_rects):
+
+        h_of_ok_plus_stale = []
         index = 0
-        for rect in rects:
+        for rect in ok_rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., h + 1, f"#{failure_rate_counts[index]}",
-                    ha='center', va='bottom')
+            h_of_ok_plus_stale.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in stale_rects:
+            h = rect.get_height()
+            h_of_ok_plus_stale[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in fail_rects:
+            if failure_rate_counts[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + h_of_ok_plus_stale[index], f"F#{failure_rate_counts[index]}",
+                        ha='center', va='bottom')
             index += 1
 
     def autolabel_ok(rects):
         index = 0
         for rect in rects:
-            h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., h - 1.5, f"#{norerror_pl_rate[str(packetloss_rates[index])] - stale_rate_counts[index]}",
-                    ha='center', va='bottom')
+            if norerror_pl_rate[str(packetloss_rates[index])] - stale_rate_counts[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., h / 2, f"OK#{norerror_pl_rate[str(packetloss_rates[index])] - stale_rate_counts[index]}",
+                        ha='center', va='bottom')
             index += 1
 
     def autolabel_stale(rects, ok_rects):
@@ -400,19 +396,25 @@ def create_combined_plots(file_name_prefix, operator_name):
 
         i = 0
         for rect in rects:
-            h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., (h + 1.5) + h_of_ok[i], f"#{stale_rate_counts[i]}",
-                    ha='center', va='bottom')
+            if stale_rate_counts[i] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + h_of_ok[i], f"S#{stale_rate_counts[i]}",
+                        ha='center', va='bottom')
             i += 1
 
-    autolabel_fail(failure_rects)
+    autolabel_fail(failure_rects, ok_rects, stale_rects)
     autolabel_ok(ok_rects)
     autolabel_stale(stale_rects, ok_rects)
 
-    plt.show()
+    # plt.show()
+
+    figure = plt.gcf()  # get current figure
+    figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
+
+    plt.savefig((directory_name + "/" + file_name_prefix + '_StaleRecordPlot.png'), dpi=100, bbox_inches='tight')
 
     # save plot as png
-    # plt.savefig((file_name_prefix + '_StaleRecordPlot.png'), bbox_inches='tight')
+    # plt.savefig((file_name_prefix + '_StaleRecordPlot.png'))
     print(f" Created box plot: {file_name_prefix}")
     # Clear plots
     plt.cla()
@@ -420,11 +422,14 @@ def create_combined_plots(file_name_prefix, operator_name):
 
 
 # Create box plot for the calculated latencies
-def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, log_scale=False):
+def create_latency_box_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict, log_scale=False):
     print(f" Creating box plot: {file_name_prefix}")
     print(f"   Inside the folder: {directory_name}")
     print(f"   Limits: [{bottom_limit}, {upper_limit}]")
-    # print(f"   Log-scale: {log_scale}")
+
+    operator_name = file_name_prefix.split("_")[0]
+    if not os.path.exists(directory_name + "/" + operator_name):
+        os.makedirs(directory_name + "/" + operator_name)
 
     # Create box plot for latency-packetloss
     fig2 = plt.figure(figsize=(10, 7))
@@ -434,7 +439,7 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
     ax.set_ylabel('Latency in seconds')
     ax.set_xlabel('Packetloss in percentage')
 
-    ax.set_title(f"Response Latency of Stale Records")
+    ax.set_title(f"Response Latency of " + file_name_prefix)
 
     # y-axis labels
     # Set the X axis labels/positions
@@ -445,11 +450,13 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
         ax.set_yscale('log', base=2)
     # else: ax.set_yscale('linear')
 
+    dict_values = get_values_of_dict(latency_dict)
+
     # Add the data counts onto the plot as text
     data_count_string = ""
-    for i in range(len(get_values_of_dict(latency_of_stales_pl))):
+    for i in range(len(dict_values)):
         data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            len(get_values_of_dict(latency_of_stales_pl)[i])) + "\n"
+            len(dict_values[i])) + "\n"
 
     left, width = .25, .5
     bottom, height = .25, .5
@@ -463,11 +470,11 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
     plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # Creating plot
-    ax.boxplot(get_values_of_dict(latency_of_stales_pl), positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100],
+    ax.boxplot(dict_values, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100],
                widths=4.4)
 
     # save plot as png
-    plt.savefig(directory_name + "/" + (file_name_prefix + '_boxPlotLatency.png'), bbox_inches='tight')
+    plt.savefig(directory_name + "/" + operator_name + "/" + file_name_prefix + '_LatencyBoxPlot.png', bbox_inches='tight')
     # show plot
     # plt.show()
     print(f" Created box plot: {file_name_prefix}")
@@ -477,11 +484,15 @@ def create_overall_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
 
 
 # Create violin plots of the calculated latencies
-def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, log_scale=False):
+def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict, log_scale=False):
     print(f" Creating violin plot: {file_name_prefix}")
     print(f"   Inside the folder: {directory_name}")
     print(f"   Limits: [{bottom_limit}, {upper_limit}]")
     # print(f"   Log-scale: {log_scale}")
+
+    operator_name = file_name_prefix.split("_")[0]
+    if not os.path.exists(directory_name + "/" + operator_name):
+        os.makedirs(directory_name + "/" + operator_name)
 
     # Create violin plot
     fig2 = plt.figure(figsize=(10, 7))
@@ -496,16 +507,16 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     ax.set_ylabel('Latency in seconds')
     ax.set_xlabel('Packetloss in percentage')
 
-    ax.set_title(f"Response Latency for Stale Records")
+    ax.set_title(f"Response Latency of " + file_name_prefix)
 
     if log_scale:
         ax.set_yscale('log', base=2)
 
     # Handle zero values with a -1 dummy value
-    data = get_values_of_dict(latency_of_stales_pl)
+    data = get_values_of_dict(latency_dict)  # get_values_of_dict(latency_of_stales_pl)
     for i in range(len(data)):
         if len(data[i]) == 0:
-            data[i] = -1
+            data[i] = [0]
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=data, showmeans=True, showmedians=True,
@@ -514,9 +525,9 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     # Add the data counts onto plot
     # But if the list was empty and we added a dummy value, subtract it from the plot text
     data_count_string = ""
-    for i in range(len(get_values_of_dict(latency_of_stales_pl))):
+    for i in range(len(get_values_of_dict(latency_dict))):
         data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            len(get_values_of_dict(latency_of_stales_pl)[i])) + "\n"
+            len(get_values_of_dict(latency_dict)[i])) + "\n"
 
     left, width = .25, .5
     bottom, height = .25, .5
@@ -539,117 +550,10 @@ def create_overall_latency_violin_plot(directory_name, file_name_prefix, bottom_
     ax.legend(handles=[blue_line, red_line], loc='upper left')
 
     # save plot as png
-    plt.savefig(directory_name + "/" + (file_name_prefix + '_violinPlotLatency.png'), bbox_inches='tight')
+    plt.savefig(directory_name + "/" + operator_name + "/" + file_name_prefix + '_LatencyViolinPlot.png', bbox_inches='tight')
     # show plot
     # plt.show()
     print(f" Created violin plot: {file_name_prefix}")
-    # Clear plots
-    plt.cla()
-    plt.close()
-
-
-def create_overall_bar_plot_failure(directory_name, file_name):
-    print(f" Creating failure bar plot: {file_name}")
-    print(f"   Inside the folder: {directory_name}")
-
-    # Create bar plot for failure rate
-    # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-
-    values = list(failed_packet_pl_rate.values())
-    print(f"Failure ratio: {values}")
-
-    ratio_value = values.copy()
-    for i in range(len(ratio_value)):
-        try:
-            ratio_value[i] = (failed_packet_pl_rate[str(packetloss_rates[i])] / (
-                    failed_packet_pl_rate[str(packetloss_rates[i])] + norerror_pl_rate[
-                str(packetloss_rates[i])])) * 100
-        except ZeroDivisionError:
-            print("Zero division error!")
-            ratio_value[i] = 0
-
-    # adding text inside the plot
-    data_count_string = ""
-    for i in range(len(packetloss_rates)):
-        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            failed_packet_pl_rate[str(packetloss_rates[i])]) + "/" + str(
-            failed_packet_pl_rate[str(packetloss_rates[i])] + norerror_pl_rate[str(packetloss_rates[i])]) + "\n"
-    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11,
-                    color='r')
-    text.set_alpha(0.5)
-
-    print(f"Failure rate ratio_value: {ratio_value}")
-
-    plt.figure(figsize=(10, 5))
-    # fig = plt.figure(figsize=(10, 5))
-
-    # creating the bar plot
-    plt.bar(packetloss_rates, ratio_value, color='maroon', width=4)
-
-    # set labels
-    plt.xlabel("Packetloss Rate")
-    plt.ylabel("DNS Response Failure Rate")
-    plt.title(f"Overall Response Failure Rate")
-    plt.ylim(bottom=0, top=100)
-
-    # save plot as png
-    plt.savefig(directory_name + "/" + (file_name + '_barPlotResponseFailureRate.png'), bbox_inches='tight')
-    # shot plot
-    # plt.show()
-    print(f" Created bar plot: {file_name}")
-    # Clear plots
-    plt.cla()
-    plt.close()
-
-
-def create_overall_bar_plot_stale(directory_name, file_name):
-    print(f" Creating stale bar plot: {file_name}")
-    print(f"   Inside the folder: {directory_name}")
-
-    # Create bar plot for failure rate
-    # data is defined as dictionary, key value pairs ('paketloss1' : failure rate1, ...)
-
-    ratio_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-    index = 0
-    for i in packetloss_rates:
-        try:
-            ratio_value[index] = (stale_count_of_pl[str(i)] / (
-                    stale_count_of_pl[str(i)] + non_stale_count_of_pl[str(i)])) * 100
-        except ZeroDivisionError:
-            print("Zero division error!")
-            ratio_value[index] = 0
-        finally:
-            index += 1
-
-    print(f"Stale rates: {ratio_value}")
-
-    plt.figure(figsize=(10, 5))
-    # fig = plt.figure(figsize=(10, 5))
-
-    # adding text inside the plot
-    data_count_string = ""
-    for i in range(len(packetloss_rates)):
-        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            stale_count_of_pl[str(packetloss_rates[i])]) + "\n"
-    text = plt.text(x_axis_for_text, y_axis_for_text, data_count_string, family="sans-serif", fontsize=11,
-                    color='r')
-    text.set_alpha(0.5)
-
-    # creating the bar plot
-    plt.bar(packetloss_rates, ratio_value, color='orange', width=4)
-
-    # set labels
-    plt.xlabel("Packetloss Rate")
-    plt.ylabel("Stale Record Rate")
-    plt.title(f"Stale Record Rate")
-    plt.ylim(bottom=0, top=100)
-
-    # save plot as png
-    plt.savefig(directory_name + "/" + (file_name + '_barPlotStaleRecordRate.png'), bbox_inches='tight')
-    # shot plot
-    # plt.show()
-    print(f" Created bar plot: {file_name}")
     # Clear plots
     plt.cla()
     plt.close()
@@ -728,8 +632,24 @@ non_stale_count_of_pl = {
     "100": 0,
 }
 
-# Latency of packets in the stale phase with rcode noerror
+# Latency of stale record packets
 latency_of_stales_pl = {
+    "0": [], "10": [], "20": [], "30": [],
+    "40": [], "50": [], "60": [], "70": [],
+    "80": [], "85": [], "90": [], "95": [],
+    "100": [],
+}
+
+# Latency of error packets in the stale phase
+latency_of_errors_pl = {
+    "0": [], "10": [], "20": [], "30": [],
+    "40": [], "50": [], "60": [], "70": [],
+    "80": [], "85": [], "90": [], "95": [],
+    "100": [],
+}
+
+# Latency of non stale ok packets in the stale phase
+latency_of_ok_nonstale_pl = {
     "0": [], "10": [], "20": [], "30": [],
     "40": [], "50": [], "60": [], "70": [],
     "80": [], "85": [], "90": [], "95": [],
@@ -764,48 +684,43 @@ def read_json_file(filename, pl_rate, resolver_filter):
     packet_count = len(json_data)
     # print(f"  Number of packets in JSON file: {packet_count}")
 
-    pcap_type = ""
-    if "client" in filename:
-        pcap_type = "client"
-    elif "auth" in filename:
-        pcap_type = "auth"
-    else:
-        pcap_type = "Unknown"
-
+    # The time difference between the current packet and the previous packet in the PCAP
+    # Used to determine phase switsches
     frame_time_relative_of_previous = 0
+    # Phase index == 0 -> Prefetching, 1 -> Stale Phase
     phases = ["Prefetching", "Stale"]
     phase_index = 0
 
     # Examine all the packets in the JSON file
     for i in range(0, packet_count):
-        # print(f"----------------")
-        # Check if the packet is a DNS packet
+        # Only examine DNS packets
         if 'dns' in json_data[i]['_source']['layers']:
-
+            # Examine the query part of the packet
             json_string = str(json_data[i]['_source']['layers']['dns']['Queries'])
-
+            # Extract the query type to examine only A records
             splitted_type = json_string.split("'dns.qry.type': ")
             splitted_type2 = str(splitted_type[1])
             query_type = splitted_type2.split("'")[1]
             # print(f"QUERY TYPE: {query_type}")
 
+            # If not an A record, skip
             if query_type != "1":
                 # pkt = json_data[i]['_source']['layers']['dns']
                 # print(pkt)
                 continue
 
+            # Extract query name
             splitted_json1 = json_string.split("'dns.qry.name': ")
             splitted2 = str(splitted_json1[1])
             query_name = splitted2.split("'")[1]
-            # print(f"Pcap type: {pcap_type}")
             # print(f"Current query name: {query_name}")
 
             # Filter query names that doesn't belong to our experiment
             # Example query: stale-1-0-0-1-50-ENM-0.packetloss.syssec-research.mmci.uni-saarland.de
             query_name_lower = query_name.lower()
-            if "ns1.packetloss.syssec-research.mmci.uni-saarland.de" in query_name_lower or "_.packetloss.syssec-research.mmci.uni-saarland.de" in query_name_lower \
-                    or ".packetloss.syssec-research.mmci.uni-saarland.de" not in query_name_lower \
-                    or "_" in query_name_lower:
+            if "ns1.packetloss.syssec-research.mmci.uni-saarland.de" in query_name_lower \
+                    or "_" in query_name_lower or ".packetloss.syssec-research.mmci.uni-saarland.de" not in query_name_lower \
+                    or "stale-" not in query_name_lower:
                 # print(f"Skipping invalid domain name: {query_name}")
                 continue
 
@@ -833,26 +748,30 @@ def read_json_file(filename, pl_rate, resolver_filter):
                     ip_dst = json_data[i]['_source']['layers']["ip"]["ip.dst"]
                     # print(f"IP DST: {ip_dst}")
 
+            # If its a client pcap, destination IP must be 139.19.117.1, otherwise pass
             if "client" in filename:
                 if ip_dst != "139.19.117.1":
                     continue
+            # If its an auth pcap, source IP must be 139.19.117.11, otherwise pass
             elif "auth" in filename:
-                if ip_src != "139.19.117.1":
+                if ip_src != "139.19.117.11":
                     continue
 
-            # Filter specific resolver packets by the query's IP Address
-
+            # Extract IP Address from the query,
+            # filter specific resolver packets using the query's IP Address
             try:
                 last_label = query_name.split(".")[0]
                 splitted_domain = last_label.split("-")
                 ip_addr_with_dashes = splitted_domain[1] + "-" + splitted_domain[2] + "-" + \
                                       splitted_domain[3] + "-" + splitted_domain[4]
+                # print(f"IP Address in query: {ip_addr_with_dashes}")
             except Exception as e:
                 print(f"Error")
                 print(f"{e}")
                 print(f"Current query name: {query_name}")
                 print(f"frame_number: {frame_number}")
 
+            # Get operator name of the IP Address
             operator = get_operator_name_from_ip(ip_addr_with_dashes)
             # print(f"Operator: {operator}")
 
@@ -866,9 +785,11 @@ def read_json_file(filename, pl_rate, resolver_filter):
             if skip_packet:
                 continue
 
-            # print(f"IP Address in query: {ip_addr_with_dashes}")
+            # Extract packetloss rate from the query name
             pl_rate_of_query_name = splitted_domain[5]
+            # print(f"Packetloss rate: {pl_rate_of_query_name}")
 
+            # If the packetloss rate of the query name does not match the packetloss rate of the PCAP, skip packet
             if str(pl_rate) != pl_rate_of_query_name:
                 # print(f"  Different packetloss query detected!")
                 # print(f"  Current PL: {str(pl_rate)}")
@@ -878,12 +799,14 @@ def read_json_file(filename, pl_rate, resolver_filter):
                 # time.sleep(1)
                 continue
 
-            # print(f"Packetloss rate: {pl_rate_of_query_name}")
+            # Extract random token from query name
             random_token_of_query = splitted_domain[6]
             # print(f"random_token_of_query: {random_token_of_query}")
+            # Extract the counter of the random token from query name
             counter_of_random_token = splitted_domain[7]
             # print(f"counter_of_random_token: {counter_of_random_token}")
 
+            # Get DNS ID of the packet
             if "dns.id" in json_data[i]['_source']['layers']['dns']:
                 dns_id = json_data[i]['_source']['layers']['dns']["dns.id"]
                 # print(f"DNS ID: {dns_id}")
@@ -893,6 +816,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
                 # Possible NS Answer or error packet or query
                 has_answer = True
 
+            # Check if it is a response packet, how many answers does the packet have, type of response
             if "dns.flags_tree" in json_data[i]['_source']['layers']['dns']:
                 if "dns.flags.response" in json_data[i]['_source']['layers']['dns']["dns.flags_tree"]:
                     is_response = json_data[i]['_source']['layers']['dns']["dns.flags_tree"]["dns.flags.response"]
@@ -931,7 +855,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
                                 ttl_of_answer = int(splitted4.split("'")[1])
                                 # print(f"TTL: {ttl_of_answer}")
 
-
+            # Check if the query name was already observed before
             is_a_new_query = query_name in all_query_names
             if is_a_new_query:
                 pass
@@ -943,19 +867,22 @@ def read_json_file(filename, pl_rate, resolver_filter):
             if is_response == "0":
                 all_query_names.add(query_name)
 
-            # Calculate the time difference to the previous packet and try to calculate, which phase the packet belongs to
+            # Calculate the time difference to the previous packet and try to calculate,
+            # which phase the packet belongs to
             time_diff_to_previous_packet = frame_time_relative - frame_time_relative_of_previous
             # print(f"                               Time diff to previous packet: {time_diff_to_previous_packet}")
             time_diff_abs = abs(frame_time_relative - frame_time_relative_of_previous)
+            # If the time difference is not too much, it should be in the same phase as previous packet
             if time_diff_abs < ttl_wait_time:
                 pass
                 # print(f"Same phase, add packet")
                 # print(f"Adding packet to phase: {phases[phase_index]}")
+            # If there is at least TTL time between packets, phase switching must have occurred
             elif ttl_wait_time <= time_diff_abs <= wait_packetloss_config:
                 # print(f"  @@@@@ Phase switching detected, first packet of the phase")
                 phase_index = (phase_index + 1) % 2
-                # print(f"  Adding packet to phase: {phases[phase_index]}")
                 # Debug
+                # print(f"  Adding packet to phase: {phases[phase_index]}")
                 # print(f"Reading file: {filename}")
                 # print(f"Current query name: {query_name}")
                 # print(f"frame_number: {frame_number}")
@@ -965,13 +892,7 @@ def read_json_file(filename, pl_rate, resolver_filter):
                     stale_phase_count += 1
                 elif phases[phase_index] == "Prefetching":
                     prefetching_phase_count += 1
-
-            # Packet capture is terminated after 600 sec waiting phase
-            # elif wait_packetloss_config < time_diff_abs < 700:
-            #    # print(f"  @@@@@ First packet after cooldown phase")
-            #    phase_index = 0
-            #    # print(f"  Adding packet to phase: {phases[phase_index]}")
-
+            # If more than 5 mins passed, packetloss cooldown is occurred
             elif time_diff_abs >= 700:  # 7200 = 12(pl araları) * 600(pl arası cooldown)
                 # print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
                 phase_index = 0
@@ -987,68 +908,51 @@ def read_json_file(filename, pl_rate, resolver_filter):
             global stale_count_of_pl
             global non_stale_count_of_pl
             global latency_of_stales_pl
-            # Count if query was stale
-            if is_response == "1" and phases[phase_index] == "Stale" and rcode == "0":
-                latency_of_stales_pl[pl_rate_of_query_name].append(dns_time)
-                expected_stale_a_record = ("139." + str(pl_rate) + "." + str(pl_rate) + "." + str(pl_rate))
-                expected_noerror_a_record = (
-                        "139." + str(int(pl_rate) + 1) + "." + str(int(pl_rate) + 1) + "." + str(int(pl_rate) + 1))
-
-                # print(f"expected_stale_a_record: {expected_stale_a_record}")
-                # print(f"expected_noerror_a_record: {expected_noerror_a_record}")
-
-                # print(f"    Added latency")
-                if expected_stale_a_record == a_record:
-                    # print("1")
-                    stale_count_of_pl[pl_rate_of_query_name] += 1
-                    # print(f"    Marked as stale")
-                elif expected_noerror_a_record == a_record:
-                    # print("0")
-                    non_stale_count_of_pl[pl_rate_of_query_name] += 1
-                    # print(f"    Marked as Non-stale")
-
-            # Calculate failure rate/refused/noerror rate of stale phase packets
-            if is_response == "1" and phases[phase_index] == "Stale":
-                if str(rcode) == "2":
-                    failed_packet_pl_rate[str(pl_rate)] += 1
-                # Consider only packets where answer count is >= 1 to filter NS type answers
-                elif str(rcode) == "0" and int(answer_count) >= 1:
-                    norerror_pl_rate[str(pl_rate)] += 1
-                elif str(rcode) == "5":
-                    refused_packet_pl_rate[str(pl_rate)] += 1
-
-            # Get all response and queries count
+            # If packet is response and in stale phase
             if phases[phase_index] == "Stale":
-                if is_response == "1" and int(answer_count) >= 1:
-                    responses_pl_rate[str(pl_rate)] += 1
+                # Packet is a response packet
+                if is_response == "1":
+                    # The response was OK and there was at least 1 A record as answer, check if its stale or not
+                    if rcode == "0" and int(answer_count) >= 1:
+                        norerror_pl_rate[str(pl_rate)] += 1
+                        responses_pl_rate[str(pl_rate)] += 1
+                        expected_stale_a_record = ("139." + str(pl_rate) + "." + str(pl_rate) + "." + str(pl_rate))
+                        expected_noerror_a_record = (
+                                "139." + str(int(pl_rate) + 1) + "." + str(int(pl_rate) + 1) + "." + str(int(pl_rate) + 1))
+
+                        # The record was stale
+                        if expected_stale_a_record == a_record:
+                            stale_count_of_pl[pl_rate_of_query_name] += 1
+                            latency_of_stales_pl[pl_rate_of_query_name].append(dns_time)
+                            operator_stale_packets[operator].append(json_data[i])
+                            # print(f"    Marked as stale")
+                        # The record was non stale
+                        elif expected_noerror_a_record == a_record:
+                            latency_of_ok_nonstale_pl[pl_rate_of_query_name].append(dns_time)
+                            non_stale_count_of_pl[pl_rate_of_query_name] += 1
+                            # print(f"    Marked as Non-stale")
+                    # If the response was SERVFAIL
+                    if rcode == "2":
+                        failed_packet_pl_rate[str(pl_rate)] += 1
+                        latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
+                    # If response was REFUSED
+                    if str(rcode) == "5":
+                        refused_packet_pl_rate[str(pl_rate)] += 1
+                # Packet is a query
                 elif is_response == "0":
                     queries_pl_rate[str(pl_rate)] += 1
 
-            # Debug yandex latencies
-            # if is_response == "1":
-            #    if dns_time >= 40:
-            #        print(f"dns_time: {dns_time}")
-            #        print(f"qry name: {query_name}")
-            #        print(f"frame no: {frame_number}")
-            #        print(f"JSON PL rate: {pl_rate}")
-            #        # time.sleep(20)
-
-            # Store packet to operator list
-            if is_response == "1" and phases[phase_index] == "Stale" and int(answer_count) >= 1:
-                operator_stale_packets[operator].append(json_data[i])
-                # if pl_rate_of_query_name == "100":
-                #     print(f"{query_name_lower} , {frame_number}")
-
-
-
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92"]
 
 # Stale record supporting resolvers
-# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "OpenDNS2"
+# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1",
 
 # No record support
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92"
+# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92", "OpenDNS2"
+
+# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
+filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92", "OpenDNS2"]
+
+file_name = "Stale Supported Resolver Only"
 
 for current_pl_rate in packetloss_rates:
     print(f"Current packetloss rate: {current_pl_rate}")
@@ -1058,61 +962,23 @@ for current_pl_rate in packetloss_rates:
 
     read_json_file(client_json_file_name, current_pl_rate, filtered_resolvers)
 
-name = "Stale record supporting resolver only"
-
-directory_name = name
-
+latency_directory_name = "LatencyPlots"
+rate_plots_directory_name = "RatePlots"
 # Create directory to store logs into it
-if not os.path.exists(directory_name):
-    os.makedirs(directory_name)
+if not os.path.exists(latency_directory_name):
+    os.makedirs(latency_directory_name)
+if not os.path.exists(rate_plots_directory_name):
+    os.makedirs(rate_plots_directory_name)
 
-file_name = name
-bottom_limit = 0
-upper_limit = 40
-log_scale_y_axis = False
+latency_upper_limit = 10
 
-# create_overall_box_plot(directory_name, file_name, bottom_limit, upper_limit, log_scale_y_axis)
-# create_overall_latency_violin_plot(directory_name, file_name, bottom_limit, upper_limit, log_scale_y_axis)
-# create_overall_bar_plot_failure(directory_name, file_name)
-# create_overall_bar_plot_stale(directory_name, file_name)
+create_combined_plots(file_name, file_name, rate_plots_directory_name)
 
-create_combined_plots(name, name)
+create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_errors_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_errors_pl, log_scale=False)
 
-# print(f"---------------")
-#
-# print(f"Non matching (filtered) pl rates:{non_matching_pl_rate}")
-#
-# print(f"Stale rates:")
-# for i in packetloss_rates:
-#     try:
-#         print(
-#             f"PL {i}: {stale_count_of_pl[str(i)]}/{stale_count_of_pl[str(i)] + non_stale_count_of_pl[str(i)]} = {stale_count_of_pl[str(i)] / (stale_count_of_pl[str(i)] + non_stale_count_of_pl[str(i)])}")
-#     except ZeroDivisionError:
-#         print("Zero division error!")
-#
-# print(f"\nResponse packet counts:{responses_pl_rate}")
-# print(f"Query packet counts:{queries_pl_rate}")
-#
-# print(f"Failed stale packet counts:{failed_packet_pl_rate}")
-# print(f"No error packet counts:{norerror_pl_rate}\n")
-#
-# print(f"Failure rates:")
-# for i in packetloss_rates:
-#     try:
-#         print(
-#             f"PL {i}: {failed_packet_pl_rate[str(i)]}/{failed_packet_pl_rate[str(i)] + norerror_pl_rate[str(i)]} = {failed_packet_pl_rate[str(i)] / (failed_packet_pl_rate[str(i)] + norerror_pl_rate[str(i)])}")
-#     except ZeroDivisionError:
-#         print("Zero division error!")
-#
-# print(f"\nLatencies of stale records:")
-# for i in packetloss_rates:
-#     try:
-#         print(
-#             f"PL {i}: mean: {statistics.mean(latency_of_stales_pl[str(i)])},  median: {statistics.median(latency_of_stales_pl[str(i)])}")
-#     except Exception:
-#         print("no data error")
-#
-# print(f"----------------")
-# print(f"stale_phase_count: {stale_phase_count}")
-# print(f"prefetching_phase_count: {prefetching_phase_count}")
-# print(f"experiment_count: {experiment_count}")
+create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
+
+create_latency_violin_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)

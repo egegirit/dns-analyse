@@ -27,6 +27,9 @@ max_iteration = 70
 # The TTL values that we will experiment with
 ttl_values_of_records = [60, 120, 180, 600]
 
+# Time to sleep in seconds between new TTL changes
+cooldown_sleep_time = 120
+
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver
 # in the prefetch phase
@@ -301,21 +304,22 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
             print(e)
         # Extract A record and TTL from response
         try:
-            if not response.answer:
-                print(f"        No Answer")
-                no_answer_count += 1
-                stale_record_on_iterations[x] = 0
-            # If Answer was not empty, process
-            else:
-                stale_answer_count += 1
-                stale_record_on_iterations[x] = 1
-                for a in response.answer:
-                    dataset = a.to_rdataset()
-                    if "A" in str(dataset):
-                        a_record = str(dataset).split("A ")[1]
-                        print(f"        A record: {a_record}")
-                    ttl = int(dataset.ttl)
-                    print(f"        TTL:  {ttl}")
+            if response is not None:
+                if not response.answer:
+                    print(f"        No Answer")
+                    no_answer_count += 1
+                    stale_record_on_iterations[x] = 0
+                # If Answer was not empty, process
+                else:
+                    stale_answer_count += 1
+                    stale_record_on_iterations[x] = 1
+                    for a in response.answer:
+                        dataset = a.to_rdataset()
+                        if "A" in str(dataset):
+                            a_record = str(dataset).split("A ")[1]
+                            print(f"        A record: {a_record}")
+                        ttl = int(dataset.ttl)
+                        print(f"        TTL:  {ttl}")
         except Exception as e:
             print(f"        Error reading the response of query {query_name}")
             print(e)
@@ -359,11 +363,12 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
         # Read content from first zone file
         for line in boilerplate_file:
             # When writing the TTL part of the zone file, modify the TTL value
-            if "$TTL" in line:
+            if "$TTL " in line:
                 ttl_line = f"$TTL {ttl_value}\n"
                 active_zone_file.write(ttl_line)
-            # Append content to active zone file line by line
-            active_zone_file.write(line)
+            else:
+                # Append content to active zone file line by line
+                active_zone_file.write(line)
 
     a_records = ""
     created_A_record = ""  # DEBUG
@@ -372,7 +377,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
 
     for ip_addr in resolver_ip_addresses:
         ip_addr_with_dashes = ip_addr.replace(".", "-")
-        a_records = f"stale-{ip_addr_with_dashes}-{str(pl_rate)}-{generated_tokens}-{ttl_value}\tIN\tA\t139.{a_record_end}\n"
+        a_records = f"stale-{ip_addr_with_dashes}-{str(pl_rate)}-{generated_tokens}-TTL{ttl_value}\tIN\tA\t139.{a_record_end}\n"
         created_A_record += a_records
         f.write(a_records)
     f.close()
@@ -465,6 +470,10 @@ for current_ttl in ttl_values_of_records:
                        for current_resolver_ip in resolver_ip_addresses]
 
         print(f"\nSTALE PHASE DONE\n")
+        print(f"Sleeping for {cooldown_sleep_time} seconds (Cooldown)")
+
+        # Cooldown between packetloss configurations
+        sleep_for_seconds(cooldown_sleep_time)
 
         # Terminate packet captures / all created processes
         print(f"  Stopping packet capture")

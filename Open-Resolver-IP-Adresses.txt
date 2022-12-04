@@ -116,7 +116,7 @@ operators = {
 caches_of_resolvers = {
     "94.140.14.14": 1,  # AdGuard_1
     "94.140.14.15": 1,  # AdGuard_2
-	"94.140.14.140": 1,  # AdGuard_2
+	"94.140.14.140": 1,  # AdGuard_3
 	
     "185.228.168.168": 6,  # CleanBrowsing_1
     "185.228.168.9": 6,  # CleanBrowsing_2

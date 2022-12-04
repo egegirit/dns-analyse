@@ -28,7 +28,7 @@ max_iteration = 70
 ttl_values_of_records = [60, 120, 180, 600]
 
 # Time to sleep in seconds between new TTL changes
-cooldown_sleep_time = 120
+cooldown_sleep_time = 600
 
 # The probability that we will hit all the caches of the resolver.
 # This probability is used to calculate the query count to send to the resolver

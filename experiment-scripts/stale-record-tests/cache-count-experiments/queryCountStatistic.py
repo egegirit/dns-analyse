@@ -2,7 +2,7 @@ from random import randrange
 
 cache_count_of_resolver = 18
 query_count = 40
-desired_probability = 0.90
+desired_probability = 0.95
 
 min_value = 1
 max_value = cache_count_of_resolver

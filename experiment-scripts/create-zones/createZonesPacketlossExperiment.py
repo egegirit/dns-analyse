@@ -4,24 +4,47 @@ packetloss_rates = ["pl0", "pl10", "pl20", "pl30", "pl40", "pl50", "pl60", "pl70
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
-    "94.140.14.14",  # AdGuard 1  (dns.adguard.com)
-    "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
-    "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
-    "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
-    "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
-    "1.0.0.1",  # Cloudflare 2     (1dot1dot1dot1.cloudflare-dns.com)
-    "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
-    "216.146.36.36",  # Dyn 2  (resolver2.dyndnsinternetguide.com )
-    "8.8.8.8",  # Google 1  (dns.google )
-    "8.8.4.4",  # Google 2  (dns.google )
-    "64.6.64.6",  # Neustar 1  (?)  ERROR
-    "156.154.70.1",  # Neustar 2  (?)  ERROR
-    "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
-    "208.67.222.2",  # OpenDNS 2  (sandbox.opendns.com )
-    "9.9.9.9",  # Quad9 1    (dns9.quad9.net )
-    "9.9.9.11",  # Quad9 2    (dns11.quad9.net)
-    "77.88.8.1",  # Yandex 1   (dns.yandex.ru)
-    "77.88.8.8"  # Yandex 2   (secondary.dns.yandex.ru )
+    "94.140.14.14",  # AdGuard_1
+    "94.140.14.15",  # AdGuard_2
+    "94.140.14.140",  # AdGuard_3
+
+    "185.228.168.168",  # CleanBrowsing_1
+    "185.228.168.9",  # CleanBrowsing_2
+    "185.228.168.10",  # CleanBrowsing_3
+
+    "1.1.1.1",  # Cloudflare_1
+    "1.1.1.2",  # Cloudflare_2
+    "1.1.1.3",  # Cloudflare_3
+
+    "216.146.35.35",  # Dyn_1
+
+    "8.8.8.8",  # Google_1
+
+    "64.6.64.6",  # Neustar_1
+    "156.154.70.2",  # Neustar_2
+    "156.154.70.3",  # Neustar_3
+    "156.154.70.4",  # Neustar_4
+    "156.154.70.5",  # Neustar_5
+
+    "208.67.222.222",  # OpenDNS_1
+    "208.67.222.2",  # OpenDNS_2
+    "208.67.222.123",  # OpenDNS_3
+
+    "9.9.9.9",  # Quad9_1
+    "9.9.9.11",  # Quad9_2
+    "9.9.9.10",  # Quad9_3
+
+    "77.88.8.1",  # Yandex_1
+    "77.88.8.2",  # Yandex_2
+    "77.88.8.3",  # Yandex_3
+
+    "76.76.19.19",  # AlternateDNS_1
+    "76.223.122.150",  # AlternateDNS_2
+
+    "76.76.2.0",  # ControlD_1
+    "76.76.2.1",  # ControlD_2
+    "76.76.2.2",  # ControlD_3
+    "76.76.2.3"  # ControlD_4
 ]
 
 # Delete?

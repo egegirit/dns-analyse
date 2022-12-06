@@ -15,6 +15,8 @@ sleep_time = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
+max_worker_count = 30
+
 # Determines how many times the program sends the query
 execute_count = 1
 
@@ -288,7 +290,7 @@ for current_packetloss_rate in packetloss_rates:
         # Measure the time of parallelization (Optional)
         start = time.perf_counter()
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a 
             # future object representing the execution of the callable.

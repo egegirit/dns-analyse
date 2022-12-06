@@ -20,9 +20,8 @@ from datetime import datetime
 # Time to wait after one prefetch query is sent to a resolver IP Addresses
 sleep_time_after_every_prefetch = 0.5
 
-# The amount of iterations the experiment will continue
-# Minimum Experiment time: Prefetching phase time + (max_iteration * TTL)
-max_iteration = 70
+# For how many minutes we should keep send queries after prefetching phase
+experiment_time_in_minutes = 1
 
 max_worker_count = 30
 
@@ -293,23 +292,30 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
 
 # Prefetch phase, send queries to resolvers to make them cache the entries
 def stale_phase(ip_addr, generated_tokens, ttl_value):
-    global max_iteration
     # Timeout value of the query in stale phase
     stale_query_timeout = 10
     stale_answer_count = 0
     no_answer_count = 0
-    # Stop experiment for the resolver if iteration count is equals max_iteration
+
     # If there was a stale record observed in the i-th iteration, mark the i-th element of list as 1
-    stale_record_on_iterations = [-1] * max_iteration
+    stale_record_on_iterations = []
 
     print(f"\n  Sending query to IP: {ip_addr}")
     query_name = build_query(100, ip_addr, generated_tokens, ttl_value)
     print(f"   Query name: {query_name}")
     response = None
 
+    # Keep sending queries for experiment_time_in_minutes minutes
+    experiment_time_in_secs = experiment_time_in_minutes * 60
+    start_time = time.time()
+    print(f"   Start time: {start_time}")
+    current_time = 0
+    continue_experiment = True
+
+    x = 0
     # Keep sending queries until max iteration count is reached
-    for x in range(max_iteration):
-        print(f"    {x+1}. iteration for {ip_addr}")
+    while continue_experiment:
+        print(f"    {x + 1}. iteration for {ip_addr}")
         request = dns.message.make_query(query_name, dns.rdatatype.A)
         print(f"      Sending Query")
 
@@ -325,11 +331,11 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
                 if not response.answer:
                     print(f"        No Answer")
                     no_answer_count += 1
-                    stale_record_on_iterations[x] = 0
+                    stale_record_on_iterations.append(0)
                 # If Answer was not empty, process
                 else:
                     stale_answer_count += 1
-                    stale_record_on_iterations[x] = 1
+                    stale_record_on_iterations.append(1)
                     for a in response.answer:
                         dataset = a.to_rdataset()
                         if "A" in str(dataset):
@@ -337,12 +343,25 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
                             print(f"        A record: {a_record}")
                         ttl = int(dataset.ttl)
                         print(f"        TTL:  {ttl}")
+            else:
+                stale_record_on_iterations.append(-1)
         except Exception as e:
             print(f"        Error reading the response of query {query_name}")
             print(e)
         # Wait TTL
         time.sleep(ttl_value)
-    print(f"Ending stale phase for {ip_addr}, max iteration count reached")
+
+        current_time = time.time()
+        elapsed_time = current_time - start_time
+        remaining_time = experiment_time_in_secs - elapsed_time
+        if remaining_time <= 0:
+            continue_experiment = False
+        else:
+            print(f"        ({int(remaining_time)} seconds remaining for {ip_addr})")
+
+        x += 1
+
+    print(f"Ending stale phase for {ip_addr}")
     print(f"Results of {ip_addr}:")
     print(f"  stale_answer_count: {stale_answer_count}")
     print(f"  no_answer_count: {no_answer_count}")
@@ -452,7 +471,7 @@ for current_ttl in ttl_values_of_records:
         print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             results = [executor.submit(send_queries_to_resolvers,
                                        current_resolver_ip,
                                        current_packetloss_rate,

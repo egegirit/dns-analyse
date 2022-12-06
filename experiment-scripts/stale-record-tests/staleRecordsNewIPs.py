@@ -450,7 +450,7 @@ for current_experiment_count in range(experiment_count):
         print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a
             # future object representing the execution of the callable.

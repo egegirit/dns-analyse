@@ -68,6 +68,14 @@ resolver_ip_addresses = [
     "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
     "216.146.36.36",  # Dyn 2  (resolver2.dyndnsinternetguide.com )
     "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
+
+    # TODO: Check if stale supported, add new stale supporting IPs
+    "209.244.0.3",  # Level3_1
+    "209.244.0.4",  # Level3_2
+
+    "199.85.126.10",  # Norton_1
+    "199.85.126.20",  # Norton_2
+    "199.85.126.30"  # Norton_3
 ]
 
 # Define how many caches does the resolver have
@@ -77,6 +85,13 @@ caches_of_resolvers = {
     "216.146.35.35": 3,  # Dyn 1
     "216.146.36.36": 3,  # Dyn 2
     "208.67.222.222": 16,  # OpenDNS 1
+
+    "209.244.0.3": 2,  # Level3_1
+	"209.244.0.4": 2,  # Level3_2
+
+	"199.85.126.10": 4,  # Norton_1
+	"199.85.126.20": 4,  # Norton_2
+	"199.85.126.30": 4  # Norton_3
 }
 
 

@@ -86,13 +86,12 @@ resolver_ip_addresses = [
     "77.88.8.2",  # Yandex_2
     "77.88.8.3",  # Yandex_3
 
-    "76.76.19.19",  # AlternateDNS_1
-    "76.223.122.150",  # AlternateDNS_2
+    "209.244.0.3",  # Level3_1
+    "209.244.0.4",  # Level3_2
 
-    "76.76.2.0",  # ControlD_1
-    "76.76.2.1",  # ControlD_2
-    "76.76.2.2",  # ControlD_3
-    "76.76.2.3"  # ControlD_4
+    "199.85.126.10",  # Norton_1
+    "199.85.126.20",  # Norton_2
+    "199.85.126.30"  # Norton_3
 ]
 
 # Define how many caches does the resolver have
@@ -116,13 +115,12 @@ caches_of_resolvers = {
     "77.88.8.2": 10,  # Yandex_2
     "77.88.8.3": 10,  # Yandex_3
 
-    "76.76.19.19": 1,  # AlternateDNS_1
-    "76.223.122.150": 1,  # AlternateDNS_2
+    "209.244.0.3": 2,  # Level3_1
+	"209.244.0.4": 2,  # Level3_2
 
-    "76.76.2.0": 1,  # ControlD_1
-    "76.76.2.1": 1,  # ControlD_2
-    "76.76.2.2": 1,  # ControlD_3
-    "76.76.2.3": 1,  # ControlD_4
+	"199.85.126.10": 4,  # Norton_1
+	"199.85.126.20": 4,  # Norton_2
+	"199.85.126.30": 4  # Norton_3
 }
 
 

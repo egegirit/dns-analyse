@@ -11,9 +11,9 @@ resolver_ip_addresses = [
     # "94.140.14.14",  # AdGuard 1  -> 1
     # "94.140.14.15",  # AdGuard 2  (dns-family.adguard.com )
     # "94.140.14.140",
-    "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
-    "185.228.168.10",
-    "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
+    # "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
+    # "185.228.168.10",
+    # "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
     # "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
     # "1.1.1.2",
     # "1.1.1.3",
@@ -38,21 +38,27 @@ resolver_ip_addresses = [
     # "76.76.2.1",
     # "76.76.2.2",
     # "76.76.2.3",
+    "209.244.0.3",  # Level3_1
+	"209.244.0.4",  # Level3_2
+
+	"199.85.126.10",  # Norton_1
+	"199.85.126.20",  # Norton_2
+	"199.85.126.30"   # Norton_3
 ]
 
 skip_to_next = False
 
-file_name = "cache_count_logs_cleanbrowsing2.txt"
+file_name = "cache_count_logs_newIPs2.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "hoopala.ocean134.messwithdns.com"
+query_name = "cachetest.cobalt106.messwithdns.com"
 sleep_time = 1.1
 max_ttl_of_record = 700
-query_count = 55
+query_count = 60
 
 print(f"Current time: {datetime.utcnow()}")
 f.write(f"Current time: {datetime.utcnow()}\n")

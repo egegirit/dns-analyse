@@ -27,7 +27,7 @@ Google (Cache count: 8, No stale record support):
 - 8.8.8.8  (Google_1, dns.google, None)
 
 
-Neustar (All IPs use the same cache, cache count: 4, No stale record support):
+Neustar (Neustar Announced Acquisition of Verisign’s Public DNS Service 64.6.64.6) (All IPs use the same cache, cache count: 4, No stale record support):  
 - 64.6.64.6  (Neustar_1, None)
 - 156.154.70.2  (Neustar_(2), Malware, ransomware, spyware, phishing)
 - 156.154.70.3  (Neustar_3, Low security + gambling, pornography, violence, hate)
@@ -66,6 +66,16 @@ Control D (All IPs use the same cache, cache count: 1):
 - 76.76.2.2  (ControlD_3, Block Malware, Ads)  # Delete?
 - 76.76.2.3 (ControlD_4, Block Malware, Ads and Social)
 
+--------------------------
+
+Level 3 (No filtering like Google DNS, mostly used for performance and reliability, All IPs use the same cache, cache count: 2):
+- 209.244.0.3
+- 209.244.0.4
+
+Norton ConnectSafe (All IPs use the same cache, cache count: 4):
+— 199.85.126.10  (Security (virus, phishing sites, and scam sites))
+— 199.85.126.20  (Security + Adult content) 
+— 199.85.126.30  (Security + Adult content + Other)
 
 -----------------------------------------------------------
 
@@ -104,13 +114,13 @@ operators = {
     "Yandex_2": "77-88-8-2",
 	"Yandex_3": "77-88-8-3",
 	
-	"AlternateDNS_1": "76-76-19-19",
-	"AlternateDNS_2": "76-223-122-150",
+	"Level3_1": "209.244.0.3",
+	"Level3_2": "209.244.0.4",
 	
-	"ControlD_1": "76-76-2-0",
-	"ControlD_2": "76-76-2-1",
-	"ControlD_3": "76-76-2-2",
-	"ControlD_4": "76-76-2-3"	
+	"Norton_1": "199.85.126.10",
+	"Norton_2": "199.85.126.20",
+	"Norton_3": "199.85.126.30",
+	
 }
 
 caches_of_resolvers = {
@@ -148,12 +158,11 @@ caches_of_resolvers = {
     "77.88.8.2": 10,  # Yandex_2
 	"77.88.8.3": 10,  # Yandex_3
 	
-	"76.76.19.19": 1,  # AlternateDNS_1
-    "76.223.122.150": 1,  # AlternateDNS_2
-
-	"76.76.2.0": 1,  # ControlD_1
-	"76.76.2.1": 1,  # ControlD_2
-	"76.76.2.2": 1,  # ControlD_3
-	"76.76.2.3": 1,  # ControlD_4	
+	"209.244.0.3": 2,  # Level3_1 
+	"209.244.0.4": 2,  # Level3_2 
+	
+	"199.85.126.10": 4,  # Norton_1 
+	"199.85.126.20": 4,  # Norton_2 
+	"199.85.126.30": 4  # Norton_3 
 	
 }

@@ -26,6 +26,8 @@ sleep_time_between_packetloss_config = 600
 # The TTL value of the A records on the authoritative server
 ttl_value_of_records = 60
 
+max_worker_count = 30
+
 # How many A records there are for each IP
 # This also determines the count of the results we will get for each IP and each Packetloss config
 count_of_a_records = 4
@@ -477,7 +479,7 @@ for current_experiment_count in range(experiment_count):
         print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a
             # future object representing the execution of the callable.

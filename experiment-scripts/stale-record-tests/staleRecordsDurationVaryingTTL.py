@@ -24,6 +24,8 @@ sleep_time_after_every_prefetch = 0.5
 # Minimum Experiment time: Prefetching phase time + (max_iteration * TTL)
 max_iteration = 70
 
+max_worker_count = 30
+
 # The TTL values that we will experiment with
 ttl_values_of_records = [60, 120, 180, 600]
 
@@ -477,7 +479,7 @@ for current_ttl in ttl_values_of_records:
         print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             results = [executor.submit(stale_phase,
                                        current_resolver_ip,
                                        generated_chars,

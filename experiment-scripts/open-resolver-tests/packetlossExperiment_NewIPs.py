@@ -18,6 +18,8 @@ sleep_time_between_packetloss_config = 600
 # Determines how many times the program sends the query
 execute_count = 1
 
+max_worker_count = 30
+
 # The name of the folder that will be created to store all the tcpdump files inside it
 directory_name_of_logs = "capture_logs_packetloss_experiment"
 
@@ -67,7 +69,6 @@ resolver_ip_addresses = [
     "199.85.126.10",  # Norton_1
     "199.85.126.20",  # Norton_2
     "199.85.126.30"  # Norton_3
-]
 ]
 
 # Set the interface names for packet capture with tcpdump
@@ -300,7 +301,7 @@ for current_packetloss_rate in packetloss_rates:
         # Measure the time of parallelization (Optional)
         start = time.perf_counter()
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a 
             # future object representing the execution of the callable.

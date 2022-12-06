@@ -60,9 +60,9 @@ Level 3 (No filtering like Google DNS, mostly used for performance and reliabili
 - 209.244.0.4
 
 Norton ConnectSafe (All IPs use the same cache, cache count: 4):
-— 199.85.126.10  (Security (virus, phishing sites, and scam sites))
-— 199.85.126.20  (Security + Adult content) 
-— 199.85.126.30  (Security + Adult content + Other)
+- 199.85.126.10  (Security (virus, phishing sites, and scam sites))
+- 199.85.126.20  (Security + Adult content) 
+- 199.85.126.30  (Security + Adult content + Other)
 
 -----------------------------------------------------------
 

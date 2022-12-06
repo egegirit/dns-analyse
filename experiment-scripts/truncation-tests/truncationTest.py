@@ -79,7 +79,7 @@ interface_2 = (
 interface_3 = "bond0"  # The interface of client which sends the queries
 
 # Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
 
 # Multiprocessing function that builds the all query names from a given IP address using a counter value

@@ -351,6 +351,7 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
         # Wait TTL
         time.sleep(ttl_value)
 
+        # Calculate the elapsed time and check we reached the time limit for the experiment
         current_time = time.time()
         elapsed_time = current_time - start_time
         remaining_time = experiment_time_in_secs - elapsed_time

@@ -348,7 +348,7 @@ def create_combined_plots(file_name_prefix, operator_name, directory_name):
     plt.ylabel("Rate of results")
     # ax.set_ylabel('Results')
     plt.title(plot_title, x=0.5, y=1.1)
-    plt.ylim(bottom=0)
+    plt.ylim(bottom=0, top=100)
 
     ax.set_xticks(arr + width/2)
     ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100))
@@ -950,9 +950,9 @@ def read_json_file(filename, pl_rate, resolver_filter):
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92", "OpenDNS2"
 
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Google1", "Google2", "Neustar1", "Neustar2", "Yandex1", "Yandex2", "Quad91", "Quad92", "OpenDNS2"]
+filtered_resolvers = ["Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1",]
 
-file_name = "Stale Supported Resolver Only"
+file_name = "No stale record supported resolvers only"
 
 for current_pl_rate in packetloss_rates:
     print(f"Current packetloss rate: {current_pl_rate}")

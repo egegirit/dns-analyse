@@ -21,7 +21,7 @@ from datetime import datetime
 sleep_time_after_every_prefetch = 0.5
 
 # For how many minutes we should keep send queries after prefetching phase
-experiment_time_in_minutes = 1
+experiment_time_in_minutes = 360
 
 max_worker_count = 30
 

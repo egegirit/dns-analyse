@@ -1,0 +1,17 @@
+Stale record experiment with ripe atlas:
+
+1.000.000 Daily kredit limit
+No one off experiment -> 10 Kredit per query
+
+Assume: Cache count of probes resolver is 18 
+Then, about 70 queries for prefetching phase for every probe to fill caches with 95% chance -> 700 Kredits pro probe in prefetching.
+
+Stale phase: 1 query every 1 minute.
+Duration of stale phase: 2 hours -> 60 * 2 = 120 queries -> 1200 Kredits per Probe in stale phase
+
+With 500 Probes:
+Prefetching -> 350.000 Kredits
+2 hours Stale Phase -> 600.000 Kredits
+Total -> 950.000 Kredits
+
+Find balance between probe count and stale phase duration

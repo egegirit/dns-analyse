@@ -88,11 +88,11 @@ caches_of_resolvers = {
     "208.67.222.222": 16,  # OpenDNS 1
 
     "209.244.0.3": 2,  # Level3_1
-	"209.244.0.4": 2,  # Level3_2
+    "209.244.0.4": 2,  # Level3_2
 
-	"199.85.126.10": 4,  # Norton_1
-	"199.85.126.20": 4,  # Norton_2
-	"199.85.126.30": 4  # Norton_3
+    "199.85.126.10": 4,  # Norton_1
+    "199.85.126.20": 4,  # Norton_2
+    "199.85.126.30": 4  # Norton_3
 }
 
 
@@ -150,8 +150,8 @@ def disable_packetloss_simulation(packetloss_rate, interface_name):
 
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
-def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface, generated_chars, ttl_value):
-
+def start_packet_captures(directory_name_of_logs, current_packetloss_rate, auth_interface, client_interface,
+                          generated_chars, ttl_value):
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
@@ -254,7 +254,8 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     global extra_query_count
     global caches_of_resolvers
     if phase == "prefetch":
-        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr], desired_probability) + extra_query_count
+        return calculate_query_count_with_desired_probability(ip_addr, caches_of_resolvers[ip_addr],
+                                                              desired_probability) + extra_query_count
     elif phase == "stale":
         return 1
 
@@ -380,7 +381,8 @@ def build_query(packetloss_rate, ip_addr, generated_tokens, ttl_value):
 
 # Switch to the zone file of the corresponding packetloss rate
 def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
-    print(f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
+    print(
+        f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
 
     a_record_ip_addr = ""
 
@@ -396,7 +398,8 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
 
     # Write the contents of boilerplate zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
-    with open(boilerplate_zone_file_path, 'r') as boilerplate_file, open(active_zone_file_path, 'w') as active_zone_file:
+    with open(boilerplate_zone_file_path, 'r') as boilerplate_file, open(active_zone_file_path,
+                                                                         'w') as active_zone_file:
         # Read content from first zone file
         for line in boilerplate_file:
             # When writing the TTL part of the zone file, modify the TTL value

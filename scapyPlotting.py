@@ -293,11 +293,11 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # The record was stale
                 if expected_stale_a_record == a_record:
                     stale_count_pl[pl_rate_of_packet] += 1
-                    latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
+                    # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
                     # print(f"    Marked as stale")
                 # The record was non-stale
                 elif expected_noerror_a_record == a_record:
-                    latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
+                    # latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
                     non_stale_count_pl[pl_rate_of_packet] += 1
                     # print(f"    Marked as Non-stale")
 

@@ -66,6 +66,10 @@ Norton ConnectSafe (All IPs use the same cache, cache count: 4):
 
 -----------------------------------------------------------
 
+"AdGuard_1", "AdGuard_2", "AdGuard_3", "CleanBrowsing_1", "CleanBrowsing_2", "CleanBrowsing_3", "Cloudflare_1", "Cloudflare_2", "Cloudflare_3", "Dyn_1", "Google_1",
+"Neustar_1", "Neustar_2", "Neustar_3", "Neustar_4", "Neustar_5", "OpenDNS_1", "OpenDNS_2", "OpenDNS_3", "Quad9_1", "Quad9_2", "Quad9_3", "Yandex_1", "Yandex_2", "Yandex_3",
+"Level3_1", "Level3_2", "Norton_1", "Norton_2", "Norton_3"
+
 operators = {
     "AdGuard_1": "94-140-14-14",
     "AdGuard_2": "94-140-14-15",

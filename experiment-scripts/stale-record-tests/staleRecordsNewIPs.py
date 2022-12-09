@@ -24,7 +24,7 @@ sleep_time_after_every_stale_query = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 # The TTL value of the A records on the authoritative server
-ttl_value_of_records = 60
+ttl_value_of_records = 130
 
 max_worker_count = 30
 
@@ -118,11 +118,11 @@ caches_of_resolvers = {
     "77.88.8.3": 10,  # Yandex_3
 
     "209.244.0.3": 2,  # Level3_1
-	"209.244.0.4": 2,  # Level3_2
+    "209.244.0.4": 2,  # Level3_2
 
-	"199.85.126.10": 4,  # Norton_1
-	"199.85.126.20": 4,  # Norton_2
-	"199.85.126.30": 4  # Norton_3
+    "199.85.126.10": 4,  # Norton_1
+    "199.85.126.20": 4,  # Norton_2
+    "199.85.126.30": 4  # Norton_3
 }
 
 
@@ -305,7 +305,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
     # Show a warning if the sent queries will become stale before we begin the stale phase
     if "prefetch" == phase:
         minimum_waiting_time_of_prefetch = ((query_count * prefetch_query_timeout) + (
-                    query_count * sleep_time_after_every_prefetch)) * count_of_a_records
+                query_count * sleep_time_after_every_prefetch)) * count_of_a_records
         if minimum_waiting_time_of_prefetch > ttl_value_of_records:
             print(
                 f"Warning! Minimum runtime of stale phase is {minimum_waiting_time_of_prefetch} for {ip_addr}, which is greater than the TTL value {ttl_value_of_records}")

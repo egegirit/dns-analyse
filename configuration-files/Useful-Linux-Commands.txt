@@ -506,7 +506,7 @@ pscp.exe domeras@192.168.1.13:/home/domeras/Desktop/logs.zip "C:\Users\egegi\Des
 
 pscp.exe debian@192.168.1.30:/home/debian/config_v2.zip "C:\Users\egegi\Desktop"
 
-pscp.exe domeras@192.168.1.21:/home/domeras/Desktop/logs-last-exp.zip "C:\Users\egegi\Desktop"
+pscp.exe domeras@192.168.1.21:/home/domeras/Desktop/logs.zip "C:\Users\egegi\Desktop"
 
 ***********************************
 

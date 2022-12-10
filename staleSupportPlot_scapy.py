@@ -854,15 +854,18 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
     plt.cla()
     plt.close()
 
-
+# New Operators
 # "AdGuard_1", "AdGuard_2", "AdGuard_3", "CleanBrowsing_1", "CleanBrowsing_2", "CleanBrowsing_3", "Cloudflare_1",
 # "Cloudflare_2", "Cloudflare_3", "Dyn_1", "Google_1", "Neustar_1", "Neustar_2", "Neustar_3", "Neustar_4",
 # "Neustar_5", "OpenDNS_1", "OpenDNS_2", "OpenDNS_3", "Quad9_1", "Quad9_2", "Quad9_3", "Yandex_1", "Yandex_2",
 # "Yandex_3", "Level3_1", "Level3_2", "Norton_1", "Norton_2", "Norton_3"
-filtered_resolvers = []
+
+# Old PCAP Operators
+# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
+filtered_resolvers = ["AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
 
 # Name of the plot
-file_name = "Test"
+file_name = "AdGuard1"
 
 latency_upper_limit = 10
 latency_directory_name = "LatencyPlots"

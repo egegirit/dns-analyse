@@ -235,7 +235,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
             # print(f"Showing packet ({index})")
             # packet.show()
             try:
-                rcode = packet[DNS].rcode
+                rcode = int(packet[DNS].rcode)
                 if rcode == 1:
                     # print(f"RCODE format-error, skipping")
                     format_error_count_pl[str(current_pl_rate)] += 1
@@ -325,7 +325,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # print(f"Adding packet to phase: {phases[phase_index]}")
                 # If there is at least TTL time between packets, phase switching must have occurred
                 elif ttl_wait_time <= time_diff_to_previous <= wait_packetloss_config:
-                    # print(f"  @@@@@ Phase switching detected, first packet of the phase")
+                    print(f"  @@@@@ Phase switching detected, first packet of the phase")
                     phase_index = (phase_index + 1) % 2
                     # Debug
                     # print(f"  Adding packet to phase: {phases[phase_index]}")
@@ -340,7 +340,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     prefetching_phase_count += 1
                 # If more than 5 mins passed, packetloss cooldown is occurred
                 elif time_diff_to_previous >= 700:  # 7200 = 12(pl araları) * 600(pl arası cooldown)
-                    # print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
+                    print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
                     phase_index = 0
                     experiment_count += 1
                     # Debug
@@ -351,17 +351,17 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                 is_stale_record = False
 
-                if answer_count > 0:
-                    rrname = packet[DNS].an.rrname.decode("utf-8")
-                    ans_type = packet[DNS].an.type
-                    ttl = packet[DNS].an.ttl
-                    a_record = packet[DNS].an.rdata
+                if phases[phase_index] == "Stale":
+                    if answer_count > 0:
+                        rrname = packet[DNS].an.rrname.decode("utf-8")
+                        ans_type = packet[DNS].an.type
+                        ttl = packet[DNS].an.ttl
+                        a_record = packet[DNS].an.rdata
 
-                    # Filter if answer is not an A record
-                    if ans_type != 1:
-                        # print(f"  Answer type is not an A record: {ans_type}")
-                        continue
-                    if phases[phase_index] == "Stale":
+                        # Filter if answer is not an A record
+                        if ans_type != 1:
+                            # print(f"  Answer type is not an A record: {ans_type}")
+                            continue
                         # If DNS packet is a query
                         if is_response == 0:
                             all_stale_phase_queries_pl[str(current_pl_rate)] += 1
@@ -378,8 +378,8 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                                     int(current_pl_rate) + 1))
                                 # The record was stale
                                 if expected_stale_a_record == a_record:
-                                    stale_count_pl[pl_rate_of_packet] += 1
                                     is_stale_record = True
+                                    stale_count_pl[pl_rate_of_packet] += 1
                                     # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
                                     # print(f"    Marked as stale")
                                 # The record was non-stale
@@ -388,11 +388,11 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                                     non_stale_count_pl[pl_rate_of_packet] += 1
                                     # print(f"    Marked as Non-stale")
                                     # If the response was SERVFAIL
-                            if rcode == "2":
+                            if rcode == 2:
                                 servfail_count_pl[str(current_pl_rate)] += 1
                                 # TODO: latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
                             # If response was REFUSED
-                            if str(rcode) == "5":
+                            if rcode == 5:
                                 refused_count_pl[str(current_pl_rate)] += 1
 
                     # print(f"    RRNAME: {rrname}")
@@ -523,7 +523,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 print(f"Error reading packet: {str(e)}")
                 packet.show()
         index += 1
-    # TODO: After examining all the packets in the pcap file,
+    # After examining all the packets in the pcap file,
     # check the all_packets array to get unanswered queries
     # print(f"Unanswered packet count: {len(all_packets)}")
     # print(f"Unanswered packets: {all_packets}")
@@ -904,3 +904,6 @@ create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_up
 
 create_latency_violin_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
 create_latency_box_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
+
+# TODO: Unanswered query plot
+# unanswered_packet_count_pl[str(current_pl_rate)]

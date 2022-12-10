@@ -895,7 +895,7 @@ for current_pl_rate in packetloss_rates:
     read_pcap(client_file_name, current_pl_rate, filtered_resolvers)
 
 # create rate plot
-create_combined_plots(name, rate_plots_directory_name)
+create_combined_plots(file_name, rate_plots_directory_name)
 
 create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)
 create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)

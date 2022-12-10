@@ -362,40 +362,38 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"  Answer type is not an A record: {ans_type}")
                         continue
                     if phases[phase_index] == "Stale":
-
                         # If DNS packet is a query
                         if is_response == 0:
                             all_stale_phase_queries_pl[str(current_pl_rate)] += 1
                         # DNS packet is response
                         elif is_response == 1:
                             all_stale_phase_responses_pl[str(current_pl_rate)] += 1
-
-                        if rcode == 0:
-                            # TODO: Check if stale or not (is_stale_record is at wrong position?)
-                            expected_stale_a_record = (
-                                    "139." + str(current_pl_rate) + "." + str(current_pl_rate) + "." + str(current_pl_rate))
-                            expected_noerror_a_record = (
-                                    "139." + str(int(current_pl_rate) + 1) + "." + str(
-                                int(current_pl_rate) + 1) + "." + str(
-                                int(current_pl_rate) + 1))
-                            # The record was stale
-                            if expected_stale_a_record == a_record:
-                                stale_count_pl[pl_rate_of_packet] += 1
-                                # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
-                                # print(f"    Marked as stale")
-                            # The record was non-stale
-                            elif expected_noerror_a_record == a_record:
-                                is_stale_record = True
-                                # latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
-                                non_stale_count_pl[pl_rate_of_packet] += 1
-                                # print(f"    Marked as Non-stale")
-                                # If the response was SERVFAIL
-                        if rcode == "2":
-                            servfail_count_pl[str(current_pl_rate)] += 1
-                            # TODO: latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
-                        # If response was REFUSED
-                        if str(rcode) == "5":
-                            refused_count_pl[str(current_pl_rate)] += 1
+                            if rcode == 0:
+                                # TODO: Check if stale or not (is_stale_record is at wrong position?)
+                                expected_stale_a_record = (
+                                        "139." + str(current_pl_rate) + "." + str(current_pl_rate) + "." + str(current_pl_rate))
+                                expected_noerror_a_record = (
+                                        "139." + str(int(current_pl_rate) + 1) + "." + str(
+                                    int(current_pl_rate) + 1) + "." + str(
+                                    int(current_pl_rate) + 1))
+                                # The record was stale
+                                if expected_stale_a_record == a_record:
+                                    stale_count_pl[pl_rate_of_packet] += 1
+                                    is_stale_record = True
+                                    # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
+                                    # print(f"    Marked as stale")
+                                # The record was non-stale
+                                elif expected_noerror_a_record == a_record:
+                                    # latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
+                                    non_stale_count_pl[pl_rate_of_packet] += 1
+                                    # print(f"    Marked as Non-stale")
+                                    # If the response was SERVFAIL
+                            if rcode == "2":
+                                servfail_count_pl[str(current_pl_rate)] += 1
+                                # TODO: latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
+                            # If response was REFUSED
+                            if str(rcode) == "5":
+                                refused_count_pl[str(current_pl_rate)] += 1
 
                     # print(f"    RRNAME: {rrname}")
                     # print(f"    Resp Type: {ans_type}")
@@ -405,120 +403,121 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # Set the previous_packet_time for the next packet
                 previous_packet_time = packet_time
 
-                # TODO: Latency calculation via hash map/dictionary
-                # Add the current packet to list
-                current_packet_attributes = [query, src, dst, dns_id, rec_type, is_response, packet_time]  # , port]
-                should_be_added = True
-                difference_detected_of_previous = True
-                found_duplicate = None
-                for pkt in all_packets:
-                    # print(f"------------------")
-                    difference_detected = False
-                    is_query_difference = False
-                    response_to_query_found = False
-                    # Query comparison
-                    if pkt[0] != current_packet_attributes[0]:
-                        difference_detected = True
-                    # else:
-                    #     print(f"Same query name found")
-                    # TODO: What if you send to 8.8.8.8 but it comes from another IP, then query source != response dest
-                    # # Source IP comparison
-                    # if pkt[1] != current_packet_attributes[1]:
-                    #     # print(f"Same query name found: {pkt[1]}")
-                    #     difference_detected = True
-                    # else:
-                    #     print(f"Same source")
-                    # # Destination IP comparison
-                    # if pkt[2] != current_packet_attributes[2]:
-                    #     # print(f"Same query name found: {pkt[2]}")
-                    #     difference_detected = True
-                    # else:
-                    #     print(f"Same DST")
-                    # DNS ID comparison
-                    if pkt[3] != current_packet_attributes[3]:
-                        # print(f"Same query name found: {pkt[3]}")
-                        difference_detected = True
-                    # else:
-                    #     print(f"Same DNS ID")
-                    # Record Type comparison
-                    if pkt[4] != current_packet_attributes[4]:
-                        # print(f"Same query name found: {pkt[4]}")
-                        difference_detected = True
-                    # else:
-                    #     print(f"Same Record Type")
-                    # Query or response comparison
-                    if pkt[5] != current_packet_attributes[5]:
-                        # TODO: if both are query, ignore for latency list because duplicate query,
-                        # if both are response, ignore for latency list because duplicate response
-                        # if one is query and one is response, add to list,
-                        # BUT ignore the ones that comes afterwards!!
-                        is_query_difference = True
-                        if pkt[5] == 0 and current_packet_attributes[5] == 1:
-                            # Because we will delete the query, we dont need to add the response to the list
-                            response_to_query_found = True
+                if phases[phase_index] == "Stale":
+                    # TODO: Latency calculation via hash map/dictionary
+                    # Add the current packet to list
+                    current_packet_attributes = [query, src, dst, dns_id, rec_type, is_response, packet_time]  # , port]
+                    should_be_added = True
+                    difference_detected_of_previous = True
+                    found_duplicate = None
+                    for pkt in all_packets:
+                        # print(f"------------------")
+                        difference_detected = False
+                        is_query_difference = False
+                        response_to_query_found = False
+                        # Query comparison
+                        if pkt[0] != current_packet_attributes[0]:
+                            difference_detected = True
+                        # else:
+                        #     print(f"Same query name found")
+                        # TODO: What if you send to 8.8.8.8 but it comes from another IP, then query source != response dest
+                        # # Source IP comparison
+                        # if pkt[1] != current_packet_attributes[1]:
+                        #     # print(f"Same query name found: {pkt[1]}")
+                        #     difference_detected = True
+                        # else:
+                        #     print(f"Same source")
+                        # # Destination IP comparison
+                        # if pkt[2] != current_packet_attributes[2]:
+                        #     # print(f"Same query name found: {pkt[2]}")
+                        #     difference_detected = True
+                        # else:
+                        #     print(f"Same DST")
+                        # DNS ID comparison
+                        if pkt[3] != current_packet_attributes[3]:
+                            # print(f"Same query name found: {pkt[3]}")
+                            difference_detected = True
+                        # else:
+                        #     print(f"Same DNS ID")
+                        # Record Type comparison
+                        if pkt[4] != current_packet_attributes[4]:
+                            # print(f"Same query name found: {pkt[4]}")
+                            difference_detected = True
+                        # else:
+                        #     print(f"Same Record Type")
+                        # Query or response comparison
+                        if pkt[5] != current_packet_attributes[5]:
+                            # TODO: if both are query, ignore for latency list because duplicate query,
+                            # if both are response, ignore for latency list because duplicate response
+                            # if one is query and one is response, add to list,
+                            # BUT ignore the ones that comes afterwards!!
+                            is_query_difference = True
+                            if pkt[5] == 0 and current_packet_attributes[5] == 1:
+                                # Because we will delete the query, we dont need to add the response to the list
+                                response_to_query_found = True
 
-                            # Delete from list (for wild pcap scans) because we only send 1 to query
-                            if not difference_detected and response_to_query_found:
-                                # print(f"  Query removed")
-                                all_packets.remove(pkt)
+                                # Delete from list (for wild pcap scans) because we only send 1 to query
+                                if not difference_detected and response_to_query_found:
+                                    # print(f"  Query removed")
+                                    all_packets.remove(pkt)
 
-                    # else:
-                    #     print(f"Same is_response")
-                    # Port comparison
-                    # if pkt[6] != current_packet_attributes[6]:
-                    #     # print(f"Same query name found: {pkt[6]}")
-                    #     difference_detected = True
+                        # else:
+                        #     print(f"Same is_response")
+                        # Port comparison
+                        # if pkt[6] != current_packet_attributes[6]:
+                        #     # print(f"Same query name found: {pkt[6]}")
+                        #     difference_detected = True
 
-                    query_response_match = not (
-                            difference_detected and difference_detected_of_previous) and response_to_query_found
+                        query_response_match = not (
+                                difference_detected and difference_detected_of_previous) and response_to_query_found
 
-                    # If the packet is a response to an existing query in the stale phase, calculate its latency
-                    # and add the latency to the corresponding list
-                    if query_response_match and phases[phase_index] == "Stale":
-                        latency = current_packet_attributes[6] - pkt[6]
-                        if is_stale_record:
-                            latency_of_stales_pl[pl_rate_of_packet].append(latency)
-                            # print(f"    Query: {query}")
-                            # print(f"      STALE RECORD Latency: {latency}")
-                            # print(f"        A RECORD: {a_record}")
-                        elif not is_stale_record:
-                            if rcode == 0:
-                                latency_of_ok_nonstale_pl[pl_rate_of_packet].append(latency)
+                        # If the packet is a response to an existing query in the stale phase, calculate its latency
+                        # and add the latency to the corresponding list
+                        if query_response_match and phases[phase_index] == "Stale":
+                            latency = float(current_packet_attributes[6] - pkt[6])
+                            if is_stale_record:
+                                latency_of_stales_pl[pl_rate_of_packet].append(latency)
                                 # print(f"    Query: {query}")
-                                # print(f"      OK RECORD Latency: {latency}")
-                            elif rcode == 5:
-                                latency_of_refused_pl[pl_rate_of_packet].append(latency)
-                                # print(f"    Query: {query}")
-                                # print(f"      REFUSED Latency: {latency}")
-                            elif rcode == 2:
-                                latency_of_servfails_pl[pl_rate_of_packet].append(latency)
-                                # print(f"    Query: {query}")
-                                # print(f"      SERVFAIL Latency: {latency}")
+                                # print(f"      STALE RECORD Latency: {latency}")
+                                # print(f"        A RECORD: {a_record}")
+                            elif not is_stale_record:
+                                if rcode == 0:
+                                    latency_of_ok_nonstale_pl[pl_rate_of_packet].append(latency)
+                                    # print(f"    Query: {query}")
+                                    # print(f"      OK RECORD Latency: {latency}")
+                                elif rcode == 5:
+                                    latency_of_refused_pl[pl_rate_of_packet].append(latency)
+                                    # print(f"    Query: {query}")
+                                    # print(f"      REFUSED Latency: {latency}")
+                                elif rcode == 2:
+                                    latency_of_servfails_pl[pl_rate_of_packet].append(latency)
+                                    # print(f"    Query: {query}")
+                                    # print(f"      SERVFAIL Latency: {latency}")
 
-                        # print(f"  Response to query found:")
-                        # print(f"      {current_packet_attributes}")
-                        # print(f"        AND")
-                        # print(f"      {pkt}")
-                        # print(f"      Latency: {latency}")
-                        # print(f"-----------------------")
+                            # print(f"  Response to query found:")
+                            # print(f"      {current_packet_attributes}")
+                            # print(f"        AND")
+                            # print(f"      {pkt}")
+                            # print(f"      Latency: {latency}")
+                            # print(f"-----------------------")
 
-                    # If the packet should be added to the list
-                    should_be_added = (difference_detected and difference_detected_of_previous)
-                    # At least 1 duplicate packet is found, don't add
-                    if not should_be_added:
-                        found_duplicate = pkt
-                        break
-                    difference_detected_of_previous = difference_detected
+                        # If the packet should be added to the list
+                        should_be_added = (difference_detected and difference_detected_of_previous)
+                        # At least 1 duplicate packet is found, don't add
+                        if not should_be_added:
+                            found_duplicate = pkt
+                            break
+                        difference_detected_of_previous = difference_detected
 
-                # Add packet if the packet is different from the others in the list
-                if should_be_added:
-                    all_packets.append(current_packet_attributes)
-                # Don't add packet if it's a duplicate
-                # else:
-                #     print(f"  Duplicate for (Query name, SRC, DST, DNS ID, Record type, Is response):")
-                #     print(f"      {current_packet_attributes}")
-                #     print(f"        AND")
-                #     print(f"      {found_duplicate}")
+                    # Add packet if the packet is different from the others in the list
+                    if should_be_added:
+                        all_packets.append(current_packet_attributes)
+                    # Don't add packet if it's a duplicate
+                    # else:
+                    #     print(f"  Duplicate for (Query name, SRC, DST, DNS ID, Record type, Is response):")
+                    #     print(f"      {current_packet_attributes}")
+                    #     print(f"        AND")
+                    #     print(f"      {found_duplicate}")
 
             except Exception as e:
                 print(f"Error reading packet: {str(e)}")
@@ -543,37 +542,37 @@ def create_combined_plots(file_name_prefix, directory_name):
 
     # Non stale datas
     non_stale_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    non_stale_counts = non_stale_count_pl.values()
-    for i in range(non_stale_counts):
+    non_stale_counts = list(non_stale_count_pl.values())
+    for i in range(len(non_stale_rate_vals)):
         try:
-            non_stale_rate_vals[i] = non_stale_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+            non_stale_rate_vals[i] = (non_stale_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             non_stale_rate_vals[i] = 0
 
     # Stale datas
     stale_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    stale_rate_counts = stale_count_pl.values()
-    for i in range(stale_rate_counts):
+    stale_rate_counts = list(stale_count_pl.values())
+    for i in range(len(stale_rate_vals)):
         try:
-            stale_rate_vals[i] = stale_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+            stale_rate_vals[i] = (stale_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             stale_rate_vals[i] = 0
 
     # Failure datas
     failure_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    failure_rate_counts = servfail_count_pl.values()
-    for i in range(failure_rate_counts):
+    failure_rate_counts = list(servfail_count_pl.values())
+    for i in range(len(failure_rate_vals)):
         try:
-            failure_rate_vals[i] = failure_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+            failure_rate_vals[i] = (failure_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             failure_rate_vals[i] = 0
 
     # Refused datas
     refused_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    refused_counts = refused_count_pl.values()
-    for i in range(refused_counts):
+    refused_counts = list(refused_count_pl.values())
+    for i in range(len(refused_rates)):
         try:
-            refused_rates[i] = refused_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+            refused_rates[i] = (refused_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             refused_rates[i] = 0
 
@@ -862,10 +861,10 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
 
 # Old PCAP Operators
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
+filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
 
 # Name of the plot
-file_name = "AdGuard1"
+file_name = "Cloudflare1"
 
 latency_upper_limit = 10
 latency_directory_name = "LatencyPlots"

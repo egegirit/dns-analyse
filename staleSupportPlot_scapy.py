@@ -286,22 +286,22 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     # print(f"Skipping resolver packet")
                     continue
 
-                # Arrival time of the packet
-                packet_time = packet.time
-                # Time difference of the current and previous packet, used to determine phases in stale pcaps
-                time_diff_to_previous = packet_time - previous_packet_time
-
                 rec_type = packet[DNSQR].qtype  # Type 1 is A record
                 # Filter if query is not an A record query
                 if rec_type != 1:
-                    # print(f"  Query type is not an A record: {rec_type}")
+                    # print(f"  Query type is not an A record: {query}")
                     continue
 
                 port = packet.sport
                 proto = packet[IP].proto
-                is_response = packet[DNS].qr  # Packet is a query (0), or a response (1)
+                is_response = int(packet[DNS].qr)  # Packet is a query (0), or a response (1)
                 dns_id = packet[DNS].id
-                answer_count = packet[DNS].ancount
+                answer_count = int(packet[DNS].ancount)
+
+                # Arrival time of the packet
+                packet_time = float(packet.time)
+                # Time difference of the current and previous packet, used to determine phases in stale pcaps
+                time_diff_to_previous = packet_time - previous_packet_time
 
                 # print(f"Query name: {query}")
                 # print(f"  Query type: {rec_type}")
@@ -320,27 +320,33 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                 # Calculate in which phase is the current packet
                 if time_diff_to_previous < ttl_wait_time:
+                    # print(f"  Time difference to previous packet: {time_diff_to_previous}")
                     pass
                 # print(f"Same phase, add packet")
                 # print(f"Adding packet to phase: {phases[phase_index]}")
                 # If there is at least TTL time between packets, phase switching must have occurred
                 elif ttl_wait_time <= time_diff_to_previous <= wait_packetloss_config:
-                    print(f"  @@@@@ Phase switching detected, first packet of the phase")
+                    # print(f"  @@@@@ Phase switching detected, first packet of the phase")
                     phase_index = (phase_index + 1) % 2
                     # Debug
-                    # print(f"  Adding packet to phase: {phases[phase_index]}")
+                    # print(f"  New Phase: {phases[phase_index]}")
                     # print(f"Reading file: {filename}")
-                    # print(f"Current query name: {query_name}")
+                    # print(f"    Arrival time of packet: {packet_time}")
+                    # print(f"    Current query name: {query}")
+                    # print(f"    DNS ID: {dns_id}")
+                    # print(f"    Time difference to previous packet: {time_diff_to_previous}")
                     # print(f"frame_number: {frame_number}")
-                    # print(f"Time diff to previous packet: {time_diff_abs}")
+                    # print(f"    Time diff to previous packet: {time_diff_to_previous}")
                     pass
-                if phases[phase_index] == "Stale":
-                    stale_phase_count += 1
-                elif phases[phase_index] == "Prefetching":
-                    prefetching_phase_count += 1
+                    if phases[phase_index] == "Stale":
+                        stale_phase_count += 1
+                    elif phases[phase_index] == "Prefetching":
+                        prefetching_phase_count += 1
                 # If more than 5 mins passed, packetloss cooldown is occurred
-                elif time_diff_to_previous >= 700:  # 7200 = 12(pl araları) * 600(pl arası cooldown)
-                    print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
+                elif time_diff_to_previous >= 600:  # 7200 = 12(pl araları) * 600(pl arası cooldown)
+                    # print(f"  @@@@@ NEW EXPERIMENT BEGIN?")
+                    # print(f"    Current query name: {query}")
+                    # print(f"    DNS ID: {dns_id}")
                     phase_index = 0
                     experiment_count += 1
                     # Debug
@@ -352,48 +358,48 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 is_stale_record = False
 
                 if phases[phase_index] == "Stale":
-                    if answer_count > 0:
-                        rrname = packet[DNS].an.rrname.decode("utf-8")
-                        ans_type = packet[DNS].an.type
-                        ttl = packet[DNS].an.ttl
-                        a_record = packet[DNS].an.rdata
+                    # If DNS packet is a query
+                    if is_response == 0:
+                        all_stale_phase_queries_pl[str(current_pl_rate)] += 1
+                    # DNS packet is response
+                    elif is_response == 1:
+                        all_stale_phase_responses_pl[str(current_pl_rate)] += 1
+                        # The response was OK and there was at least 1 A record as answer, check if its stale or not
+                        if rcode == 0 and answer_count > 0:
+                            rrname = packet[DNS].an.rrname.decode("utf-8")
+                            ans_type = int(packet[DNS].an.type)
+                            ttl = int(packet[DNS].an.ttl)
+                            a_record = packet[DNS].an.rdata
 
-                        # Filter if answer is not an A record
-                        if ans_type != 1:
-                            # print(f"  Answer type is not an A record: {ans_type}")
-                            continue
-                        # If DNS packet is a query
-                        if is_response == 0:
-                            all_stale_phase_queries_pl[str(current_pl_rate)] += 1
-                        # DNS packet is response
-                        elif is_response == 1:
-                            all_stale_phase_responses_pl[str(current_pl_rate)] += 1
-                            if rcode == 0:
-                                # TODO: Check if stale or not (is_stale_record is at wrong position?)
-                                expected_stale_a_record = (
-                                        "139." + str(current_pl_rate) + "." + str(current_pl_rate) + "." + str(current_pl_rate))
-                                expected_noerror_a_record = (
-                                        "139." + str(int(current_pl_rate) + 1) + "." + str(
-                                    int(current_pl_rate) + 1) + "." + str(
-                                    int(current_pl_rate) + 1))
-                                # The record was stale
-                                if expected_stale_a_record == a_record:
-                                    is_stale_record = True
-                                    stale_count_pl[pl_rate_of_packet] += 1
-                                    # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
-                                    # print(f"    Marked as stale")
-                                # The record was non-stale
-                                elif expected_noerror_a_record == a_record:
-                                    # latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
-                                    non_stale_count_pl[pl_rate_of_packet] += 1
-                                    # print(f"    Marked as Non-stale")
-                                    # If the response was SERVFAIL
-                            if rcode == 2:
-                                servfail_count_pl[str(current_pl_rate)] += 1
-                                # TODO: latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
-                            # If response was REFUSED
-                            if rcode == 5:
-                                refused_count_pl[str(current_pl_rate)] += 1
+                            # Filter if answer is not an A record
+                            if ans_type != 1:
+                                # print(f"  Answer type is not an A record: {ans_type}")
+                                continue
+
+                            # TODO: Check if stale or not (is_stale_record is at wrong position?)
+                            expected_stale_a_record = ("139." + str(current_pl_rate) + "." + str(current_pl_rate) + "." + str(current_pl_rate))
+                            expected_non_stale_a_record = ("139." + str(int(current_pl_rate) + 1) + "." + str(int(current_pl_rate) + 1) + "." + str(int(current_pl_rate) + 1))
+                            # The record non-was stale
+                            if a_record == expected_non_stale_a_record:
+                                non_stale_count_pl[str(current_pl_rate)] += 1
+                                # latency_of_stales_pl[pl_rate_of_packet].append(dns_time)
+                                # print(f"    Non-stale count: {non_stale_count_pl[str(current_pl_rate)]}")
+                            # The record was stale
+                            elif a_record == expected_stale_a_record:
+                                is_stale_record = True
+                                # latency_of_ok_nonstale_pl[pl_rate_of_packet].append(dns_time)
+                                stale_count_pl[str(current_pl_rate)] += 1
+                                # print(f"        Stale count: {stale_count_pl[str(current_pl_rate)]}")
+                                # print(f"    Marked as stale")
+                                # If the response was SERVFAIL
+                        if rcode == 2:
+                            servfail_count_pl[str(current_pl_rate)] += 1
+                            # print(f"        SERVFAIL: {query}")
+                            # print(f"        ID: {dns_id}")
+                            # TODO: latency_of_errors_pl[pl_rate_of_query_name].append(dns_time)
+                        # If response was REFUSED
+                        if rcode == 5:
+                            refused_count_pl[str(current_pl_rate)] += 1
 
                     # print(f"    RRNAME: {rrname}")
                     # print(f"    Resp Type: {ans_type}")
@@ -545,7 +551,8 @@ def create_combined_plots(file_name_prefix, directory_name):
     non_stale_counts = list(non_stale_count_pl.values())
     for i in range(len(non_stale_rate_vals)):
         try:
-            non_stale_rate_vals[i] = (non_stale_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
+            non_stale_rate_vals[i] = (non_stale_counts[i] / all_stale_phase_responses_pl[
+                str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             non_stale_rate_vals[i] = 0
 
@@ -563,7 +570,8 @@ def create_combined_plots(file_name_prefix, directory_name):
     failure_rate_counts = list(servfail_count_pl.values())
     for i in range(len(failure_rate_vals)):
         try:
-            failure_rate_vals[i] = (failure_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]) * 100
+            failure_rate_vals[i] = (failure_rate_counts[i] / all_stale_phase_responses_pl[
+                str(packetloss_rates[i])]) * 100
         except ZeroDivisionError:
             failure_rate_vals[i] = 0
 
@@ -853,6 +861,7 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
     plt.cla()
     plt.close()
 
+
 # New Operators
 # "AdGuard_1", "AdGuard_2", "AdGuard_3", "CleanBrowsing_1", "CleanBrowsing_2", "CleanBrowsing_3", "Cloudflare_1",
 # "Cloudflare_2", "Cloudflare_3", "Dyn_1", "Google_1", "Neustar_1", "Neustar_2", "Neustar_3", "Neustar_4",
@@ -861,7 +870,9 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
 
 # Old PCAP Operators
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare2", "Dyn1", "Dyn2", "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"]
+filtered_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare2", "Dyn1", "Dyn2",
+                      "Google1", "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92",
+                      "Yandex1", "Yandex2"]
 
 # Name of the plot
 file_name = "Cloudflare1"
@@ -896,14 +907,20 @@ for current_pl_rate in packetloss_rates:
 # create rate plot
 create_combined_plots(file_name, rate_plots_directory_name)
 
-create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)
-create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)
+create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit,
+                           latency_of_servfails_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl,
+                        log_scale=False)
 
-create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
-create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
+create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl,
+                           log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl,
+                        log_scale=False)
 
-create_latency_violin_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
-create_latency_box_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
+create_latency_violin_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl,
+                           log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl,
+                        log_scale=False)
 
 # TODO: Unanswered query plot
 # unanswered_packet_count_pl[str(current_pl_rate)]

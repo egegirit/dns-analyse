@@ -10,64 +10,72 @@ from scapy.layers.dns import DNS, DNSQR
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
-# All operators with their IP Addresses with dashes
+# TODO: OPERATORS FOR THE FIRST PCAP
 operators = {
-    "AdGuard_1": "94-140-14-14",
-    "AdGuard_2": "94-140-14-15",
-    "AdGuard_3": "94-140-14-140",
-
-    "CleanBrowsing_1": "185-228-168-168",
-    "CleanBrowsing_2": "185-228-168-9",
-    "CleanBrowsing_3": "185-228-168-10",
-
-    "Cloudflare_1": "1-1-1-1",
-    "Cloudflare_2": "1-1-1-2",
-    "Cloudflare_3": "1-1-1-3",
-
-    "Dyn_1": "216-146-35-35",
-
-    "Google_1": "8-8-8-8",
-
-    "Neustar_1": "64-6-64-6",
-    "Neustar_2": "156-154-70-2",
-    "Neustar_3": "156-154-70-3",
-    "Neustar_4": "156-154-70-4",
-    "Neustar_5": "156-154-70-5",
-
-    "OpenDNS_1": "208-67-222-222",
-    "OpenDNS_2": "208-67-222-2",
-    "OpenDNS_3": "208-67-222-123",
-
-    "Quad9_1": "9-9-9-9",
-    "Quad9_2": "9-9-9-11",
-    "Quad9_3": "9-9-9-10",
-
-    "Yandex_1": "77-88-8-1",
-    "Yandex_2": "77-88-8-2",
-    "Yandex_3": "77-88-8-3",
-
-    "Level3_1": "209-244-0-3",
-    "Level3_2": "209-244-0-4",
-
-    "Norton_1": "199-85-126-10",
-    "Norton_2": "199-85-126-20",
-    "Norton_3": "199-85-126-30",
-
+    "AdGuard1": "94-140-14-14",
+    "AdGuard2": "94-140-14-15",
+    "CleanBrowsing1": "185-228-168-168",
+    "CleanBrowsing2": "185-228-168-9",
+    "Cloudflare1": "1-1-1-1",
+    "Cloudflare2": "1-0-0-1",
+    "Dyn1": "216-146-35-35",
+    "Dyn2": "216-146-36-36",
+    "Google1": "8-8-8-8",
+    "Google2": "8-8-4-4",
+    "Neustar1": "64-6-64-6",
+    "Neustar2": "156-154-70-1",
+    "OpenDNS1": "208-67-222-222",
+    "OpenDNS2": "208-67-222-2",
+    "Quad91": "9-9-9-9",
+    "Quad92": "9-9-9-11",
+    "Yandex1": "77-88-8-1",
+    "Yandex2": "77-88-8-8"
 }
 
-all_responses_count_pl = {
-    "0": 0, "10": 0, "20": 0, "30": 0,
-    "40": 0, "50": 0, "60": 0, "70": 0,
-    "80": 0, "85": 0, "90": 0, "95": 0,
-    "100": 0,
-}
-
-all_queries_count_pl = {
-    "0": 0, "10": 0, "20": 0, "30": 0,
-    "40": 0, "50": 0, "60": 0, "70": 0,
-    "80": 0, "85": 0, "90": 0, "95": 0,
-    "100": 0,
-}
+# All operators with their IP Addresses with dashes
+# operators = {
+#     "AdGuard_1": "94-140-14-14",
+#     "AdGuard_2": "94-140-14-15",
+#     "AdGuard_3": "94-140-14-140",
+#
+#     "CleanBrowsing_1": "185-228-168-168",
+#     "CleanBrowsing_2": "185-228-168-9",
+#     "CleanBrowsing_3": "185-228-168-10",
+#
+#     "Cloudflare_1": "1-1-1-1",
+#     "Cloudflare_2": "1-1-1-2",
+#     "Cloudflare_3": "1-1-1-3",
+#
+#     "Dyn_1": "216-146-35-35",
+#
+#     "Google_1": "8-8-8-8",
+#
+#     "Neustar_1": "64-6-64-6",
+#     "Neustar_2": "156-154-70-2",
+#     "Neustar_3": "156-154-70-3",
+#     "Neustar_4": "156-154-70-4",
+#     "Neustar_5": "156-154-70-5",
+#
+#     "OpenDNS_1": "208-67-222-222",
+#     "OpenDNS_2": "208-67-222-2",
+#     "OpenDNS_3": "208-67-222-123",
+#
+#     "Quad9_1": "9-9-9-9",
+#     "Quad9_2": "9-9-9-11",
+#     "Quad9_3": "9-9-9-10",
+#
+#     "Yandex_1": "77-88-8-1",
+#     "Yandex_2": "77-88-8-2",
+#     "Yandex_3": "77-88-8-3",
+#
+#     "Level3_1": "209-244-0-3",
+#     "Level3_2": "209-244-0-4",
+#
+#     "Norton_1": "199-85-126-10",
+#     "Norton_2": "199-85-126-20",
+#     "Norton_3": "199-85-126-30",
+#
+# }
 
 non_stale_count_pl = {
     "0": 0, "10": 0, "20": 0, "30": 0,
@@ -144,6 +152,20 @@ latency_of_refused_pl = {
     "100": [],
 }
 
+all_stale_phase_responses_pl = {
+    "0": 0, "10": 0, "20": 0, "30": 0,
+    "40": 0, "50": 0, "60": 0, "70": 0,
+    "80": 0, "85": 0, "90": 0, "95": 0,
+    "100": 0,
+}
+
+all_stale_phase_queries_pl = {
+    "0": 0, "10": 0, "20": 0, "30": 0,
+    "40": 0, "50": 0, "60": 0, "70": 0,
+    "80": 0, "85": 0, "90": 0, "95": 0,
+    "100": 0,
+}
+
 ttl_wait_time = 115
 wait_packetloss_config = 595
 
@@ -215,7 +237,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
             try:
                 rcode = packet[DNS].rcode
                 if rcode == 1:
-                    print(f"RCODE format-error, skipping")
+                    # print(f"RCODE format-error, skipping")
                     format_error_count_pl[str(current_pl_rate)] += 1
                     continue
 
@@ -343,10 +365,10 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                         # If DNS packet is a query
                         if is_response == 0:
-                            all_queries_count_pl[str(current_pl_rate)] += 1
-                            # DNS packet is response
+                            all_stale_phase_queries_pl[str(current_pl_rate)] += 1
+                        # DNS packet is response
                         elif is_response == 1:
-                            all_responses_count_pl[str(current_pl_rate)] += 1
+                            all_stale_phase_responses_pl[str(current_pl_rate)] += 1
 
                         if rcode == 0:
                             # TODO: Check if stale or not (is_stale_record is at wrong position?)
@@ -520,20 +542,40 @@ def create_combined_plots(file_name_prefix, directory_name):
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
 
     # Non stale datas
-    non_stale_rate_vals = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 0]
-    non_stale_counts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0]
+    non_stale_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    non_stale_counts = non_stale_count_pl.values()
+    for i in range(non_stale_counts):
+        try:
+            non_stale_rate_vals[i] = non_stale_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+        except ZeroDivisionError:
+            non_stale_rate_vals[i] = 0
 
     # Stale datas
-    stale_rate_vals = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0]
-    stale_rate_counts = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    stale_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    stale_rate_counts = stale_count_pl.values()
+    for i in range(stale_rate_counts):
+        try:
+            stale_rate_vals[i] = stale_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+        except ZeroDivisionError:
+            stale_rate_vals[i] = 0
 
     # Failure datas
-    failure_rate_vals = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 0]
-    failure_rate_counts = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0]
+    failure_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    failure_rate_counts = servfail_count_pl.values()
+    for i in range(failure_rate_counts):
+        try:
+            failure_rate_vals[i] = failure_rate_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+        except ZeroDivisionError:
+            failure_rate_vals[i] = 0
 
     # Refused datas
-    refused_rates = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0]
-    refused_counts = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    refused_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    refused_counts = refused_count_pl.values()
+    for i in range(refused_counts):
+        try:
+            refused_rates[i] = refused_counts[i] / all_stale_phase_responses_pl[str(packetloss_rates[i])]
+        except ZeroDivisionError:
+            refused_rates[i] = 0
 
     # Calculate bottom of refused bars by adding non stale + stale ratios
     non_stale_plus_stale = list()
@@ -820,14 +862,21 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
 filtered_resolvers = []
 
 # Name of the plot
-name = "Test"
+file_name = "Test"
 
-# Name of the directory that will be created for the plots
-directory_name = name
+latency_upper_limit = 10
+latency_directory_name = "LatencyPlots"
+rate_plots_directory_name = "RatePlots"
 
 # Create directory to store logs into it
-if not os.path.exists(directory_name):
-    os.makedirs(directory_name)
+if not os.path.exists(latency_directory_name):
+    os.makedirs(latency_directory_name)
+
+if not os.path.exists(rate_plots_directory_name):
+    os.makedirs(rate_plots_directory_name)
+
+# Name of the directory that will be created for the plots
+directory_name = file_name
 
 # Prefixes of the pcap file names
 client_prefix = "client_stale_pl"
@@ -843,4 +892,13 @@ for current_pl_rate in packetloss_rates:
     read_pcap(client_file_name, current_pl_rate, filtered_resolvers)
 
 # create rate plot
-# create_combined_plots(name, name)
+create_combined_plots(name, rate_plots_directory_name)
+
+create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit, latency_of_servfails_pl, log_scale=False)
+
+create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit, latency_of_ok_nonstale_pl, log_scale=False)
+
+create_latency_violin_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)
+create_latency_box_plot(latency_directory_name, file_name + "_Stale", 0, latency_upper_limit, latency_of_stales_pl, log_scale=False)

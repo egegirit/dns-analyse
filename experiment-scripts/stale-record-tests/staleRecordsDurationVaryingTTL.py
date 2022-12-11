@@ -381,8 +381,7 @@ def build_query(packetloss_rate, ip_addr, generated_tokens, ttl_value):
 
 # Switch to the zone file of the corresponding packetloss rate
 def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
-    print(
-        f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
+    print(f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
 
     a_record_ip_addr = ""
 
@@ -398,8 +397,7 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
 
     # Write the contents of boilerplate zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
-    with open(boilerplate_zone_file_path, 'r') as boilerplate_file, open(active_zone_file_path,
-                                                                         'w') as active_zone_file:
+    with open(boilerplate_zone_file_path, 'r') as boilerplate_file, open(active_zone_file_path, 'w') as active_zone_file:
         # Read content from first zone file
         for line in boilerplate_file:
             # When writing the TTL part of the zone file, modify the TTL value

@@ -333,7 +333,7 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
                     # print(f"Timeout")
                 # Print all other exceptions
                 except Exception as e:
-                    print(f"Exception occured when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
+                    print(f"Exception occurred when sending prefetch query {query_name} to {ip_addr} (Not a timeout)")
                     print(e)
                 # Sleep after sending a query to the same resolver to not spam the resolver
                 time.sleep(sleep_time_after_every_prefetch)
@@ -359,8 +359,8 @@ def build_query(packetloss_rate, ip_addr, generated_tokens, counter):
 
 
 # Switch to the zone file of the corresponding packetloss rate
-def switch_zone_file(zone_type, generated_tokens, pl_rate):
-    print(f"  Creating {zone_type} zone file with generated chars {generated_tokens} and packetloss rate {pl_rate}")
+def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
+    print(f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
 
     a_record_ip_addr = ""
 
@@ -376,11 +376,16 @@ def switch_zone_file(zone_type, generated_tokens, pl_rate):
 
     # Write the contents of the desired zone file to the active.zone file
     # Opening the file with "w" mode erases the previous content of the file
-    with open(boilerplate_zone_file_path, 'r') as first_file, open(active_zone_file_path, 'w') as second_file:
+    with open(boilerplate_zone_file_path, 'r') as boilerplate_file, open(active_zone_file_path, 'w') as active_zone_file:
         # Read content from first zone file
-        for line in first_file:
-            # Append content to active zone file line by line
-            second_file.write(line)
+        for line in boilerplate_file:
+            # When writing the TTL part of the zone file, modify the TTL value
+            if "$TTL " in line:
+                ttl_line = f"$TTL {ttl_value}\n"
+                active_zone_file.write(ttl_line)
+            else:
+                # Append content to active zone file line by line
+                active_zone_file.write(line)
 
     a_records = ""
     created_A_record = ""  # DEBUG
@@ -445,7 +450,7 @@ for current_experiment_count in range(experiment_count):
                                                   client_interface_name, generated_chars)
 
         # Set the right zone file for the prefetching phase
-        switch_zone_file("prefetch", generated_chars, current_packetloss_rate)
+        switch_zone_file("prefetch", generated_chars, current_packetloss_rate, ttl_value_of_records)
 
         print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
@@ -473,7 +478,7 @@ for current_experiment_count in range(experiment_count):
         simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
         # Set the right zone file for the phase after the answer is stale
-        switch_zone_file("stale", generated_chars, current_packetloss_rate)
+        switch_zone_file("stale", generated_chars, current_packetloss_rate, ttl_value_of_records)
 
         # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
         print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")

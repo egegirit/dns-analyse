@@ -1025,17 +1025,17 @@ def reset_for_next_plot():
     global latency_of_servfails_pl
     global latency_of_refused_pl
 
-    reset_values_of_dict_to_zero(non_stale_count_pl, 0)
+    reset_values_of_dict_to_zero(ok_count_pl, 0)
     reset_values_of_dict_to_zero(stale_count_pl, 0)
     reset_values_of_dict_to_zero(servfail_count_pl, 0)
     reset_values_of_dict_to_zero(refused_count_pl, 0)
     reset_values_of_dict_to_zero(format_error_count_pl, 0)
     reset_values_of_dict_to_zero(unanswered_packet_count_pl, 0)
     reset_values_of_dict_to_zero(other_rcodes_count_pl, 0)
-    reset_values_of_dict_to_zero(all_stale_phase_responses_pl, 0)
-    reset_values_of_dict_to_zero(all_stale_phase_queries_pl, 0)
+    reset_values_of_dict_to_zero(all_responses_pl, 0)
+    reset_values_of_dict_to_zero(all_queries_pl, 0)
 
-    reset_values_of_dict_to_zero(latency_of_ok_nonstale_pl, [])
+    reset_values_of_dict_to_zero(latency_of_ok_pl, [])
     reset_values_of_dict_to_zero(latency_of_stales_pl, [])
     reset_values_of_dict_to_zero(latency_of_servfails_pl, [])
     reset_values_of_dict_to_zero(latency_of_refused_pl, [])
@@ -1156,5 +1156,5 @@ no_stale_support = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", 
 
 stale_support = ["Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1"]
 
-create_plot_for("No Stale Record Supported Resolvers Only", stale_support)
-create_plot_for("Stale Record Supported Resolvers Only", no_stale_support)
+create_plot_for("Stale Record Supported Resolvers Only", stale_support)
+create_plot_for("No Stale Record Supported Resolvers Only", no_stale_support)

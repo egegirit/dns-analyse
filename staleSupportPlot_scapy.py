@@ -1052,7 +1052,7 @@ def reset_for_next_plot():
 
 def create_plot_for(file_name, selected_resolvers_to_plot):
     print(f"Plot name: {file_name}")
-    print(f"Ploting for: {selected_resolvers_to_plot}")
+    print(f"Plotting for: {selected_resolvers_to_plot}")
 
     global all_resolvers
     to_filter = all_resolvers.copy()

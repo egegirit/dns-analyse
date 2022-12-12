@@ -95,6 +95,7 @@ all_response_names_pl = {}
 # Queries that are in client pcaps but not in auth.
 all_query_names_pl_for_missing = {}
 
+
 # Input: IP Address with dashes (e.g. "8-8-8-8")
 # Output: Name of the operator (e.g. "Google1")
 def get_operator_name_from_ip(ip_addr_with_dashes):
@@ -997,7 +998,7 @@ def create_violin_plot(directory_name, file_name_prefix, latency_dict, plots_dir
     # print(f"Data of {plot_title}: {data}")
     # print(f" plot_upper_limit: {plot_upper_limit}")
 
-    plt.ylim(bottom=0, top=plot_upper_limit+1)
+    plt.ylim(bottom=0, top=plot_upper_limit + 1)
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=data, showmeans=True, showmedians=True,
@@ -1093,7 +1094,6 @@ def reset_values_of_dict_to_zero(dictionary, init_value):
 
 # Reset the dictionaries for the next plotting
 def reset_for_next_plot():
-
     global all_query_names_pl
     global all_response_names_pl
     global all_responses_count_pl
@@ -1106,7 +1106,6 @@ def reset_for_next_plot():
     global rcodes_by_pl
     global rcode_0_udp_count_pl
     global rcode_0_tcp_count_pl
-
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -1319,12 +1318,10 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
 # "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
 
-all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2", "Cloudflare-1", "Cloudflare-2",
-                 "Dyn-1",
-                 "Dyn-2", "Google-1", "Google-2", "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1",
-                 "Quad9-2",
+all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
+                 "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
+                 "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
                  "Yandex-1", "Yandex-2"]
-
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:

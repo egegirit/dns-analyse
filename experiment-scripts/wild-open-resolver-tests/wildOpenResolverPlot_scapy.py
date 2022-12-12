@@ -118,16 +118,6 @@ def decode_hexadecimal(encoded_ip):
     return ip_with_dots
 
 
-# Get the input string from the command line arguments
-input_string = sys.argv[1]
-
-# Encode the string in 8-byte hexadecimal encoding
-encoded_string = encode_hexadecimal(input_string)
-
-# Print the encoded string
-print(encoded_string)
-
-
 # Read the pcap file with the given packetloss rate while filtering the specified resolver packets
 def read_pcap(pcap_file_name, current_pl_rate):
     print(f"    Reading file: {pcap_file_name}")
@@ -164,7 +154,7 @@ def read_pcap(pcap_file_name, current_pl_rate):
                     continue
 
                 # Query name of packet
-                query_name = packet[DNSQR].qname.decode("utf-8")
+                query_name = packet[DNSQR].qname.decode("utf-8").lower()
                 if not is_query_name_valid(query_name):
                     # print(f" Query name does not match: {query_name}")
                     continue

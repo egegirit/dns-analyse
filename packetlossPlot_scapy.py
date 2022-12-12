@@ -1294,8 +1294,8 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
     for pl in packetloss_rates:
         missing_query_count_list[str(pl)] = len(all_query_names_pl_for_missing[pl])
 
-    print(f"  all_query_names_pl_for_missing:\n{all_query_names_pl_for_missing}")
-    print(f"  missing_query_count_list:\n{missing_query_count_list}")
+    # print(f"  all_query_names_pl_for_missing:\n{all_query_names_pl_for_missing}")
+    # print(f"  missing_query_count_list:\n{missing_query_count_list}")
 
     create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_count_list,
                     auth_plots_directory_name, "Missing Queries", "Missing Query Count")

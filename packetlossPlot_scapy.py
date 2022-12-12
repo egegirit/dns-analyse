@@ -85,9 +85,14 @@ latencies_by_pl_and_rcode = {}
 query_duplicate_by_pl = {}
 rcodes_by_pl = {}
 
+rcode_0_udp_count_pl = {}
+rcode_0_tcp_count_pl = {}
+
+all_query_names_pl = {}
+
 # Store all query names of client to detect any missing queries on the auth pcap
 # Queries that are in client pcaps but not in auth.
-all_query_names_pl = {}
+all_query_names_pl_for_missing = {}
 
 missing_query_count_pl = {
     "0": 0, "10": 0, "20": 0, "30": 0,
@@ -140,9 +145,24 @@ def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
     return True
 
 
+def initialize_dictionaries():
+    rcodes = [0, 2, 5]
+    for current_pl_rate in packetloss_rates:
+        query_duplicate_by_pl[current_pl_rate] = 0
+        all_queries_count_pl[current_pl_rate] = 0
+        all_query_names_pl_for_missing[current_pl_rate] = []
+        all_responses_count_pl[current_pl_rate] = 0
+        rcode_0_udp_count_pl[current_pl_rate] = 0
+        rcode_0_tcp_count_pl[current_pl_rate] = 0
+
+        for rcode in rcodes:
+            latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
+            rcodes_by_pl[current_pl_rate, rcode] = 0
+
+
 # Read the pcap file with the given packetloss rate while filtering the specified resolver packets
 def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
-    print(f"  Reading file: {pcap_file_name}")
+    print(f"    Reading file: {pcap_file_name}")
 
     # Get a list of all packets (Very slow if the PCAP file is large)
     # all_packets = rdpcap(pcap_file_name)
@@ -239,21 +259,42 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # print(f"  Arrival time of packet: {packet_time}")
                 # print(f"  Time difference to previous packet: {time_diff_to_previous}")
 
+                # Initialize dictionaries (now as separate function)
+                # if current_pl_rate not in query_duplicate_by_pl:
+                #     query_duplicate_by_pl[current_pl_rate] = 0
+                # if current_pl_rate not in all_queries_count_pl:
+                #     all_queries_count_pl[current_pl_rate] = 0
+                # if current_pl_rate not in all_query_names_pl_for_missing:
+                #     all_query_names_pl_for_missing[current_pl_rate] = []
+                # if current_pl_rate not in all_responses_count_pl:
+                #     all_responses_count_pl[current_pl_rate] = 0
+                # if (current_pl_rate, rcode) not in latencies_by_pl_and_rcode:
+                #     latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
+                # if (current_pl_rate, rcode) not in rcodes_by_pl:
+                #     rcodes_by_pl[current_pl_rate, rcode] = 0
+                # if current_pl_rate not in rcode_0_udp_count_pl:
+                #     rcode_0_udp_count_pl[current_pl_rate] = 0
+                # if current_pl_rate not in rcode_0_tcp_count_pl:
+                #     rcode_0_tcp_count_pl[current_pl_rate] = 0
+
+                # Count unique query names of pl for dns retransmission plot
+                if (current_pl_rate, query_name) not in all_query_names_pl:
+                    all_query_names_pl[current_pl_rate, query_name] = 0
+                else:
+                    all_query_names_pl[current_pl_rate, query_name] += 1
+
                 # Store query names on client pcap to detect missing queries on auth pcap
                 if "client" in pcap_file_name:
-                    if current_pl_rate not in all_query_names_pl:
-                        all_query_names_pl[current_pl_rate] = []
-                    all_query_names_pl[current_pl_rate].append(query_name)
+                    all_query_names_pl_for_missing[current_pl_rate].append(query_name)
                 # After reading all the client pcaps, delete all the client queries which are also in auth pcap
                 elif "auth" in pcap_file_name:
-                    if query_name in all_query_names_pl[current_pl_rate]:
-                        all_query_names_pl[current_pl_rate].remove(query_name)
+                    if query_name in all_query_names_pl_for_missing[current_pl_rate]:
+                        all_query_names_pl_for_missing[current_pl_rate].remove(query_name)
 
                 # DNS query
                 if is_response_packet == 0:
+
                     # Count all the queries to build ratios
-                    if current_pl_rate not in all_queries_count_pl:
-                        all_queries_count_pl[current_pl_rate] = 0
                     all_queries_count_pl[current_pl_rate] += 1
 
                     # Only add it to the queries dictionary if it's not a duplicate
@@ -261,33 +302,33 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         queries[dns_id, query_name, is_response_packet] = [packet_time, rcode]
                     # Count query duplicate by packetloss rate
                     else:
-                        print(f"Query duplicate: {query_name}, {dns_id}")
-                        if current_pl_rate not in query_duplicate_by_pl:
-                            query_duplicate_by_pl[current_pl_rate] = 0
+                        # print(f"Query duplicate: {query_name}, {dns_id}")
                         query_duplicate_by_pl[current_pl_rate] += 1
                 # DNS response
                 elif is_response_packet == 1:
                     # Count all the responses to build ratios
-                    if current_pl_rate not in all_responses_count_pl:
-                        all_responses_count_pl[current_pl_rate] = 0
                     all_responses_count_pl[current_pl_rate] += 1
 
                     # Check if we found a corresponding response packet to a query
                     if (dns_id, query_name, 0) in queries:
+                        # Calculate latency between response and query
                         latency = float(packet_time - queries[dns_id, query_name, 0][0])
                         # Delete the query from dictionary because we calculated its latency
                         del queries[dns_id, query_name, 0]
 
                         # Store the latency directly using the rcode and current packetloss rate
                         # Create the latency keys if not created before
-                        if (current_pl_rate, rcode) not in latencies_by_pl_and_rcode:
-                            latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
                         latencies_by_pl_and_rcode[current_pl_rate, rcode].append(latency)
 
                         # Count the RCODEs of the packets of the pl rate
-                        if (current_pl_rate, rcode) not in rcodes_by_pl:
-                            rcodes_by_pl[current_pl_rate, rcode] = 0
                         rcodes_by_pl[current_pl_rate, rcode] += 1
+
+                        # For RCODE 0 responses, check if its UDP or TCP and count it
+                        if rcode == 0:
+                            if packet.haslayer(UDP):
+                                rcode_0_udp_count_pl[current_pl_rate] += 1
+                            elif packet.haslayer(TCP):
+                                rcode_0_tcp_count_pl[current_pl_rate] += 1
 
                     # The response packet has no corresponding query packet for now (and probably will not have any?)
                     # Add the response to the list
@@ -300,7 +341,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         pass
 
             except Exception as e:
-                print(f"  Error reading packet: {str(e)}")
+                print(f"  Error reading packet: {e}")
                 # packet.show()
         index += 1
 
@@ -318,7 +359,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
-def create_combined_plots(file_name_prefix, directory_name):
+def create_combined_plots(file_name_prefix, directory_name, plots_directory_name):
     n = 12  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
@@ -329,6 +370,11 @@ def create_combined_plots(file_name_prefix, directory_name):
 
     rcode_0_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     rcode_0_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    global rcode_0_udp_count_pl
+    global rcode_0_tcp_count_pl
+    rcode_0_udp_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_0_tcp_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     rcode_2_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     rcode_2_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -350,7 +396,8 @@ def create_combined_plots(file_name_prefix, directory_name):
     for current_pl_rate in packetloss_rates:
         try:
             index = get_index_of_packetloss_rate(current_pl_rate)
-            unanswered_query_rates[index] = (unanswered_query_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
+            unanswered_query_rates[index] = (unanswered_query_counts[index] / all_queries_count_pl[
+                current_pl_rate]) * 100
         except ZeroDivisionError:
             unanswered_query_rates[index] = 0
 
@@ -390,15 +437,35 @@ def create_combined_plots(file_name_prefix, directory_name):
         except ZeroDivisionError:
             other_rcode_rates[index] = 0
 
+    # Calculate UDP and TCP rate of RCODE 0 packets
+    for current_pl_rate in packetloss_rates:
+        try:
+            index = get_index_of_packetloss_rate(current_pl_rate)
+            rcode_0_udp_rates[index] = (rcode_0_udp_count_pl[current_pl_rate] / all_queries_count_pl[
+                current_pl_rate]) * 100
+        except ZeroDivisionError:
+            rcode_0_udp_rates[index] = 0
+        try:
+            index = get_index_of_packetloss_rate(current_pl_rate)
+            rcode_0_tcp_rates[index] = (rcode_0_tcp_count_pl[current_pl_rate] / all_queries_count_pl[
+                current_pl_rate]) * 100
+        except ZeroDivisionError:
+            rcode_0_tcp_rates[index] = 0
+
     # print(f"all_responses_count_pl: {all_responses_count_pl}")
     # print(f"rcode_0_rates: {rcode_0_rates}")
     # print(f"rcode_2_rates: {rcode_2_rates}")
     # print(f"rcode_5_rates: {rcode_5_rates}")
     # print(f"other_rcode_counts: {other_rcode_counts}")
 
+    # Calculate bottom of refused
+    refused_bottom = list()
+    for item1, item2 in zip(rcode_0_udp_rates, rcode_0_tcp_rates):
+        refused_bottom.append(item1 + item2)
+
     # Calculate bottom of failed bars by adding ok + refused ratios
     failure_bottom = list()
-    for item1, item2 in zip(rcode_0_rates, rcode_5_rates):
+    for item1, item2 in zip(refused_bottom, rcode_5_rates):
         failure_bottom.append(item1 + item2)
 
     # Calculate bottom of Other RCODES bar
@@ -411,13 +478,14 @@ def create_combined_plots(file_name_prefix, directory_name):
     for item1, item2 in zip(other_rcods_bottom, other_rcode_rates):
         unanswered_bottom.append(item1 + item2)
 
-    print(f"failure_bottom: {failure_bottom}")
-    print(f"other_rcods_bottom: {other_rcods_bottom}")
-    print(f"unanswered_bottom: {unanswered_bottom}")
-    print(f"unanswered_query_rates: {unanswered_query_rates}")
+    # print(f"failure_bottom: {failure_bottom}")
+    # print(f"other_rcods_bottom: {other_rcods_bottom}")
+    # print(f"unanswered_bottom: {unanswered_bottom}")
+    # print(f"unanswered_query_rates: {unanswered_query_rates}")
 
-    ok_rects = ax.bar(bar_pos, rcode_0_rates, width, bottom=0, color='green')
-    refused_rects = ax.bar(bar_pos, rcode_5_rates, width, bottom=rcode_0_rates, color='orange')
+    rcode_0_udp_rects = ax.bar(bar_pos, rcode_0_udp_rates, width, bottom=0, color='limegreen')
+    rcode_0_tcp_rects = ax.bar(bar_pos, rcode_0_tcp_rates, width, bottom=rcode_0_udp_rates, color='green')
+    refused_rects = ax.bar(bar_pos, rcode_5_rates, width, bottom=refused_bottom, color='orange')
     failure_rects = ax.bar(bar_pos, rcode_2_rates, width, bottom=failure_bottom, color='red')
     others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=other_rcods_bottom, color='dodgerblue')
     unanswered_rects = ax.bar(bar_pos, unanswered_query_rates, width, bottom=unanswered_bottom, color='silver')
@@ -437,26 +505,50 @@ def create_combined_plots(file_name_prefix, directory_name):
     ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95))
 
     # Create legend at the top left of the plot
-    ax.legend((unanswered_rects[0], others_rects[0], failure_rects[0], refused_rects[0], ok_rects[0]),
-              ('Unanswered queries', 'Other RCODE', 'Failure', 'Refused', 'OK'), framealpha=0.5,
+    ax.legend((unanswered_rects[0], others_rects[0], failure_rects[0], refused_rects[0], rcode_0_tcp_rects[0],
+               rcode_0_udp_rects[0]),
+              ('Unanswered queries', 'Other RCODE', 'Failure', 'Refused', 'OK (TCP)', 'OK (UDP)'), framealpha=0.5,
               bbox_to_anchor=(0.1, 1.1))
 
     # Write the exact count of the non-stale packets in the middle of non-stale bars
-    def autolabel_ok(rects):
+    def autolabel_rcode_0_udp_rects(rects):
         index = 0
         for rect in rects:
             if rcode_0_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"OK#{rcode_0_counts[index]}",
+                        f"OK(UDP)#{rcode_0_counts[index]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
+                        ha='center', va='bottom')
+            index += 1
+
+    # Write the exact count of the non-stale packets in the middle of non-stale bars
+    def autolabel_rcode_0_tcp_rects(udp_rects, tcp_rects):
+        hight_of_non_stale_plus_stale = []
+        index = 0
+        for rect in udp_rects:
+            h = rect.get_height()
+            hight_of_non_stale_plus_stale.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in tcp_rects:
+            if rcode_5_counts[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_stale_plus_stale[index],
+                        f"OK(TCP)#{rcode_5_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
     # Text of refused bars
-    def autolabel_refused(ok_rects, refused_rects):
+    def autolabel_refused(udp_rects, tcp_rects, refused_rects):
         hight_of_non_stale_plus_stale = []
         index = 0
-        for rect in ok_rects:
+        for rect in udp_rects:
+            h = rect.get_height()
+            hight_of_non_stale_plus_stale.append(int(h))
+            index += 1
+
+        for rect in tcp_rects:
             h = rect.get_height()
             hight_of_non_stale_plus_stale.append(int(h))
             index += 1
@@ -471,10 +563,16 @@ def create_combined_plots(file_name_prefix, directory_name):
             index += 1
 
     # Text of failed bars
-    def autolabel_fail(ok_rects, refused_rects, fail_rects):
+    def autolabel_fail(udp_rects, tcp_rects, refused_rects, fail_rects):
         hight_of_non_failed = []
         index = 0
-        for rect in ok_rects:
+        for rect in udp_rects:
+            h = rect.get_height()
+            hight_of_non_failed.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in tcp_rects:
             h = rect.get_height()
             hight_of_non_failed.append(int(h))
             index += 1
@@ -495,10 +593,16 @@ def create_combined_plots(file_name_prefix, directory_name):
             index += 1
 
     # Text of others
-    def autolabel_other(ok_rects, refused_rects, fail_rects, other_rects):
+    def autolabel_other(udp_rects, tcp_rects, refused_rects, fail_rects, other_rects):
         hight_of_non_failed = []
         index = 0
-        for rect in ok_rects:
+        for rect in udp_rects:
+            h = rect.get_height()
+            hight_of_non_failed.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in tcp_rects:
             h = rect.get_height()
             hight_of_non_failed.append(int(h))
             index += 1
@@ -520,15 +624,21 @@ def create_combined_plots(file_name_prefix, directory_name):
             if other_rcode_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_failed[index],
-                        f"X#{other_rcode_counts[index]}",
+                        f"Other#{other_rcode_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
     # Text of others
-    def autolabel_unanswered(ok_rects, refused_rects, fail_rects, other_rects, unanswered_rects):
+    def autolabel_unanswered(udp_rects, tcp_rects, refused_rects, fail_rects, other_rects, unanswered_rects):
         hight_of_non_failed = []
         index = 0
-        for rect in ok_rects:
+        for rect in udp_rects:
+            h = rect.get_height()
+            hight_of_non_failed.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in tcp_rects:
             h = rect.get_height()
             hight_of_non_failed.append(int(h))
             index += 1
@@ -560,29 +670,44 @@ def create_combined_plots(file_name_prefix, directory_name):
                         ha='center', va='bottom')
             index += 1
 
-    autolabel_ok(ok_rects)
-    autolabel_refused(ok_rects, refused_rects)
-    autolabel_fail(ok_rects, refused_rects, failure_rects)
-    autolabel_other(ok_rects, refused_rects, failure_rects, others_rects)
-    autolabel_unanswered(ok_rects, refused_rects, failure_rects, others_rects, unanswered_rects)
+    autolabel_rcode_0_udp_rects(rcode_0_udp_rects)
+    autolabel_rcode_0_tcp_rects(rcode_0_udp_rects, rcode_0_tcp_rects)
+    autolabel_refused(rcode_0_udp_rects, rcode_0_tcp_rects, refused_rects)
+    autolabel_fail(rcode_0_udp_rects, rcode_0_tcp_rects, refused_rects, failure_rects)
+    autolabel_other(rcode_0_udp_rects, rcode_0_tcp_rects, refused_rects, failure_rects, others_rects)
+    autolabel_unanswered(rcode_0_udp_rects, rcode_0_tcp_rects, refused_rects, failure_rects, others_rects,
+                         unanswered_rects)
 
     # plt.show()
 
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
 
-    plt.savefig((directory_name + "/" + file_name_prefix + '_StaleRecordPlot.png'), dpi=100, bbox_inches='tight')
+    if not os.path.exists(plots_directory_name + "/" + directory_name):
+        os.makedirs(plots_directory_name + "/" + directory_name)
+
+    plot_type = ""
+    directory_name_lower = plots_directory_name.lower()
+    if "client" in directory_name_lower:
+        plot_type = "client"
+    elif "auth" in directory_name_lower:
+        plot_type = "auth"
+
+    save_path = plots_directory_name + "/" + directory_name + "/" + plot_type + "_" + file_name_prefix + '_combinedPlot.png'
+
+    plt.savefig(save_path, dpi=100, bbox_inches='tight')
 
     # save plot as png
     # plt.savefig((file_name_prefix + '_StaleRecordPlot.png'))
-    print(f" Created box plot: {file_name_prefix}")
+    print(f"      Created box plot: {save_path}")
     # Clear plots
     plt.cla()
     plt.close()
 
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
-def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_dict):
+def create_bar_plot(file_name_prefix, directory_name, unanswered_dict, plots_directory_name, plot_title, y_label):
+    print(f"    Creating unanswered bar plot")
     n = 12  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
@@ -592,12 +717,12 @@ def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_d
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
 
     dict_values = get_values_of_dict(unanswered_dict)
-    non_stale_rects = ax.bar(bar_pos, dict_values, width, bottom=0, color='green')
+    non_stale_rects = ax.bar(bar_pos, dict_values, width, bottom=0, color='dodgerblue')
 
     # Title of the graph, x and y label
-    plot_title = f"Unanswered query count ({file_name_prefix})"
+    plot_title = f"{plot_title} ({file_name_prefix})"
     plt.xlabel("Packetloss rate")
-    plt.ylabel("Unanswered query count")
+    plt.ylabel(f"{y_label}")
 
     # Title position
     plt.title(plot_title, x=0.5, y=1.1)
@@ -618,7 +743,7 @@ def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_d
             if dict_values[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"OK#{dict_values[index]}",
+                        f"U#{dict_values[index]}",
                         ha='center', va='bottom')
             index += 1
 
@@ -629,21 +754,34 @@ def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_d
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
 
-    plt.savefig((directory_name + "/" + file_name_prefix + '_UnansweredQueryPlot.png'), dpi=100, bbox_inches='tight')
+    if not os.path.exists(plots_directory_name + "/" + directory_name):
+        os.makedirs(plots_directory_name + "/" + directory_name)
+
+    plot_type = ""
+    directory_name_lower = plots_directory_name.lower()
+    if "client" in directory_name_lower:
+        plot_type = "client"
+    elif "auth" in directory_name_lower:
+        plot_type = "auth"
+
+    save_path = plots_directory_name + "/" + directory_name + "/" + plot_type + "_" + file_name_prefix + '_UnansweredQueryPlot.png'
+
+    plt.savefig(save_path, dpi=100, bbox_inches='tight')
 
     # save plot as png
     # plt.savefig((file_name_prefix + '_StaleRecordPlot.png'))
-    print(f" Created box plot: {file_name_prefix}")
+    print(f"      Created box plot: {save_path}")
     # Clear plots
     plt.cla()
     plt.close()
 
 
 # Create box plot for the calculated latencies
-def create_latency_box_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict, log_scale=False):
-    print(f" Creating box plot: {file_name_prefix}")
-    print(f"   Inside the folder: {directory_name}")
-    print(f"   Limits: [{bottom_limit}, {upper_limit}]")
+def create_latency_box_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict,
+                            plots_directory_name, log_scale=False):
+    print(f"    Creating box plot: {file_name_prefix}")
+    # print(f"   Inside the folder: {directory_name}")
+    # print(f"   Limits: [{bottom_limit}, {upper_limit}]")
 
     operator_name = file_name_prefix.split("_")[0]
     if not os.path.exists(directory_name + "/" + operator_name):
@@ -691,23 +829,33 @@ def create_latency_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
     ax.boxplot(dict_values, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95],
                widths=4.4)
 
+    if not os.path.exists(plots_directory_name + "/" + directory_name + "/" + operator_name):
+        os.makedirs(plots_directory_name + "/" + directory_name + "/" + operator_name)
+
+    plot_type = ""
+    directory_name_lower = plots_directory_name.lower()
+    if "client" in directory_name_lower:
+        plot_type = "client"
+    elif "auth" in directory_name_lower:
+        plot_type = "auth"
+
+    save_path = plots_directory_name + "/" + directory_name + "/" + operator_name + "/" + plot_type + "_" + file_name_prefix + '_LatencyBoxPlot.png'
+
     # save plot as png
-    plt.savefig(directory_name + "/" + operator_name + "/" + file_name_prefix + '_LatencyBoxPlot.png',
-                bbox_inches='tight')
+    plt.savefig(save_path, bbox_inches='tight')
+
     # show plot
     # plt.show()
-    print(f" Created box plot: {file_name_prefix}")
+    print(f"      Created box plot: {save_path}")
     # Clear plots
     plt.cla()
     plt.close()
 
 
 # Create violin plots of the calculated latencies
-def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict,
-                               log_scale=False):
-    print(f" Creating violin plot: {file_name_prefix}")
-    print(f"   Inside the folder: {directory_name}")
-    print(f"   Limits: [{bottom_limit}, {upper_limit}]")
+def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, upper_limit, latency_dict, plots_directory_name, log_scale=False):
+    print(f"    Creating violin plot: {file_name_prefix}")
+    # print(f"   Inside the folder: {directory_name}")
     # print(f"   Log-scale: {log_scale}")
 
     operator_name = file_name_prefix.split("_")[0]
@@ -729,8 +877,7 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
 
     ax.set_title(f"Response Latency of " + file_name_prefix)
 
-    if log_scale:
-        ax.set_yscale('log', base=2)
+    plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # Handle zero values with a -1 dummy value
     data = get_values_of_dict(latency_dict)
@@ -762,25 +909,117 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
     bp['cmeans'].set_color('b')
     # Median is red
     bp['cmedians'].set_color('r')
-    plt.ylim(bottom=bottom_limit, top=upper_limit)
 
     # Add legend for mean and median
     blue_line = mlines.Line2D([], [], color='blue', marker='', markersize=15, label='mean')
     red_line = mlines.Line2D([], [], color='red', marker='', markersize=15, label='median')
     ax.legend(handles=[blue_line, red_line], loc='upper left')
 
+    if not os.path.exists(plots_directory_name + "/" + directory_name + "/" + operator_name):
+        os.makedirs(plots_directory_name + "/" + directory_name + "/" + operator_name)
+
+    plot_type = ""
+    directory_name_lower = plots_directory_name.lower()
+    if "client" in directory_name_lower:
+        plot_type = "client"
+    elif "auth" in directory_name_lower:
+        plot_type = "auth"
+
+    save_path = plots_directory_name + "/" + directory_name + "/" + operator_name + "/" + plot_type + "_" + file_name_prefix + '_LatencyViolinPlot.png'
+
     # save plot as png
-    plt.savefig(directory_name + "/" + operator_name + "/" + file_name_prefix + '_LatencyViolinPlot.png',
-                bbox_inches='tight')
+    plt.savefig(save_path, bbox_inches='tight')
+
     # show plot
     # plt.show()
-    print(f" Created violin plot: {file_name_prefix}")
+    print(f"      Created violin plot: {save_path}")
     # Clear plots
     plt.cla()
     plt.close()
 
 
-# Input: "pl0" Output 0
+# Create retransmission plot
+def create_retransmission_violin_plot(directory_name, file_name_prefix, latency_dict, plots_directory_name):
+    print(f"    Creating violin plot: {file_name_prefix}")
+    # print(f"   Inside the folder: {directory_name}")
+    # print(f"   Log-scale: {log_scale}")
+
+    operator_name = file_name_prefix
+
+    # Create violin plot
+    fig2 = plt.figure(figsize=(10, 7))
+
+    # Creating axes instance
+    ax = fig2.add_axes([0, 0, 1, 1])
+
+    # Set the X axis labels/positions
+    ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+    ax.set_xticklabels([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    ax.set_ylabel('Retransmission counts')
+    ax.set_xlabel('Packetloss in percentage')
+    ax.set_title(f"DNS Retransmissions" + file_name_prefix)
+
+    # Handle zero values with a -1 dummy value
+    data = get_values_of_dict(latency_dict)
+    for i in range(len(data)):
+        if len(data[i]) == 0:
+            data[i] = [0]
+
+    # Create and save Violinplot
+    bp = ax.violinplot(dataset=data, showmeans=True, showmedians=True,
+                       showextrema=True, widths=4.4, positions=[0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95])
+
+    # Add the data counts onto plot
+    # But if the list was empty and we added a dummy value, subtract it from the plot text
+    data_count_string = ""
+    for i in range(len(get_values_of_dict(latency_dict))):
+        data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
+            len(get_values_of_dict(latency_dict)[i])) + "\n"
+
+    left, width = .25, .5
+    bottom, height = .25, .5
+    right = left + width
+    top = bottom + height
+    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+            horizontalalignment='center',
+            verticalalignment='center',
+            transform=ax.transAxes, color='red')
+
+    # Mean is blue
+    bp['cmeans'].set_color('b')
+    # Median is red
+    bp['cmedians'].set_color('r')
+
+    # Add legend for mean and median
+    blue_line = mlines.Line2D([], [], color='blue', marker='', markersize=15, label='mean')
+    red_line = mlines.Line2D([], [], color='red', marker='', markersize=15, label='median')
+    ax.legend(handles=[blue_line, red_line], loc='upper left')
+
+    if not os.path.exists(plots_directory_name + "/" + directory_name + "/" + operator_name):
+        os.makedirs(plots_directory_name + "/" + directory_name + "/" + operator_name)
+
+    plot_type = ""
+    directory_name_lower = plots_directory_name.lower()
+    if "client" in directory_name_lower:
+        plot_type = "client"
+    elif "auth" in directory_name_lower:
+        plot_type = "auth"
+
+    save_path = plots_directory_name + "/" + directory_name + "/" + operator_name + "/" + plot_type + "_" + file_name_prefix + '_RetransmissionPlot.png'
+
+    # save plot as png
+    plt.savefig(save_path, bbox_inches='tight')
+
+    # show plot
+    # plt.show()
+    print(f"      Created violin plot: {save_path}")
+    # Clear plots
+    plt.cla()
+    plt.close()
+
+
+# Input: "10" Output 1
 def get_index_of_packetloss_rate(input):
     pl_rate = str(input)
     if pl_rate == "0":
@@ -824,6 +1063,7 @@ def reset_for_next_plot():
     global missing_query_count_pl
 
     global all_query_names_pl
+    # global all_query_names_pl_for_missing  #Only reset after reading the auth pcap of the client pcap
     global all_responses_count_pl
     global all_queries_count_pl
 
@@ -832,10 +1072,13 @@ def reset_for_next_plot():
     global latencies_by_pl_and_rcode
     global query_duplicate_by_pl
     global rcodes_by_pl
+    global rcode_0_udp_count_pl
+    global rcode_0_tcp_count_pl
 
     reset_values_of_dict_to_zero(missing_query_count_pl, 0)
 
     all_query_names_pl = {}
+    # all_query_names_pl_for_missing = {}
     all_responses_count_pl = {}
     all_queries_count_pl = {}
     unanswered_query_count_by_pl = {}
@@ -843,8 +1086,17 @@ def reset_for_next_plot():
     latencies_by_pl_and_rcode = {}
     query_duplicate_by_pl = {}
     rcodes_by_pl = {}
+    rcode_0_udp_count_pl = {}
+    rcode_0_tcp_count_pl = {}
 
-    print(f"Clean up for next plotting DONE")
+    # print(f"Clean up for next plotting DONE")
+
+
+def reset_after_auth_pcaps():
+    global all_query_names_pl_for_missing
+    all_query_names_pl_for_missing = {}
+
+    # print(f"Clean up after auth DONE")
 
 
 def extract_latencies_from_dict():
@@ -884,76 +1136,123 @@ def extract_latencies_from_dict():
     return [ok_latencies, servfail_latencies]
 
 
-def create_plot_for(file_name, selected_resolvers_to_plot):
-    print(f"Plot name: {file_name}")
-    print(f"Plotting for: {selected_resolvers_to_plot}")
+client_plots_directory_name = "ClientPlots"
+auth_plots_directory_name = "AuthPlots"
+latency_directory_name = "LatencyPlots"
+rate_plots_directory_name = "RatePlots"
+unanswered_query_plots_directory_name = "UnansweredQueryPlots"
+missing_query_plots_directory_name = "MissingQueryPlots"
+retransmission_plots_directory_name = "RetransmissionPlots"
+latency_upper_limit = 20
 
-    global all_resolvers
-    to_filter = all_resolvers.copy()
 
-    for selected in selected_resolvers_to_plot:
-        if selected in all_resolvers:
-            to_filter.remove(selected)
-
-    print(f"Filtering: {to_filter}")
-
-    latency_upper_limit = 10
-    latency_directory_name = "LatencyPlots"
-    rate_plots_directory_name = "RatePlots"
-    unanswered_query_plots_directory_name = "UnansweredQueryPlots"
-
-    # Create directory to store logs into it
-    if not os.path.exists(latency_directory_name):
-        os.makedirs(latency_directory_name)
-
-    if not os.path.exists(rate_plots_directory_name):
-        os.makedirs(rate_plots_directory_name)
-
-    if not os.path.exists(unanswered_query_plots_directory_name):
-        os.makedirs(unanswered_query_plots_directory_name)
-
-    # Name of the directory that will be created for the plots
-    directory_name = file_name
-
-    # Prefixes of the pcap file names
-    client_prefix = "tcpdump_log_client_bond0_"
-    # auth_prefix = "tcpdump_log_auth1_bond0_"
-
-    # read all the pcap files
+def create_plots_of_type(file_name, pcap_file_prefix, resolvers_to_filter, directory_type):
+    # read the client pcap files
     for current_pl_rate in packetloss_rates:
         print(f"  Current packetloss rate: {current_pl_rate}")
 
-        client_file_name = client_prefix + str(current_pl_rate) + ".pcap"
-        # auth_file_name = auth_prefix + str(current_pl_rate) + ".pcap"
-        read_pcap(client_file_name, current_pl_rate, to_filter)
+        pcap_file_name = pcap_file_prefix + str(current_pl_rate) + ".pcap"
+        read_pcap(pcap_file_name, current_pl_rate, resolvers_to_filter)
 
-    # TODO: missing query plot
     # print(f"query_duplicate_by_pl: {query_duplicate_by_pl}")
+    # print(f"all_query_names_pl: {all_query_names_pl}")
 
     # create rate plot
-    create_combined_plots(file_name, rate_plots_directory_name)
+    create_combined_plots(file_name, rate_plots_directory_name, directory_type)
 
-    ok_latencies = extract_latencies_from_dict()[0]
-    servfail_latencies = extract_latencies_from_dict()[1]
+    extracted_latencies = extract_latencies_from_dict()
+    ok_latencies = extracted_latencies[0]
+    servfail_latencies = extracted_latencies[1]
+
+    # print(f"@@@@ servfail_latencies: {servfail_latencies}")
 
     # create OK latency plots
     create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit,
-                               ok_latencies, log_scale=False)
+                               ok_latencies, directory_type, log_scale=False)
     create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit,
-                            ok_latencies,
+                            ok_latencies, directory_type,
                             log_scale=False)
 
     # create ServFail latency plots
     create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit,
-                               servfail_latencies, log_scale=False)
+                               servfail_latencies, directory_type, log_scale=False)
     create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit,
-                            servfail_latencies,
+                            servfail_latencies, directory_type,
                             log_scale=False)
 
-    create_unanswered_query_plots(file_name, unanswered_query_plots_directory_name, unanswered_query_count_by_pl)
+    # Create unanswered query plot
+    create_bar_plot(file_name, unanswered_query_plots_directory_name, unanswered_query_count_by_pl,
+                    directory_type, "Unanswered Queries", "Unanswered Query Count")
+
+    # Create retransmission plots
+    retransmission_count_list = {
+        "0": [], "10": [], "20": [], "30": [],
+        "40": [], "50": [], "60": [], "70": [],
+        "80": [], "85": [], "90": [], "95": []
+    }
+
+    for pl_rate, query_name in all_query_names_pl:
+        # Check if there was really a retransmission
+        # (count should be > 1 bcs first one is the original, not the duplicate)
+        result = all_query_names_pl[pl_rate, query_name]
+        if result > 1:
+            retransmission_count_list[str(pl_rate)].append(result)
+
+    # print(f" @@@@@@ retransmission_count_list:\n{retransmission_count_list}")
+    create_retransmission_violin_plot(retransmission_plots_directory_name, file_name, retransmission_count_list, directory_type)
+
+
+def create_plot_for(file_name, selected_resolvers_to_plot):
+    print(f"Plot name: {file_name}")
+    print(f"Plotting for: {selected_resolvers_to_plot}")
+
+    initialize_dictionaries()
+
+    global all_resolvers
+    resolvers_to_filter = all_resolvers.copy()
+
+    for selected in selected_resolvers_to_plot:
+        if selected in all_resolvers:
+            resolvers_to_filter.remove(selected)
+
+    print(f"Filtering: {resolvers_to_filter}")
+
+    # Prefixes of the pcap file names
+    client_prefix = "tcpdump_log_client_bond0_"
+    auth_prefix = "tcpdump_log_auth1_bond0_"
+
+    # Create client plots
+    create_plots_of_type(file_name, client_prefix, resolvers_to_filter, client_plots_directory_name)
+    # print(f"latencies_by_pl_and_rcode:\n{latencies_by_pl_and_rcode}")
 
     # reset the dictionaries for the next plotting/pcaps
     reset_for_next_plot()
+
+    # Initialize dictionaries again
+    initialize_dictionaries()
+
+    # Create client plots
+    create_plots_of_type(file_name, auth_prefix, resolvers_to_filter, auth_plots_directory_name)
+
+    # Create missing query plots
+    # print(f"all_query_names_pl_for_missing: {all_query_names_pl_for_missing}")
+    missing_query_count_list = {
+        "0": 0, "10": 0, "20": 0, "30": 0,
+        "40": 0, "50": 0, "60": 0, "70": 0,
+        "80": 0, "85": 0, "90": 0, "95": 0
+    }
+
+    for pl in packetloss_rates:
+        missing_query_count_list[str(pl)] = len(all_query_names_pl_for_missing[pl])
+
+    create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_count_list,
+                    auth_plots_directory_name, "Missing Queries", "Missing Query Count")
+
+    # reset the dictionaries for the next plotting/pcaps
+    reset_for_next_plot()
+
+    # Reset missing query count
+    reset_after_auth_pcaps()
 
 
 # New Operators

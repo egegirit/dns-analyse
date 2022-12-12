@@ -840,7 +840,7 @@ def create_latency_box_plot(directory_name, file_name_prefix, bottom_limit, uppe
     bottom, height = .25, .5
     right = left + width
     top = bottom + height
-    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+    ax.text(0.5 * (left + right), .80 * (bottom + top), data_count_string,
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes, color='red')
@@ -922,7 +922,7 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
     bottom, height = .25, .5
     right = left + width
     top = bottom + height
-    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+    ax.text(0.5 * (left + right), .80 * (bottom + top), data_count_string,
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes, color='red')
@@ -984,13 +984,22 @@ def create_violin_plot(directory_name, file_name_prefix, latency_dict, plots_dir
     ax.set_xlabel('Packetloss in percentage')
     ax.set_title(f"{plot_title} " + file_name_prefix)
 
-    plt.ylim(bottom=0)
-
     # Handle zero values with a -1 dummy value
     data = get_values_of_dict(latency_dict)
+    plot_upper_limit = 1
     for i in range(len(data)):
         if len(data[i]) == 0:
             data[i] = [0]
+        else:
+            # Find maximum count for top limit of plot
+            for number in data[i]:
+                if number > plot_upper_limit:
+                    plot_upper_limit = number
+
+    # print(f"Data of {plot_title}: {data}")
+    # print(f" plot_upper_limit: {plot_upper_limit}")
+
+    plt.ylim(bottom=0, top=plot_upper_limit+1)
 
     # Create and save Violinplot
     bp = ax.violinplot(dataset=data, showmeans=True, showmedians=True,
@@ -1007,7 +1016,7 @@ def create_violin_plot(directory_name, file_name_prefix, latency_dict, plots_dir
     bottom, height = .25, .5
     right = left + width
     top = bottom + height
-    ax.text(0.5 * (left + right), .75 * (bottom + top), data_count_string,
+    ax.text(0.5 * (left + right), .80 * (bottom + top), data_count_string,
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes, color='red')
@@ -1235,6 +1244,9 @@ def create_plots_of_type(file_name, pcap_file_prefix, resolvers_to_filter, direc
         result = all_response_names_pl[pl_rate, query_name]
         if result > 1:
             response_retransmission_count_list[str(pl_rate)].append(result)
+
+    # print(f"query_retransmission_count_list: {query_retransmission_count_list}")
+    # print(f"response_retransmission_count_list: {response_retransmission_count_list}")
 
     create_violin_plot(retransmission_plots_directory_name, file_name, query_retransmission_count_list, directory_type,
                        "DNS Query Retransmissions", "Query Retransmission Counts", "QueryRetransmissionPlot")

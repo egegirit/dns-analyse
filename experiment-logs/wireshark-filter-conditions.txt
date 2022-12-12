@@ -98,7 +98,7 @@ WARNING: dns.qry.name matches "8-8-8-8" also shows the packets for Yandex2 with 
 ========================
 
 Filter for faster tests of plotting scripts:
-((dns.qry.name matches "94-140-14-14") || (dns.qry.name matches "94-140-14-15")) && ((dns.qry.name matches "1-pl") || (dns.qry.name matches "2-pl") || (dns.qry.name matches "3-pl"))
+((dns.qry.name matches "94-140-14-15") || (dns.qry.name matches "94-140-14-15")) && ((dns.qry.name matches "1-pl") || (dns.qry.name matches "2-pl") || (dns.qry.name matches "3-pl"))
 
 TTL Value in wireshark:
 dns.resp.ttl

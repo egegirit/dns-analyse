@@ -1325,6 +1325,7 @@ all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
                  "Quad9-2",
                  "Yandex-1", "Yandex-2"]
 
+
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
     # try:
@@ -1333,4 +1334,7 @@ for resolver in all_resolvers:
     #     print(f"Error creating plots for: {resolver}")
     #     print(f"{str(e)}")
 
-create_plot_for("Overall behaviour plot", [])
+create_plot_for("OverallBehaviour", ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
+                                     "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
+                                     "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
+                                     "Yandex-1", "Yandex-2"])

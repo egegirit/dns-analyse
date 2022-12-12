@@ -95,14 +95,6 @@ all_response_names_pl = {}
 # Queries that are in client pcaps but not in auth.
 all_query_names_pl_for_missing = {}
 
-missing_query_count_pl = {
-    "0": 0, "10": 0, "20": 0, "30": 0,
-    "40": 0, "50": 0, "60": 0, "70": 0,
-    "80": 0, "85": 0, "90": 0, "95": 0,
-    "100": 0,
-}
-
-
 # Input: IP Address with dashes (e.g. "8-8-8-8")
 # Output: Name of the operator (e.g. "Google1")
 def get_operator_name_from_ip(ip_addr_with_dashes):
@@ -146,12 +138,14 @@ def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
     return True
 
 
-def initialize_dictionaries():
+def initialize_dictionaries(pcap_type):
     rcodes = [0, 2, 5]
     for current_pl_rate in packetloss_rates:
         query_duplicate_by_pl[current_pl_rate] = 0
         all_queries_count_pl[current_pl_rate] = 0
-        all_query_names_pl_for_missing[current_pl_rate] = []
+        # Only reset this after an auth pcap is read
+        if pcap_type == "client":
+            all_query_names_pl_for_missing[current_pl_rate] = []
         all_responses_count_pl[current_pl_rate] = 0
         rcode_0_udp_count_pl[current_pl_rate] = 0
         rcode_0_tcp_count_pl[current_pl_rate] = 0
@@ -262,11 +256,15 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                 # Store query names on client pcap to detect missing queries on auth pcap
                 if "client" in pcap_file_name:
-                    all_query_names_pl_for_missing[current_pl_rate].append(query_name)
+                    if query_name not in all_query_names_pl_for_missing[current_pl_rate]:
+                        all_query_names_pl_for_missing[current_pl_rate].append(query_name)
+                        # print(f"  Length Added: {len(all_query_names_pl_for_missing[current_pl_rate])}")
                 # After reading all the client pcaps, delete all the client queries which are also in auth pcap
                 elif "auth" in pcap_file_name:
+                    # print(f"    Length Auth: {len(all_query_names_pl_for_missing[current_pl_rate])}")
                     if query_name in all_query_names_pl_for_missing[current_pl_rate]:
                         all_query_names_pl_for_missing[current_pl_rate].remove(query_name)
+                        # print(f"    Length Deleted: {len(all_query_names_pl_for_missing[current_pl_rate])}")
 
                 # DNS query
                 if is_response_packet == 0:
@@ -540,7 +538,7 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
             if rcode_0_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"OK(UDP)#{rcode_0_counts[index]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
+                        f"OK-U#{rcode_0_counts[index]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
                         ha='center', va='bottom')
             index += 1
 
@@ -558,7 +556,7 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
             if rcode_5_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_stale_plus_stale[index],
-                        f"OK(TCP)#{rcode_5_counts[index]}",
+                        f"OK-T#{rcode_5_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
@@ -1095,11 +1093,9 @@ def reset_values_of_dict_to_zero(dictionary, init_value):
 
 # Reset the dictionaries for the next plotting
 def reset_for_next_plot():
-    global missing_query_count_pl
 
     global all_query_names_pl
     global all_response_names_pl
-    # global all_query_names_pl_for_missing  #Only reset after reading the auth pcap of the client pcap
     global all_responses_count_pl
     global all_queries_count_pl
 
@@ -1111,11 +1107,9 @@ def reset_for_next_plot():
     global rcode_0_udp_count_pl
     global rcode_0_tcp_count_pl
 
-    reset_values_of_dict_to_zero(missing_query_count_pl, 0)
 
     all_query_names_pl = {}
     all_response_names_pl = {}
-    # all_query_names_pl_for_missing = {}
     all_responses_count_pl = {}
     all_queries_count_pl = {}
     unanswered_query_count_by_pl = {}
@@ -1132,6 +1126,8 @@ def reset_for_next_plot():
 def reset_after_auth_pcaps():
     global all_query_names_pl_for_missing
     all_query_names_pl_for_missing = {}
+    for current_pl_rate in packetloss_rates:
+        all_query_names_pl_for_missing[current_pl_rate] = []
 
     # print(f"Clean up after auth DONE")
 
@@ -1260,7 +1256,7 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
     print(f"Plot name: {file_name}")
     print(f"Plotting for: {selected_resolvers_to_plot}")
 
-    initialize_dictionaries()
+    initialize_dictionaries("client")
 
     global all_resolvers
     resolvers_to_filter = all_resolvers.copy()
@@ -1283,13 +1279,12 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
     reset_for_next_plot()
 
     # Initialize dictionaries again
-    initialize_dictionaries()
+    initialize_dictionaries("auth")
 
-    # Create client plots
+    # Create auth plots
     create_plots_of_type(file_name, auth_prefix, resolvers_to_filter, auth_plots_directory_name)
 
     # Create missing query plots
-    # print(f"all_query_names_pl_for_missing: {all_query_names_pl_for_missing}")
     missing_query_count_list = {
         "0": 0, "10": 0, "20": 0, "30": 0,
         "40": 0, "50": 0, "60": 0, "70": 0,
@@ -1298,6 +1293,9 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
 
     for pl in packetloss_rates:
         missing_query_count_list[str(pl)] = len(all_query_names_pl_for_missing[pl])
+
+    print(f"  all_query_names_pl_for_missing:\n{all_query_names_pl_for_missing}")
+    print(f"  missing_query_count_list:\n{missing_query_count_list}")
 
     create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_count_list,
                     auth_plots_directory_name, "Missing Queries", "Missing Query Count")

@@ -77,6 +77,8 @@ operators = {
 #
 # }
 
+all_responses_count_pl = {}
+all_queries_count_pl = {}
 unanswered_query_count_by_pl = {}
 responses_with_no_query_count_by_pl = {}
 latencies_by_pl_and_rcode = {}
@@ -87,12 +89,6 @@ rcodes_by_pl = {}
 # Queries that are in client pcaps but not in auth.
 all_query_names_pl = {}
 
-all_responses_count_pl = {
-    "0": 0, "10": 0, "20": 0, "30": 0,
-    "40": 0, "50": 0, "60": 0, "70": 0,
-    "80": 0, "85": 0, "90": 0, "95": 0,
-    "100": 0,
-}
 missing_query_count_pl = {
     "0": 0, "10": 0, "20": 0, "30": 0,
     "40": 0, "50": 0, "60": 0, "70": 0,
@@ -129,19 +125,19 @@ def is_query_name_valid(query_name):
 
 
 # Check if the source or destination IP of the packet is valid, filter packets by IP Address
-def is_src_or_dst_ip_valid(pcap_name, src_ip, dst_ip):
+def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
     # Client IP is 139.19.117.1
     if "client" in pcap_name:
         if src_ip != "139.19.117.1" and dst_ip != "139.19.117.1":
-            # print(f"IP of client packet invalid: {query}")
+            # print(f"  IP of client packet invalid: {src_ip}, {dst_ip}")
             return False
     # Server IP is 139.19.117.11
     elif "auth" in pcap_name:
+
         if src_ip != "139.19.117.11" and dst_ip != "139.19.117.11":
-            # print(f"IP of auth packet invalid: {query}")
+            # print(f"  IP of auth packet invalid: {src_ip}, {dst_ip}")
             return False
-    else:
-        return True
+    return True
 
 
 # Read the pcap file with the given packetloss rate while filtering the specified resolver packets
@@ -175,12 +171,14 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 dst_port = packet[IP].dst
                 src_port = packet[IP].src
                 # Filter packet if source or destination IP is not valid
-                if not is_src_or_dst_ip_valid(pcap_file_name, src_port, dst_port):
+                if not is_src_and_dst_ip_valid(pcap_file_name, src_port, dst_port):
+                    # print(f" Invalid IP Skipping")
                     continue
 
                 # Query name of packet
                 query_name = packet[DNSQR].qname.decode("utf-8")
                 if not is_query_name_valid(query_name):
+                    # print(f" Query name does not match: {query_name}")
                     continue
 
                 # Query name: "8-8-8-8-0-pl0.packetloss.syssec-research.mmci.uni-saarland.de
@@ -190,11 +188,12 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                                  splitted_query[2] + "-" + splitted_query[3]
                 operator_name = get_operator_name_from_ip(ip_with_dashes)
                 counter = splitted_query[4]
-                pl_rate_of_packet = splitted_query[5].split("pl")[1]
+                pl_rate_of_packet = splitted_query[5].split("pl")[1].split(".")[0]
 
                 # Filter if packetloss rate of packet does not match the pl rate of pcap file
                 if str(current_pl_rate) != str(pl_rate_of_packet):
                     # print(f"PL rate does not match for: {query}")
+                    # print(f" PL rate on query name does not match: {pl_rate_of_packet} != {current_pl_rate}")
                     continue
 
                 # Filter if its a filtered resolver packet
@@ -211,7 +210,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 rec_type = packet[DNSQR].qtype  # Type 1 is A record
                 # Filter if query is not an A record query
                 if rec_type != 1:
-                    # print(f"  Query type is not an A record: {query}")
+                    print(f"  Query type is not an A record: {query_name}")
                     continue
 
                 port = packet.sport
@@ -225,7 +224,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # Time difference of the current and previous packet, used to determine phases in stale pcaps
                 # time_diff_to_previous = packet_time - previous_packet_time
 
-                # print(f"Query name: {query}")
+                # print(f"Query name: {query_name}")
                 # print(f"  Query type: {rec_type}")
                 # print(f"  Is response (0: Query, 1: Response): {is_response}")
                 # print(f"  DNS ID: {dns_id}")
@@ -244,8 +243,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 if "client" in pcap_file_name:
                     if current_pl_rate not in all_query_names_pl:
                         all_query_names_pl[current_pl_rate] = []
-                    else:
-                        all_query_names_pl[current_pl_rate].append(query_name)
+                    all_query_names_pl[current_pl_rate].append(query_name)
                 # After reading all the client pcaps, delete all the client queries which are also in auth pcap
                 elif "auth" in pcap_file_name:
                     if query_name in all_query_names_pl[current_pl_rate]:
@@ -253,6 +251,11 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                 # DNS query
                 if is_response_packet == 0:
+                    # Count all the queries to build ratios
+                    if current_pl_rate not in all_queries_count_pl:
+                        all_queries_count_pl[current_pl_rate] = 0
+                    all_queries_count_pl[current_pl_rate] += 1
+
                     # Only add it to the queries dictionary if it's not a duplicate
                     if (dns_id, query_name, is_response_packet) not in queries:
                         queries[dns_id, query_name, is_response_packet] = [packet_time, rcode]
@@ -261,10 +264,14 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         print(f"Query duplicate: {query_name}, {dns_id}")
                         if current_pl_rate not in query_duplicate_by_pl:
                             query_duplicate_by_pl[current_pl_rate] = 0
-                        else:
-                            query_duplicate_by_pl[current_pl_rate] += 1
+                        query_duplicate_by_pl[current_pl_rate] += 1
                 # DNS response
                 elif is_response_packet == 1:
+                    # Count all the responses to build ratios
+                    if current_pl_rate not in all_responses_count_pl:
+                        all_responses_count_pl[current_pl_rate] = 0
+                    all_responses_count_pl[current_pl_rate] += 1
+
                     # Check if we found a corresponding response packet to a query
                     if (dns_id, query_name, 0) in queries:
                         latency = float(packet_time - queries[dns_id, query_name, 0][0])
@@ -275,28 +282,26 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # Create the latency keys if not created before
                         if (current_pl_rate, rcode) not in latencies_by_pl_and_rcode:
                             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
-                        else:
-                            latencies_by_pl_and_rcode[current_pl_rate, rcode].append(latency)
+                        latencies_by_pl_and_rcode[current_pl_rate, rcode].append(latency)
 
                         # Count the RCODEs of the packets of the pl rate
                         if (current_pl_rate, rcode) not in rcodes_by_pl:
                             rcodes_by_pl[current_pl_rate, rcode] = 0
-                        else:
-                            rcodes_by_pl[current_pl_rate, rcode] += 1
+                        rcodes_by_pl[current_pl_rate, rcode] += 1
 
                     # The response packet has no corresponding query packet for now (and probably will not have any?)
                     # Add the response to the list
                     elif (dns_id, query_name, is_response_packet) not in responses:
                         responses[dns_id, query_name, is_response_packet] = [packet_time, rcode]
+                        # print(f"@@ Response has no query to it: {query_name}, {dns_id}")
                     # The response packet has no corresponding query to it and this packet is a duplicate
                     else:
-                        pass
                         # print(f"Duplicate response packet detected for {query_name}, {dns_id}")
+                        pass
 
             except Exception as e:
                 print(f"  Error reading packet: {str(e)}")
                 # packet.show()
-
         index += 1
 
     # After examining all the packets in the pcap file,
@@ -314,68 +319,111 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
 def create_combined_plots(file_name_prefix, directory_name):
-    n = 13  # Amount of bars in the chart
+    n = 12  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10])  # Positions of the bars
+    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
 
-    # Non stale datas
-    ok_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ok_counts = list(ok_count_pl.values())
-    for i in range(len(ok_rate_vals)):
-        try:
-            ok_rate_vals[i] = (ok_counts[i] / all_responses_count_pl[
-                str(packetloss_rates[i])]) * 100
-        except ZeroDivisionError:
-            ok_rate_vals[i] = 0
+    rcode_0_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_0_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    # Failure datas
-    failure_rate_vals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    failure_rate_counts = list(servfail_count_pl.values())
-    for i in range(len(failure_rate_vals)):
-        try:
-            failure_rate_vals[i] = (failure_rate_counts[i] / all_responses_count_pl[
-                str(packetloss_rates[i])]) * 100
-        except ZeroDivisionError:
-            failure_rate_vals[i] = 0
+    rcode_2_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_2_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    # Refused datas
-    refused_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    refused_counts = list(refused_count_pl.values())
-    for i in range(len(refused_rates)):
-        try:
-            refused_rates[i] = (refused_counts[i] / all_responses_count_pl[str(packetloss_rates[i])]) * 100
-        except ZeroDivisionError:
-            refused_rates[i] = 0
+    rcode_5_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_5_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    # TODO: Other RCODES
-    other_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    other_counts = list(other_rcodes_count_pl.values())
-    for i in range(len(refused_rates)):
+    other_rcode_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    other_rcode_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    unanswered_query_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    unanswered_query_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # Calculate unanswered_query_counts
+    for key in list(unanswered_query_count_by_pl.keys()):
+        unanswered_query_counts[get_index_of_packetloss_rate(key)] = unanswered_query_count_by_pl[key]
+
+    # Calculate unanswered_query_rates
+    for current_pl_rate in packetloss_rates:
         try:
-            other_rates[i] = (other_counts[i] / all_responses_count_pl[str(packetloss_rates[i])]) * 100
+            index = get_index_of_packetloss_rate(current_pl_rate)
+            unanswered_query_rates[index] = (unanswered_query_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
         except ZeroDivisionError:
-            refused_rates[i] = 0
+            unanswered_query_rates[index] = 0
+
+    # Calculate RCODE counts
+    keys_of_rcodes_by_pl = list(rcodes_by_pl.keys())
+    for key in keys_of_rcodes_by_pl:
+        # Get only latencies of RCODE = 0
+        if key[1] == 0:
+            rcode_0_counts[get_index_of_packetloss_rate(key[0])] = rcodes_by_pl[key[0], key[1]]
+        # ServFail
+        elif key[1] == 2:
+            rcode_2_counts[get_index_of_packetloss_rate(key[0])] = rcodes_by_pl[key[0], key[1]]
+        # Refused
+        elif key[1] == 5:
+            rcode_5_counts[get_index_of_packetloss_rate(key[0])] = rcodes_by_pl[key[0], key[1]]
+        # Other RCODES
+        else:
+            other_rcode_counts[get_index_of_packetloss_rate(key[0])] = rcodes_by_pl[key[0], key[1]]
+
+    # Calculate RCODE ratios
+    for current_pl_rate in packetloss_rates:
+        try:
+            index = get_index_of_packetloss_rate(current_pl_rate)
+            rcode_0_rates[index] = (rcode_0_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
+        except ZeroDivisionError:
+            rcode_0_rates[index] = 0
+        try:
+            rcode_2_rates[index] = (rcode_2_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
+        except ZeroDivisionError:
+            rcode_2_rates[index] = 0
+        try:
+            rcode_5_rates[index] = (rcode_5_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
+        except ZeroDivisionError:
+            rcode_5_rates[index] = 0
+        try:
+            other_rcode_rates[index] = (other_rcode_counts[index] / all_queries_count_pl[current_pl_rate]) * 100
+        except ZeroDivisionError:
+            other_rcode_rates[index] = 0
+
+    # print(f"all_responses_count_pl: {all_responses_count_pl}")
+    # print(f"rcode_0_rates: {rcode_0_rates}")
+    # print(f"rcode_2_rates: {rcode_2_rates}")
+    # print(f"rcode_5_rates: {rcode_5_rates}")
+    # print(f"other_rcode_counts: {other_rcode_counts}")
 
     # Calculate bottom of failed bars by adding ok + refused ratios
-    refused_plus_ok = list()
-    for item1, item2 in zip(ok_rate_vals, refused_rates):
-        refused_plus_ok.append(item1 + item2)
+    failure_bottom = list()
+    for item1, item2 in zip(rcode_0_rates, rcode_5_rates):
+        failure_bottom.append(item1 + item2)
 
     # Calculate bottom of Other RCODES bar
     other_rcods_bottom = list()
-    for item1, item2 in zip(refused_plus_ok, failure_rate_vals):
+    for item1, item2 in zip(failure_bottom, rcode_2_rates):
         other_rcods_bottom.append(item1 + item2)
 
-    ok_rects = ax.bar(bar_pos, ok_rate_vals, width, bottom=0, color='green')
-    refused_rects = ax.bar(bar_pos, refused_rates, width, bottom=ok_rate_vals, color='orange')
-    failure_rects = ax.bar(bar_pos, failure_rate_vals, width, bottom=refused_plus_ok, color='red')
+    # Calculate bottom of unanswered_rects
+    unanswered_bottom = list()
+    for item1, item2 in zip(other_rcods_bottom, other_rcode_rates):
+        unanswered_bottom.append(item1 + item2)
+
+    print(f"failure_bottom: {failure_bottom}")
+    print(f"other_rcods_bottom: {other_rcods_bottom}")
+    print(f"unanswered_bottom: {unanswered_bottom}")
+    print(f"unanswered_query_rates: {unanswered_query_rates}")
+
+    ok_rects = ax.bar(bar_pos, rcode_0_rates, width, bottom=0, color='green')
+    refused_rects = ax.bar(bar_pos, rcode_5_rates, width, bottom=rcode_0_rates, color='orange')
+    failure_rects = ax.bar(bar_pos, rcode_2_rates, width, bottom=failure_bottom, color='red')
+    others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=other_rcods_bottom, color='violet')
+    unanswered_rects = ax.bar(bar_pos, unanswered_query_rates, width, bottom=unanswered_bottom, color='silver')
 
     # Title of the graph, x and y label
-    plot_title = f"Stale Record Experiment ({file_name_prefix})"
+    plot_title = f"Packetloss Experiment ({file_name_prefix})"
     plt.xlabel("Packetloss rate")
     plt.ylabel("Rate of results")
 
@@ -386,21 +434,21 @@ def create_combined_plots(file_name_prefix, directory_name):
     plt.ylim(bottom=0, top=100)
 
     ax.set_xticks(bar_pos)
-    ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100))
+    ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95))
 
     # Create legend at the top left of the plot
-    ax.legend((failure_rects[0], refused_rects[0], ok_rects[0]),
-              ('Failure', 'Refused', 'OK'), framealpha=0.5,
-              bbox_to_anchor=(0.1, 1.14))
+    ax.legend((unanswered_rects[0], others_rects[0], failure_rects[0], refused_rects[0], ok_rects[0]),
+              ('Unanswered queries', 'Other RCODE', 'Failure', 'Refused', 'OK'), framealpha=0.5,
+              bbox_to_anchor=(0.04, 1.05))
 
     # Write the exact count of the non-stale packets in the middle of non-stale bars
     def autolabel_ok(rects):
         index = 0
         for rect in rects:
-            if ok_counts[index] != 0:
+            if rcode_0_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"OK#{ok_counts[index]}",
+                        f"OK#{rcode_0_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
@@ -415,10 +463,10 @@ def create_combined_plots(file_name_prefix, directory_name):
 
         index = 0
         for rect in refused_rects:
-            if refused_counts[index] != 0:
+            if rcode_5_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_stale_plus_stale[index],
-                        f"R#{refused_counts[index]}",
+                        f"R#{rcode_5_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
@@ -439,16 +487,84 @@ def create_combined_plots(file_name_prefix, directory_name):
 
         index = 0
         for rect in fail_rects:
-            if failure_rate_counts[index] != 0:
+            if rcode_2_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_failed[index],
-                        f"F#{failure_rate_counts[index]}",
+                        f"F#{rcode_2_counts[index]}",
+                        ha='center', va='bottom')
+            index += 1
+
+    # Text of others
+    def autolabel_other(ok_rects, refused_rects, fail_rects, other_rects):
+        hight_of_non_failed = []
+        index = 0
+        for rect in ok_rects:
+            h = rect.get_height()
+            hight_of_non_failed.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in refused_rects:
+            h = rect.get_height()
+            hight_of_non_failed[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in fail_rects:
+            h = rect.get_height()
+            hight_of_non_failed[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in other_rects:
+            if other_rcode_counts[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_failed[index],
+                        f"X#{other_rcode_counts[index]}",
+                        ha='center', va='bottom')
+            index += 1
+
+    # Text of others
+    def autolabel_unanswered(ok_rects, refused_rects, fail_rects, other_rects, unanswered_rects):
+        hight_of_non_failed = []
+        index = 0
+        for rect in ok_rects:
+            h = rect.get_height()
+            hight_of_non_failed.append(int(h))
+            index += 1
+
+        index = 0
+        for rect in refused_rects:
+            h = rect.get_height()
+            hight_of_non_failed[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in fail_rects:
+            h = rect.get_height()
+            hight_of_non_failed[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in other_rects:
+            h = rect.get_height()
+            hight_of_non_failed[index] += int(h)
+            index += 1
+
+        index = 0
+        for rect in unanswered_rects:
+            if unanswered_query_counts[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_failed[index],
+                        f"U#{unanswered_query_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
     autolabel_ok(ok_rects)
     autolabel_refused(ok_rects, refused_rects)
     autolabel_fail(ok_rects, refused_rects, failure_rects)
+    autolabel_other(ok_rects, refused_rects, failure_rects, others_rects)
+    autolabel_unanswered(ok_rects, refused_rects, failure_rects, others_rects, unanswered_rects)
 
     # plt.show()
 
@@ -467,10 +583,10 @@ def create_combined_plots(file_name_prefix, directory_name):
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
 def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_dict):
-    n = 13  # Amount of bars in the chart
+    n = 12  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10])  # Positions of the bars
+    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -490,7 +606,7 @@ def create_unanswered_query_plots(file_name_prefix, directory_name, unanswered_d
     plt.ylim(bottom=0)
 
     ax.set_xticks(bar_pos)
-    ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100))
+    ax.set_xticklabels((0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95))
 
     # Create legend at the top left of the plot
     # ax.legend((non_stale_rects[0]), ('OK'), framealpha=0.5, bbox_to_anchor=(0.1, 1.25))
@@ -664,6 +780,38 @@ def create_latency_violin_plot(directory_name, file_name_prefix, bottom_limit, u
     plt.close()
 
 
+# Input: "pl0" Output 0
+def get_index_of_packetloss_rate(input):
+    pl_rate = str(input)
+    if pl_rate == "0":
+        return 0
+    if pl_rate == "10":
+        return 1
+    if pl_rate == "20":
+        return 2
+    if pl_rate == "30":
+        return 3
+    if pl_rate == "40":
+        return 4
+    if pl_rate == "50":
+        return 5
+    if pl_rate == "60":
+        return 6
+    if pl_rate == "70":
+        return 7
+    if pl_rate == "80":
+        return 8
+    if pl_rate == "85":
+        return 9
+    if pl_rate == "90":
+        return 10
+    if pl_rate == "95":
+        return 11
+    if pl_rate == "100":
+        return 12
+    return None
+
+
 # Reset all the values (lists) of the given dictionary
 def reset_values_of_dict_to_zero(dictionary, init_value):
     all_keys = list(dictionary.keys())
@@ -673,10 +821,11 @@ def reset_values_of_dict_to_zero(dictionary, init_value):
 
 # Reset the dictionaries for the next plotting
 def reset_for_next_plot():
-    global all_responses_count_pl
     global missing_query_count_pl
 
     global all_query_names_pl
+    global all_responses_count_pl
+    global all_queries_count_pl
 
     global unanswered_query_count_by_pl
     global responses_with_no_query_count_by_pl
@@ -684,11 +833,11 @@ def reset_for_next_plot():
     global query_duplicate_by_pl
     global rcodes_by_pl
 
-    reset_values_of_dict_to_zero(all_responses_count_pl, 0)
     reset_values_of_dict_to_zero(missing_query_count_pl, 0)
 
     all_query_names_pl = {}
-
+    all_responses_count_pl = {}
+    all_queries_count_pl = {}
     unanswered_query_count_by_pl = {}
     responses_with_no_query_count_by_pl = {}
     latencies_by_pl_and_rcode = {}
@@ -703,7 +852,6 @@ def extract_latencies_from_dict():
     keys_of_latency = list(latencies_by_pl_and_rcode.keys())
     rcode_0_keys = []
     rcode_2_keys = []
-    rcode_5_keys = []
     for key in keys_of_latency:
         # Get only latencies of RCODE = 0
         if key[1] == 0:
@@ -724,6 +872,17 @@ def extract_latencies_from_dict():
     for key in rcode_2_keys:
         # print(f"latencies_by_pl_and_rcode[{key}]: {latencies_by_pl_and_rcode[key]}")
         servfail_latencies[key[0]] = latencies_by_pl_and_rcode[key]
+
+    # If some pl rate lists are empty, for example when there is 0 servfails packets in packetloss rate 0,
+    # then pl 0 key of the dictionary wont exist. Fill the non existing keys with 0
+    for pl in packetloss_rates:
+        if pl not in ok_latencies:
+            ok_latencies[pl] = [0]
+        if pl not in servfail_latencies:
+            servfail_latencies[pl] = [0]
+
+    return [ok_latencies, servfail_latencies]
+
 
 def create_plot_for(file_name, selected_resolvers_to_plot):
     print(f"Plot name: {file_name}")
@@ -769,21 +928,29 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
         read_pcap(client_file_name, current_pl_rate, to_filter)
 
     # TODO: missing query plot
+    # print(f"query_duplicate_by_pl: {query_duplicate_by_pl}")
 
     # create rate plot
     create_combined_plots(file_name, rate_plots_directory_name)
 
-    # create latency plots
+    ok_latencies = extract_latencies_from_dict()[0]
+    servfail_latencies = extract_latencies_from_dict()[1]
+
+    # create OK latency plots
+    create_latency_violin_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit,
+                               ok_latencies, log_scale=False)
+    create_latency_box_plot(latency_directory_name, file_name + "_OK", 0, latency_upper_limit,
+                            ok_latencies,
+                            log_scale=False)
+
+    # create ServFail latency plots
     create_latency_violin_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit,
-                               latencies_by_pl_and_rcode, log_scale=False)
+                               servfail_latencies, log_scale=False)
     create_latency_box_plot(latency_directory_name, file_name + "_Error", 0, latency_upper_limit,
-                            latencies_by_pl_and_rcode,
+                            servfail_latencies,
                             log_scale=False)
 
     create_unanswered_query_plots(file_name, unanswered_query_plots_directory_name, unanswered_query_count_by_pl)
-
-    print(f"rcodes_by_pl: {rcodes_by_pl}")
-    print(f"query_duplicate_by_pl: {query_duplicate_by_pl}")
 
     # reset the dictionaries for the next plotting/pcaps
     reset_for_next_plot()
@@ -807,9 +974,10 @@ all_resolvers = ["AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cl
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
-    try:
-        create_plot_for(resolver, [resolver])
-    except Exception as e:
-        print(f"Error creating plots for: {resolver}")
+    # try:
+    create_plot_for(resolver, [resolver])
+    # except Exception as e:
+    #     print(f"Error creating plots for: {resolver}")
+    #     print(f"{str(e)}")
 
 create_plot_for("Overall behaviour plot", [])

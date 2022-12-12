@@ -119,6 +119,8 @@ def is_query_name_valid(query_name):
     if "-pl" not in query_name or "packetloss.syssec-research.mmci.uni-saarland.de" not in query_name:
         # print(f"Invalid query name for: {query}")
         return False
+    elif "public-pl" in query_name:
+        return False
     else:
         return True
 

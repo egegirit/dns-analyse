@@ -419,7 +419,7 @@ def create_combined_plots(file_name_prefix, directory_name):
     ok_rects = ax.bar(bar_pos, rcode_0_rates, width, bottom=0, color='green')
     refused_rects = ax.bar(bar_pos, rcode_5_rates, width, bottom=rcode_0_rates, color='orange')
     failure_rects = ax.bar(bar_pos, rcode_2_rates, width, bottom=failure_bottom, color='red')
-    others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=other_rcods_bottom, color='violet')
+    others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=other_rcods_bottom, color='dodgerblue')
     unanswered_rects = ax.bar(bar_pos, unanswered_query_rates, width, bottom=unanswered_bottom, color='silver')
 
     # Title of the graph, x and y label
@@ -439,7 +439,7 @@ def create_combined_plots(file_name_prefix, directory_name):
     # Create legend at the top left of the plot
     ax.legend((unanswered_rects[0], others_rects[0], failure_rects[0], refused_rects[0], ok_rects[0]),
               ('Unanswered queries', 'Other RCODE', 'Failure', 'Refused', 'OK'), framealpha=0.5,
-              bbox_to_anchor=(0.04, 1.05))
+              bbox_to_anchor=(0.1, 1.1))
 
     # Write the exact count of the non-stale packets in the middle of non-stale bars
     def autolabel_ok(rects):

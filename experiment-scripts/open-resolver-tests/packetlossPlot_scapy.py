@@ -14,71 +14,71 @@ client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
 
 # TODO: OPERATORS FOR THE FIRST PCAP
-operators = {
-    "AdGuard-1": "94-140-14-14",
-    "AdGuard-2": "94-140-14-15",
-    "CleanBrowsing-1": "185-228-168-168",
-    "CleanBrowsing-2": "185-228-168-9",
-    "Cloudflare-1": "1-1-1-1",
-    "Cloudflare-2": "1-0-0-1",
-    "Dyn-1": "216-146-35-35",
-    "Dyn-2": "216-146-36-36",
-    "Google-1": "8-8-8-8",
-    "Google-2": "8-8-4-4",
-    "Neustar-1": "64-6-64-6",
-    "Neustar-2": "156-154-70-1",
-    "OpenDNS-1": "208-67-222-222",
-    "OpenDNS-2": "208-67-222-2",
-    "Quad9-1": "9-9-9-9",
-    "Quad9-2": "9-9-9-11",
-    "Yandex-1": "77-88-8-1",
-    "Yandex-2": "77-88-8-8"
-}
-
-# All operators with their IP Addresses with dashes
 # operators = {
 #     "AdGuard-1": "94-140-14-14",
 #     "AdGuard-2": "94-140-14-15",
-#     "AdGuard-3": "94-140-14-140",
-#
 #     "CleanBrowsing-1": "185-228-168-168",
 #     "CleanBrowsing-2": "185-228-168-9",
-#     "CleanBrowsing-3": "185-228-168-10",
-#
 #     "Cloudflare-1": "1-1-1-1",
-#     "Cloudflare-2": "1-1-1-2",
-#     "Cloudflare-3": "1-1-1-3",
-#
+#     "Cloudflare-2": "1-0-0-1",
 #     "Dyn-1": "216-146-35-35",
-#
+#     "Dyn-2": "216-146-36-36",
 #     "Google-1": "8-8-8-8",
-#
+#     "Google-2": "8-8-4-4",
 #     "Neustar-1": "64-6-64-6",
-#     "Neustar-2": "156-154-70-2",
-#     "Neustar-3": "156-154-70-3",
-#     "Neustar-4": "156-154-70-4",
-#     "Neustar-5": "156-154-70-5",
-#
+#     "Neustar-2": "156-154-70-1",
 #     "OpenDNS-1": "208-67-222-222",
 #     "OpenDNS-2": "208-67-222-2",
-#     "OpenDNS-3": "208-67-222-123",
-#
 #     "Quad9-1": "9-9-9-9",
 #     "Quad9-2": "9-9-9-11",
-#     "Quad9-3": "9-9-9-10",
-#
 #     "Yandex-1": "77-88-8-1",
-#     "Yandex-2": "77-88-8-2",
-#     "Yandex-3": "77-88-8-3",
-#
-#     "Level3-1": "209-244-0-3",
-#     "Level3-2": "209-244-0-4",
-#
-#     "Norton-1": "199-85-126-10",
-#     "Norton-2": "199-85-126-20",
-#     "Norton-3": "199-85-126-30",
-#
+#     "Yandex-2": "77-88-8-8"
 # }
+
+# All operators with their IP Addresses with dashes
+operators = {
+    "AdGuard-1": "94-140-14-14",
+    "AdGuard-2": "94-140-14-15",
+    "AdGuard-3": "94-140-14-140",
+
+    "CleanBrowsing-1": "185-228-168-168",
+    "CleanBrowsing-2": "185-228-168-9",
+    "CleanBrowsing-3": "185-228-168-10",
+
+    "Cloudflare-1": "1-1-1-1",
+    "Cloudflare-2": "1-1-1-2",
+    "Cloudflare-3": "1-1-1-3",
+
+    "Dyn-1": "216-146-35-35",
+
+    "Google-1": "8-8-8-8",
+
+    "Neustar-1": "64-6-64-6",
+    "Neustar-2": "156-154-70-2",
+    "Neustar-3": "156-154-70-3",
+    "Neustar-4": "156-154-70-4",
+    "Neustar-5": "156-154-70-5",
+
+    "OpenDNS-1": "208-67-222-222",
+    "OpenDNS-2": "208-67-222-2",
+    "OpenDNS-3": "208-67-222-123",
+
+    "Quad9-1": "9-9-9-9",
+    "Quad9-2": "9-9-9-11",
+    "Quad9-3": "9-9-9-10",
+
+    "Yandex-1": "77-88-8-1",
+    "Yandex-2": "77-88-8-2",
+    "Yandex-3": "77-88-8-3",
+
+    "Level3-1": "209-244-0-3",
+    "Level3-2": "209-244-0-4",
+
+    "Norton-1": "199-85-126-10",
+    "Norton-2": "199-85-126-20",
+    "Norton-3": "199-85-126-30",
+
+}
 
 all_responses_count_pl = {}
 all_queries_count_pl = {}
@@ -392,7 +392,7 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
 def create_combined_plots(file_name_prefix, directory_name, plots_directory_name):
-    n = 12  # Amount of bars in the chart
+    n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
     arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
@@ -400,22 +400,24 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
 
-    rcode_0_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    rcode_0_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    zero_array = [0] * len(packetloss_rates)
+
+    rcode_0_counts = zero_array
+    rcode_0_rates = zero_array
 
     global rcode_0_udp_count_pl
     global rcode_0_tcp_count_pl
-    rcode_0_udp_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    rcode_0_tcp_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_0_udp_rates = zero_array
+    rcode_0_tcp_rates = zero_array
 
-    rcode_2_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    rcode_2_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_2_counts = zero_array
+    rcode_2_rates = zero_array
 
-    rcode_5_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    rcode_5_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    rcode_5_counts = zero_array
+    rcode_5_rates = zero_array
 
-    other_rcode_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    other_rcode_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    other_rcode_counts = zero_array
+    other_rcode_rates = zero_array
 
     # unanswered_query_counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     # unanswered_query_rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -494,7 +496,7 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
         except ZeroDivisionError:
             rcode_0_tcp_rates[index] = 0
 
-    create_file_write_content(f"rcode_0_counts_{file_name_prefix}_{plots_directory_name}", rcode_0_counts_)
+    create_file_write_content(f"rcode_0_counts_{file_name_prefix}_{plots_directory_name}", rcode_0_counts)
     create_file_write_content(f"rcode_2_counts_{file_name_prefix}_{plots_directory_name}", rcode_2_counts)
     create_file_write_content(f"rcode_5__{file_name_prefix}_{plots_directory_name}", rcode_5_counts)
     create_file_write_content(f"other_rcode_counts_{file_name_prefix}_{plots_directory_name}", other_rcode_counts)
@@ -573,7 +575,7 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
             if rcode_0_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"OK-U#{rcode_0_counts[index]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
+                        f"U#{rcode_0_counts[index]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
                         ha='center', va='bottom')
             index += 1
 
@@ -591,7 +593,7 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
             if rcode_5_counts[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., (h / 2) + hight_of_non_stale_plus_stale[index],
-                        f"OK-T#{rcode_5_counts[index]}",
+                        f"T#{rcode_5_counts[index]}",
                         ha='center', va='bottom')
             index += 1
 
@@ -1366,10 +1368,15 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
 # "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
 
-all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-                 "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-                 "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-                 "Yandex-1", "Yandex-2"]
+# all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
+#                  "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
+#                  "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
+#                  "Yandex-1", "Yandex-2"]
+
+all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
+"Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
+"Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
+"Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
@@ -1379,7 +1386,4 @@ for resolver in all_resolvers:
     #     print(f"Error creating plots for: {resolver}")
     #     print(f"{str(e)}")
 
-create_plot_for("OverallBehaviour", ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-                                     "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-                                     "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-                                     "Yandex-1", "Yandex-2"])
+create_plot_for("OverallBehaviour", all_resolvers)

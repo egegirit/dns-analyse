@@ -100,6 +100,10 @@ all_responses_file = "All_Responses_(PacketLoss_QueryName_Protocol)_Count.txt"
 all_latencies_file = "Latencies_(PacketLoss_RCODE)_[Latencies].txt"
 all_rcode_counts_file = "RCODE_Counts_(PacketLoss_RCODE)_Count.txt"
 tcp_counterpart_of_udp_query_file = "Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count.txt"
+responses_with_no_query_file = "Responses_With_No_Query_Count_(PacketLoss)_Count.txt"
+unanswered_query_count_file = "Unanswered_Query_Count_(PacketLoss)_Count.txt"
+response_rcode_0_udp_count_file = "Response_Rcode_0_UDP_Count_(PacketLoss)_Count.txt"
+response_rcode_0_tcp_count_file = "Response_Rcode_0_TCP_Count_(PacketLoss)_Count.txt"
 
 all_responses_count_pl = {}
 all_queries_count_pl = {}
@@ -175,16 +179,34 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     # (pl-rate, query-name, protocol-number): integer
     all_responses_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_responses_file))
-    # (pl-rate, rcode): [latencies]
-    all_latencies_dict = convert_string_to_dict(
-        read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_latencies_file))
     # (pl, rcode): count
     all_rcode_counts_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_rcode_counts_file))
     # (pl-rate): count
     tcp_counterpart_of_udp_query_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + tcp_counterpart_of_udp_query_file))
+    # (pl-rate): count
+    responses_with_no_query_dict = convert_string_to_dict(
+        read_dict_from_file(root_data_directory + "/" + file_name + "/" + responses_with_no_query_file))
+    # (pl-rate): count
+    unanswered_query_count_dict = convert_string_to_dict(
+        read_dict_from_file(root_data_directory + "/" + file_name + "/" + unanswered_query_count_file))
+    # (pl-rate): count
+    response_rcode_0_udp_count_dict = convert_string_to_dict(
+        read_dict_from_file(root_data_directory + "/" + file_name + "/" + response_rcode_0_udp_count_file))
+    # (pl-rate): count
+    response_rcode_0_tcp_count_dict = convert_string_to_dict(
+        read_dict_from_file(root_data_directory + "/" + file_name + "/" + response_rcode_0_tcp_count_file))
 
+
+
+    # TODO: in latency plot
+    # (pl-rate, rcode): [latencies]
+    all_latencies_dict = convert_string_to_dict(
+        read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_latencies_file))
+
+
+    # Calculate Responses
     response_counts_of_pl = [0] * len(packetloss_rates)
     udp_response_counts_of_pl = [0] * len(packetloss_rates)
     tcp_response_counts_of_pl = [0] * len(packetloss_rates)
@@ -199,6 +221,7 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
         if key[2] == 6:
             tcp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
 
+    # Calculate Query
     query_counts_of_pl = [0] * len(packetloss_rates)
     udp_query_counts_of_pl = [0] * len(packetloss_rates)
     tcp_query_counts_of_pl = [0] * len(packetloss_rates)
@@ -213,6 +236,27 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
         if key[2] == 6:
             tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
 
+    # Response RCODE count arrays
+    rcode_0_counts = [0] * len(packetloss_rates)
+    rcode_2_counts = [0] * len(packetloss_rates)
+    rcode_5_counts = [0] * len(packetloss_rates)
+    rcode_other_counts = [0] * len(packetloss_rates)
+
+    # RCODE counts
+    for key, value in all_rcode_counts_dict.items():
+        # RCODE = 0
+        if key[1] == 0:
+            rcode_0_counts[get_index_of_packetloss_rate(key[0])] += 1
+        # RCODE = 2
+        elif key[1] == 2:
+            rcode_2_counts[get_index_of_packetloss_rate(key[0])] += 1
+        # RCODE = 5
+        elif key[1] == 5:
+            rcode_5_counts[get_index_of_packetloss_rate(key[0])] += 1
+        # Other RCODES
+        else:
+            rcode_other_counts[get_index_of_packetloss_rate(key[0])] += 1
+
     print(f"response_counts_of_pl: {response_counts_of_pl}")
     print(f"query_counts_of_pl: {query_counts_of_pl}")
     print(f"udp_response_counts_of_pl: {udp_response_counts_of_pl}")
@@ -220,24 +264,51 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
     print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
 
-    rcode_0_counts = [0] * len(packetloss_rates)
     rcode_0_rates = [0] * len(packetloss_rates)
+    rcode_0_udp_rates = [0] * len(packetloss_rates)
+    rcode_0_tcp_rates = [0] * len(packetloss_rates)
+    rcode_2_rates = [0] * len(packetloss_rates)
+    rcode_5_rates = [0] * len(packetloss_rates)
+    other_rcode_rates = [0] * len(packetloss_rates)
+
+    for index in range(len(packetloss_rates)):
+        try:
+            rcode_0_rates[index] = (rcode_0_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            rcode_0_rates[index] = 0
+        try:
+            rcode_2_rates[index] = (rcode_2_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            rcode_2_rates[index] = 0
+        try:
+            rcode_5_rates[index] = (rcode_5_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            rcode_5_rates[index] = 0
+        try:
+            other_rcode_rates[index] = (other_rcode_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            other_rcode_rates[index] = 0
+
+        try:
+            rcode_0_udp_rates[index] = (rcode_0_udp_count_pl[index] / response_counts_of_pl[
+                packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            rcode_0_udp_rates[index] = 0
+        try:
+            index = get_index_of_packetloss_rate(current_pl_rate)
+            rcode_0_tcp_rates[index] = (rcode_0_tcp_count_pl[index] / response_counts_of_pl[
+                packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            rcode_0_tcp_rates[index] = 0
 
     rcode_0_udp_rates = [0] * len(packetloss_rates)
     rcode_0_tcp_rates = [0] * len(packetloss_rates)
 
-    rcode_2_counts = [0] * len(packetloss_rates)
-    rcode_2_rates = [0] * len(packetloss_rates)
 
-    rcode_5_counts = [0] * len(packetloss_rates)
-    rcode_5_rates = [0] * len(packetloss_rates)
-
-    other_rcode_counts = [0] * len(packetloss_rates)
-    other_rcode_rates = [0] * len(packetloss_rates)
 
     # unanswered_query_counts = zero_array
     # unanswered_query_rates = zero_array
-    #
+
     # # We will divide all the counts to this basis
     # all_query_names_pl_count = zero_array
     # # Calculate unique query names
@@ -259,58 +330,6 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     #             index]) * 100
     #     except ZeroDivisionError:
     #         unanswered_query_rates[index] = 0
-
-    # Calculate RCODE counts
-    keys_of_rcodes_by_pl = list(all_rcode_counts_dict.keys())
-    for key in keys_of_rcodes_by_pl:
-        # RCODE = 0
-        if key[1] == 0:
-            rcode_0_counts[get_index_of_packetloss_rate(key[0])] = all_rcode_counts_dict[key[0], key[1]]
-        # ServFail
-        elif key[1] == 2:
-            rcode_2_counts[get_index_of_packetloss_rate(key[0])] = all_rcode_counts_dict[key[0], key[1]]
-        # Refused
-        elif key[1] == 5:
-            rcode_5_counts[get_index_of_packetloss_rate(key[0])] = all_rcode_counts_dict[key[0], key[1]]
-        # Other RCODES
-        else:
-            other_rcode_counts[get_index_of_packetloss_rate(key[0])] = all_rcode_counts_dict[key[0], key[1]]
-
-    # Calculate RCODE ratios
-    for current_pl_rate in packetloss_rates:
-        try:
-            index = get_index_of_packetloss_rate(current_pl_rate)
-            rcode_0_rates[index] = (rcode_0_counts[index] / all_responses_count_pl[
-                current_pl_rate]) * 100
-        except ZeroDivisionError:
-            rcode_0_rates[index] = 0
-        try:
-            rcode_2_rates[index] = (rcode_2_counts[index] / all_responses_count_pl[current_pl_rate]) * 100
-        except ZeroDivisionError:
-            rcode_2_rates[index] = 0
-        try:
-            rcode_5_rates[index] = (rcode_5_counts[index] / all_responses_count_pl[current_pl_rate]) * 100
-        except ZeroDivisionError:
-            rcode_5_rates[index] = 0
-        try:
-            other_rcode_rates[index] = (other_rcode_counts[index] / all_responses_count_pl[current_pl_rate]) * 100
-        except ZeroDivisionError:
-            other_rcode_rates[index] = 0
-
-    # Calculate UDP and TCP rate of RCODE 0 packets
-    for current_pl_rate in packetloss_rates:
-        try:
-            index = get_index_of_packetloss_rate(current_pl_rate)
-            rcode_0_udp_rates[index] = (rcode_0_udp_count_pl[current_pl_rate] / all_responses_count_pl[
-                current_pl_rate]) * 100
-        except ZeroDivisionError:
-            rcode_0_udp_rates[index] = 0
-        try:
-            index = get_index_of_packetloss_rate(current_pl_rate)
-            rcode_0_tcp_rates[index] = (rcode_0_tcp_count_pl[current_pl_rate] / all_responses_count_pl[
-                current_pl_rate]) * 100
-        except ZeroDivisionError:
-            rcode_0_tcp_rates[index] = 0
 
     bottom_of_refused = [i+j for i,j in zip(rcode_0_udp_rates, rcode_0_tcp_rates)]
     bottom_of_failure = [i + j for i, j in zip(bottom_of_refused, rcode_5_rates)]

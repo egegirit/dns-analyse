@@ -153,7 +153,6 @@ def convert_string_to_dict(string_obj):
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
 def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
-
     print(f"  Creating rate plot for {file_name} inside folder {root_plot_directory_name}")
 
     n = len(packetloss_rates)  # Amount of bars in the chart
@@ -170,24 +169,56 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     create_folder(save_path)
 
     # Read the text datas from the given root data directory (can be auth or client directory)
+    # (pl-rate, query-name, protocol-number): integer
     all_queries_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_queries_file))
+    # (pl-rate, query-name, protocol-number): integer
     all_responses_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_responses_file))
+    # (pl-rate, rcode): [latencies]
     all_latencies_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_latencies_file))
+    # (pl, rcode): count
     all_rcode_counts_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_rcode_counts_file))
+    # (pl-rate): count
     tcp_counterpart_of_udp_query_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + tcp_counterpart_of_udp_query_file))
 
     response_counts_of_pl = [0] * len(packetloss_rates)
+    udp_response_counts_of_pl = [0] * len(packetloss_rates)
+    tcp_response_counts_of_pl = [0] * len(packetloss_rates)
     # (pl-rate, query-name, protocol-number): integer
     for key, value in all_responses_dict.items():
-        # Check if the second element of the key tuple is 'a'
+        # Count all of the response packets of a pl rate
         response_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
+        # Response was sent with UDP
+        if key[2] == 17:
+            udp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
+        # Response was sent with TCP
+        if key[2] == 6:
+            tcp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
+
+    query_counts_of_pl = [0] * len(packetloss_rates)
+    udp_query_counts_of_pl = [0] * len(packetloss_rates)
+    tcp_query_counts_of_pl = [0] * len(packetloss_rates)
+    # (pl-rate, query-name, protocol-number): integer
+    for key, value in all_queries_dict.items():
+        # Count all of the query packets of a pl rate
+        query_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
+        # Query was sent with UDP
+        if key[2] == 17:
+            udp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
+        # Query was sent with TCP
+        if key[2] == 6:
+            tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])] += value
 
     print(f"response_counts_of_pl: {response_counts_of_pl}")
+    print(f"query_counts_of_pl: {query_counts_of_pl}")
+    print(f"udp_response_counts_of_pl: {udp_response_counts_of_pl}")
+    print(f"tcp_response_counts_of_pl: {tcp_response_counts_of_pl}")
+    print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
+    print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
 
     rcode_0_counts = [0] * len(packetloss_rates)
     rcode_0_rates = [0] * len(packetloss_rates)

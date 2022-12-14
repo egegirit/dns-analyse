@@ -1,0 +1,58 @@
+Packetloss Experiments:
+
+	Simulate [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95] UDP and TCP packetloss on authoritative servers incoming packets and analyse the dns traffic.
+
+	Sources:
+	- Open resolvers
+	- Ripe atlas
+    - Wild open resolvers found via dns scans
+	
+	Things to plot:
+	- Latency plots of client and authoritative server as box and violin plots:
+		- Latency of RCODE OK packets
+		- Latency of RCODE Error packets
+    - Rate plot of client and authoritative server as stacked bar chart: RCODE OK (UDP and TCP rates), SERVFAIL, REFUSED and other RCODE rates.
+	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
+	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
+		- Query retransmissions 
+		- Response retransmissions
+		
+Stale Record Experiments:
+
+	Simulate [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100] packetloss on authoritative server, fill the caches of resolver, 
+	wait for the caches to become stale, send queries and analyse the dns traffic.
+
+	Sources:
+	- Open resolvers
+	- Ripe atlas (?)
+	
+	Things to plot (Write TTL Value on the plots to compare different TTL experiments):
+	- Latency plots of client and authoritative server as box and violin plots:
+		- Latency of RCODE OK packets
+		- Latency of RCODE Error packets
+    - Rate plot of client and authoritative server as stacked bar chart: Non-stale OK Records, Stale OK Records, SERVFAIL, REFUSED and other RCODE rates.
+	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
+	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
+		- Query retransmissions 
+		- Response retransmissions	
+		
+Truncated Experiment:
+
+	Simulate [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100] UDP packetloss on authoritative servers incoming packets, configure BIND9 with response policy zone
+	to answer to UDP queries with a truncated responsen with no answer to force the resolver to switch to tcp, and analyse the dns traffic.
+
+	Sources:
+	- Open resolvers
+	
+	Things to plot:
+	- Latency plots of client and authoritative server as box and violin plots:
+		- Latency of RCODE OK packets
+		- Latency of RCODE Error packets
+    - Rate plot of client and authoritative server as stacked bar chart: RCODE OK (UDP and TCP rates), SERVFAIL, REFUSED and other RCODE rates.
+	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
+	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
+		- Query retransmissions 
+		- Response retransmissions

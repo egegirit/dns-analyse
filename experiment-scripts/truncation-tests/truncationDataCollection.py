@@ -560,6 +560,7 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
 
     create_file_write_content(f"{data_path}/RCODE_Counts_(PacketLoss_RCODE)_Count", rcodes_by_pl)
     create_file_write_content(f"{data_path}/Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count", tcp_counterpart_of_udp_query)
+    create_file_write_content(f"{data_path}/All_Responses_(PacketLoss)_Count", all_responses_count_pl)
 
     # extracted_latencies = extract_latencies_from_dict()
     # ok_latencies = extracted_latencies[0]

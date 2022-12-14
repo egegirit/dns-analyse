@@ -17,37 +17,29 @@ from datetime import datetime
 # Execute this script as root user #
 ####################################
 
+
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
-    "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
-    "1.0.0.1",  # Cloudflare 2     (1dot1dot1dot1.cloudflare-dns.com)
-    "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
-    "216.146.36.36",  # Dyn 2  (resolver2.dyndnsinternetguide.com )
-    "208.67.222.222",  # OpenDNS 1  (dns.opendns.com )
+    "1.1.1.1",  # Cloudflare 1
+    "1.1.1.2",  # Cloudflare 2
+    "1.1.1.3",  # Cloudflare 3
 
-    # TODO: Check if stale supported, add new stale supporting IPs
-    "209.244.0.3",  # Level3_1
-    "209.244.0.4",  # Level3_2
+    "216.146.35.35",  # Dyn 1
 
-    "199.85.126.10",  # Norton_1
-    "199.85.126.20",  # Norton_2
-    "199.85.126.30"  # Norton_3
+    "208.67.222.222",  # OpenDNS 1
+    "208.67.222.123"  # OpenDNS 3
 ]
 
 # Define how many caches does the resolver have
 caches_of_resolvers = {
     "1.1.1.1": 18,  # Cloudflare 1
-    "1.0.0.1": 18,  # Cloudflare 2
-    "216.146.35.35": 3,  # Dyn 1
-    "216.146.36.36": 3,  # Dyn 2
+    "1.1.1.2": 18,  # Cloudflare 2
+    "1.1.1.3": 18,  # Cloudflare 3
+
+    "216.146.35.35": 4,  # Dyn 1
+
     "208.67.222.222": 16,  # OpenDNS 1
-
-    "209.244.0.3": 2,  # Level3_1
-    "209.244.0.4": 2,  # Level3_2
-
-    "199.85.126.10": 4,  # Norton_1
-    "199.85.126.20": 4,  # Norton_2
-    "199.85.126.30": 4  # Norton_3
+    "208.67.222.123": 16  # OpenDNS 3
 }
 
 # Time to wait after one prefetch query is sent to a resolver IP Addresses
@@ -59,7 +51,7 @@ experiment_time_in_minutes = 360
 max_worker_count = len(resolver_ip_addresses)
 
 # The TTL values that we will experiment with
-ttl_values_of_records = [60, 120, 180, 600]
+ttl_values_of_records = [60, 180, 600]
 
 # Time to sleep in seconds between new TTL changes
 cooldown_sleep_time = 600

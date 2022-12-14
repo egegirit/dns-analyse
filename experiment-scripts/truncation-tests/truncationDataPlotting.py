@@ -125,13 +125,16 @@ all_query_names_pl_for_missing = {}
 
 tcp_counterpart_of_udp_query = {}
 
+
 def initialize_dictionaries():
     pass
+
 
 def read_dict_from_file(file_name):
     f = open(file_name, "r")
     content = str(f.read())
     return content
+
 
 # Input: IP Address with dashes (e.g. "8-8-8-8")
 # Output: Name of the operator (e.g. "Google1")
@@ -198,13 +201,10 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     response_rcode_0_tcp_count_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + response_rcode_0_tcp_count_file))
 
-
-
     # TODO: in latency plot
     # (pl-rate, rcode): [latencies]
     all_latencies_dict = convert_string_to_dict(
         read_dict_from_file(root_data_directory + "/" + file_name + "/" + all_latencies_file))
-
 
     # Calculate Responses
     response_counts_of_pl = [0] * len(packetloss_rates)
@@ -270,7 +270,9 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     rcode_2_rates = [0] * len(packetloss_rates)
     rcode_5_rates = [0] * len(packetloss_rates)
     other_rcode_rates = [0] * len(packetloss_rates)
+    unanswered_query_rates = [0] * len(packetloss_rates)
 
+    # Calculate the rates from their counts divided by the response count
     for index in range(len(packetloss_rates)):
         try:
             rcode_0_rates[index] = (rcode_0_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
@@ -285,53 +287,30 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
         except ZeroDivisionError:
             rcode_5_rates[index] = 0
         try:
-            other_rcode_rates[index] = (other_rcode_counts[index] / response_counts_of_pl[packetloss_rates[index]]) * 100
+            other_rcode_rates[index] = (other_rcode_counts[index] / response_counts_of_pl[
+                packetloss_rates[index]]) * 100
         except ZeroDivisionError:
             other_rcode_rates[index] = 0
-
         try:
-            rcode_0_udp_rates[index] = (rcode_0_udp_count_pl[index] / response_counts_of_pl[
-                packetloss_rates[index]]) * 100
+            rcode_0_udp_rates[index] = (response_rcode_0_udp_count_dict[packetloss_rates[index]] /
+                                        response_counts_of_pl[packetloss_rates[index]]) * 100
         except ZeroDivisionError:
             rcode_0_udp_rates[index] = 0
         try:
-            index = get_index_of_packetloss_rate(current_pl_rate)
-            rcode_0_tcp_rates[index] = (rcode_0_tcp_count_pl[index] / response_counts_of_pl[
-                packetloss_rates[index]]) * 100
+            rcode_0_tcp_rates[index] = (response_rcode_0_tcp_count_dict[packetloss_rates[index]] /
+                                        response_counts_of_pl[packetloss_rates[index]]) * 100
         except ZeroDivisionError:
             rcode_0_tcp_rates[index] = 0
 
-    rcode_0_udp_rates = [0] * len(packetloss_rates)
-    rcode_0_tcp_rates = [0] * len(packetloss_rates)
+        # TODO: Separate graph for unanswered queries
+        try:
+            unanswered_query_rates[index] = (unanswered_query_count_dict[packetloss_rates[index]] /
+                                             query_counts_of_pl[packetloss_rates[index]]) * 100
+        except ZeroDivisionError:
+            unanswered_query_rates[index] = 0
 
-
-
-    # unanswered_query_counts = zero_array
-    # unanswered_query_rates = zero_array
-
-    # # We will divide all the counts to this basis
-    # all_query_names_pl_count = zero_array
-    # # Calculate unique query names
-    # for current_pl_rate, query_name in all_query_names_pl:
-    #     index = get_index_of_packetloss_rate(current_pl_rate)
-    #     all_query_names_pl_count[index] += all_query_names_pl[current_pl_rate, query_name]
-    #
-    # print(f"@@ all_query_names_pl_count:\n{all_query_names_pl_count}")
-
-    # # Calculate unanswered_query_counts
-    # for key in list(unanswered_query_count_by_pl.keys()):
-    #     unanswered_query_counts[get_index_of_packetloss_rate(key)] = unanswered_query_count_by_pl[key]
-    #
-    # # Calculate unanswered_query_rates
-    # for current_pl_rate in packetloss_rates:
-    #     try:
-    #         index = get_index_of_packetloss_rate(current_pl_rate)
-    #         unanswered_query_rates[index] = (unanswered_query_counts[index] / all_query_names_pl_count[
-    #             index]) * 100
-    #     except ZeroDivisionError:
-    #         unanswered_query_rates[index] = 0
-
-    bottom_of_refused = [i+j for i,j in zip(rcode_0_udp_rates, rcode_0_tcp_rates)]
+    # Calculate bottoms of bars
+    bottom_of_refused = [i + j for i, j in zip(rcode_0_udp_rates, rcode_0_tcp_rates)]
     bottom_of_failure = [i + j for i, j in zip(bottom_of_refused, rcode_5_rates)]
     bottom_of_others = [i + j for i, j in zip(bottom_of_failure, other_rcode_rates)]
 
@@ -340,7 +319,6 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     refused_rects = ax.bar(bar_pos, rcode_5_rates, width, bottom=bottom_of_refused, color='orange')
     failure_rects = ax.bar(bar_pos, rcode_2_rates, width, bottom=bottom_of_failure, color='red')
     others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=bottom_of_others, color='dodgerblue')
-    # unanswered_rects = ax.bar(bar_pos, unanswered_query_rates, width, bottom=unanswered_bottom, color='silver')
 
     # Title of the graph, x and y label
     plot_title = f"Packetloss Experiment ({file_name})"
@@ -369,7 +347,8 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
             if rcode_0_udp_count_pl[packetloss_rates[index]] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"U#{rcode_0_udp_count_pl[packetloss_rates[index]]}",  # /{all_queries_count_pl[packetloss_rates[index]]}
+                        f"U#{rcode_0_udp_count_pl[packetloss_rates[index]]}",
+                        # /{all_queries_count_pl[packetloss_rates[index]]}
                         ha='center', va='bottom')
             index += 1
 
@@ -896,7 +875,6 @@ def extract_latencies_from_dict():
 
 
 def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_to_read):
-
     # create rate plot
     create_rate_plot(file_name, root_directory_of_plots, directory_of_datas_to_read)
 
@@ -921,7 +899,6 @@ def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_
     # Create unanswered query plot
     create_bar_plot(file_name, unanswered_query_plots_directory_name, unanswered_query_count_by_pl,
                     root_directory_of_plots, "Unanswered Queries", "Unanswered Query Count")
-
 
     for keys in list(all_query_names_pl.keys()):
         print(f"Key 2: {keys[2]}")
@@ -961,7 +938,6 @@ def create_folder(folder_name):
 def create_plots_for(file_name):
     print(f"Creating plot with name: {file_name}")
 
-
     # Create root folder for client plots
     client_root_plot_folder_name = "ClientPlots"
     create_folder(client_root_plot_folder_name)
@@ -986,10 +962,13 @@ def create_plots_for(file_name):
 # "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
 # "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
 
-all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-"Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-"Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-"Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
+all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3",
+                 "Cloudflare-1",
+                 "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3",
+                 "Neustar-4",
+                 "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1",
+                 "Yandex-2",
+                 "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
 
 # --------------
 

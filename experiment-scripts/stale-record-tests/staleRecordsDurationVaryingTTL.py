@@ -51,7 +51,7 @@ experiment_time_in_minutes = 360
 max_worker_count = len(resolver_ip_addresses)
 
 # The TTL values that we will experiment with
-ttl_values_of_records = [60, 180, 600]
+ttl_values_of_records = [60, 1800, 3600]
 
 # Time to sleep in seconds between new TTL changes
 cooldown_sleep_time = 600

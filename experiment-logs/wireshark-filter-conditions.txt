@@ -162,3 +162,10 @@ Dyn stale phases
 (frame.time_relative > 62226 && frame.time_relative < 62236) || (frame.time_relative > 72573 && frame.time_relative < 72591) ||
 (frame.time_relative > 82916 && frame.time_relative < 82927) || (frame.time_relative > 93260 && frame.time_relative < 93271)
 )
+
+
+# Client stale pcap filter:
+(dns.qry.name matches "stale-") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)
+
+# Wild open resolver wireshark filter (client):
+(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.8 || ip.dst == 139.19.117.8)

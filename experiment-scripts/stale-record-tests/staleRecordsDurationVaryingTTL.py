@@ -17,51 +17,6 @@ from datetime import datetime
 # Execute this script as root user #
 ####################################
 
-# Time to wait after one prefetch query is sent to a resolver IP Addresses
-sleep_time_after_every_prefetch = 0.5
-
-# For how many minutes we should keep send queries after prefetching phase
-experiment_time_in_minutes = 360
-
-max_worker_count = 30
-
-# The TTL values that we will experiment with
-ttl_values_of_records = [60, 120, 180, 600]
-
-# Time to sleep in seconds between new TTL changes
-cooldown_sleep_time = 600
-
-# The probability that we will hit all the caches of the resolver.
-# This probability is used to calculate the query count to send to the resolver
-# in the prefetch phase
-cache_hit_probability = 0.95
-
-# The minimum number of queries to send to a resolver in the prefetch phase,
-# even when the resolver has only 1 cache.
-minimum_prefetch_query_count = 10
-# After the required prefetch query count for a resolver is calculated, this value is added onto it
-extra_query_count = 10
-
-# active zone file path
-# "/etc/bind/active.zone"
-active_zone_file_path = "active.zone"
-
-# active zone file path
-# "/etc/bind/boilerplate.zone"
-boilerplate_zone_file_path = "boilerplate.zone"
-
-# Set the interface names for packet capture with tcpdump
-auth_interface_name = "bond0"  # The interface of authoritative server
-client_interface_name = "bond0"  # The interface of client
-
-directory_name_of_logs = "packet_capture_logs_stale_duration2"
-
-# Packetloss rates to be simulated on the authoritative server
-packetloss_rates = [100]
-
-# Stale record supporting resolvers
-# "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "OpenDNS1", "Quad91", "Quad92"
-
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [
     "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
@@ -94,6 +49,48 @@ caches_of_resolvers = {
     "199.85.126.20": 4,  # Norton_2
     "199.85.126.30": 4  # Norton_3
 }
+
+# Time to wait after one prefetch query is sent to a resolver IP Addresses
+sleep_time_after_every_prefetch = 0.5
+
+# For how many minutes we should keep send queries after prefetching phase
+experiment_time_in_minutes = 360
+
+max_worker_count = len(resolver_ip_addresses)
+
+# The TTL values that we will experiment with
+ttl_values_of_records = [60, 120, 180, 600]
+
+# Time to sleep in seconds between new TTL changes
+cooldown_sleep_time = 600
+
+# The probability that we will hit all the caches of the resolver.
+# This probability is used to calculate the query count to send to the resolver
+# in the prefetch phase
+cache_hit_probability = 0.95
+
+# The minimum number of queries to send to a resolver in the prefetch phase,
+# even when the resolver has only 1 cache.
+minimum_prefetch_query_count = 10
+# After the required prefetch query count for a resolver is calculated, this value is added onto it
+extra_query_count = 10
+
+# active zone file path
+# "/etc/bind/active.zone"
+active_zone_file_path = "active.zone"
+
+# active zone file path
+# "/etc/bind/boilerplate.zone"
+boilerplate_zone_file_path = "boilerplate.zone"
+
+# Set the interface names for packet capture with tcpdump
+auth_interface_name = "bond0"  # The interface of authoritative server
+client_interface_name = "bond0"  # The interface of client
+
+directory_name_of_logs = "logs_stale_duration_ttl_test"
+
+# Packetloss rates to be simulated on the authoritative server
+packetloss_rates = [100]
 
 
 # Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
@@ -263,12 +260,14 @@ def calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
 # Prefetch phase, send queries to resolvers to make them cache the entries
 def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired_probability, ttl_value):
     global sleep_time_after_every_prefetch
+    # We want to be the prefetching queries as non-blocking as possible
     prefetch_query_timeout = 0.01
 
     print(f"\nSending query to IP: {ip_addr}")
     query_count = calculate_prefetch_query_count(ip_addr, phase, pl_rate, desired_probability)
     print(f"  Query Amount to send to the resolver: {query_count}")
 
+    # Send the same query to the resolver multiple times to fill resolver caches
     for counter in range(query_count):
         query_name = build_query(pl_rate, ip_addr, generated_tokens, ttl_value)
         print(f"   Query name: {query_name}")
@@ -291,10 +290,12 @@ def send_queries_to_resolvers(ip_addr, pl_rate, generated_tokens, phase, desired
         time.sleep(sleep_time_after_every_prefetch)
 
 
-# Prefetch phase, send queries to resolvers to make them cache the entries
+# Stale phase, keep sending queries every TTL seconds for the given duration
 def stale_phase(ip_addr, generated_tokens, ttl_value):
     # Timeout value of the query in stale phase
     stale_query_timeout = 10
+
+    # Count the stale answer amount and show the results in console
     stale_answer_count = 0
     no_answer_count = 0
 
@@ -328,15 +329,19 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
             print(e)
         # Extract A record and TTL from response
         try:
+            # Response is not empty
             if response is not None:
+                # Empty result
                 if not response.answer:
                     print(f"        No Answer")
                     no_answer_count += 1
                     stale_record_on_iterations.append(0)
                 # If Answer was not empty, process
                 else:
+                    # Because we have 100% packetloss rate, the response must be stale
                     stale_answer_count += 1
                     stale_record_on_iterations.append(1)
+                    # Show A record and TTL of response
                     for a in response.answer:
                         dataset = a.to_rdataset()
                         if "A" in str(dataset):
@@ -344,15 +349,16 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
                             print(f"        A record: {a_record}")
                         ttl = int(dataset.ttl)
                         print(f"        TTL:  {ttl}")
+            # Empty result coded as -1
             else:
                 stale_record_on_iterations.append(-1)
         except Exception as e:
             print(f"        Error reading the response of query {query_name}")
             print(e)
-        # Wait TTL
+        # Wait TTL after sending a stale phase query
         time.sleep(ttl_value)
 
-        # Calculate the elapsed time and check we reached the time limit for the experiment
+        # Calculate the elapsed time and check if we reached the time limit for the experiment
         current_time = time.time()
         elapsed_time = current_time - start_time
         remaining_time = experiment_time_in_secs - elapsed_time
@@ -363,6 +369,7 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
 
         x += 1
 
+    # End of sending stale phase queries, show results in console
     print(f"Ending stale phase for {ip_addr}")
     print(f"Results of {ip_addr}:")
     print(f"  stale_answer_count: {stale_answer_count}")
@@ -370,7 +377,7 @@ def stale_phase(ip_addr, generated_tokens, ttl_value):
     print(f"  stale_record_on_iterations: {stale_record_on_iterations}")
 
 
-# Build the query from packetloss rate and its type (prefetch phase or after the query becomes stale)
+# Build the query from packetloss rate, ip, tokens and ttl
 # Example: stale-9-9-9-11-100-KGN-TTL130.packetloss.syssec-research.mmci.uni-saarland.de
 def build_query(packetloss_rate, ip_addr, generated_tokens, ttl_value):
     ip_addr_with_dashes = ip_addr.replace(".", "-")
@@ -379,14 +386,17 @@ def build_query(packetloss_rate, ip_addr, generated_tokens, ttl_value):
     return query
 
 
-# Switch to the zone file of the corresponding packetloss rate
+# Switch to the given zone file of the corresponding packetloss rate
+# and create the A records in the zone with the given TTL
 def switch_zone_file(zone_type, generated_tokens, pl_rate, ttl_value):
     print(f"  Creating {zone_type} zone file with generated chars {generated_tokens}, packetloss rate {pl_rate} and TTL value {ttl_value}")
 
     a_record_ip_addr = ""
 
+    # IP of A records of stale is 139.<pl-rate>.<pl-rate>.<pl-rate>
     if zone_type == "prefetch":
         a_record_ip_addr = str(pl_rate)
+    # IP of A records of stale phase is 139.<pl-rate + 1>.<pl-rate + 1>.<pl-rate + 1>
     elif zone_type == "stale":
         a_record_ip_addr = str(pl_rate + 1)
     else:
@@ -453,12 +463,15 @@ create_folder(directory_name_of_logs)
 print("\n==== Experiment starting ====\n")
 print(f"Current time: {datetime.utcnow()}")
 
+# Generate 3 random chars for query name
 generated_chars = generate_random_characters(3)
 print(f"Generated random tokens: {generated_chars}")
 
+# Iterate over all TTL values
 for current_ttl in ttl_values_of_records:
     print(f"\nCurrent TTL Value: {current_ttl}")
 
+    # Iterate over packetloss rates
     for current_packetloss_rate in packetloss_rates:
 
         print(f"Current Packetloss Rate: {current_packetloss_rate}%")
@@ -472,7 +485,7 @@ for current_ttl in ttl_values_of_records:
 
         print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
-        # Context manager
+        # Send queries to resolvers to fill resolver caches (prefetching phase)
         with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             results = [executor.submit(send_queries_to_resolvers,
                                        current_resolver_ip,
@@ -487,19 +500,18 @@ for current_ttl in ttl_values_of_records:
 
         print(f"Sleeping for {current_ttl} seconds until the records are stale")
 
-        # Wait until we are certain that the answer which is stored in the resolver is stale
+        # Wait until we are certain that the answer which is stored in the resolver cache is stale
         sleep_for_seconds(current_ttl)
 
         # Simulate packetloss on authoritative Server
         simulate_packetloss(int(current_packetloss_rate), auth_interface_name)
 
-        # Set the right zone file for the phase after the answer is stale
+        # Set the stale zone file for the phase after the answer is stale
         switch_zone_file("stale", generated_chars, current_packetloss_rate, current_ttl)
 
-        # Send queries to resolvers again (and analyse the pcaps if the query was answered or not)
         print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
-        # Context manager
+        # Send queries to resolvers again at a lower rate (stale phase)
         with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             results = [executor.submit(stale_phase,
                                        current_resolver_ip,
@@ -529,7 +541,7 @@ for current_ttl in ttl_values_of_records:
 
         disable_packetloss_simulation(current_packetloss_rate, auth_interface_name)
 
-    print("\n==== Experiment ended ====\n")
+    print(f"\n==== Experiment for TTL Value DONE: {current_ttl} ====\n")
 
 # Compress all the packet capture logs into a logs.zip file
 compress_log_files(directory_name_of_logs)

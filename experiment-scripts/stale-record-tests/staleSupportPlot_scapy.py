@@ -192,22 +192,6 @@ def get_operator_name_from_ip(ip_addr_with_dashes):
         return "Not found!"
 
 
-def get_dict_from_op_name(operator_name):
-    global cloudflare_packets
-    global dyn_packets
-    global opendns_packets
-    global quad9_packets
-
-    if "cloudflare" in operator_name.lower():
-        return cloudflare_packets
-    elif "dyn" in operator_name.lower():
-        return dyn_packets
-    elif "opendns" in operator_name.lower():
-        return opendns_packets
-    elif "quad9" in operator_name.lower():
-        return quad9_packets
-
-
 # Return all the values (lists) of the given dictionary
 def get_values_of_dict(dictionary):
     all_values = list(dictionary.values())

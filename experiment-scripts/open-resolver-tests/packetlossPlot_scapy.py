@@ -10,6 +10,9 @@ from scapy.layers.dns import DNS, DNSQR
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
 
+client_ip_addr = "139.19.117.1"
+auth_ip_addr = "139.19.117.11"
+
 # TODO: OPERATORS FOR THE FIRST PCAP
 operators = {
     "AdGuard-1": "94-140-14-14",
@@ -96,6 +99,18 @@ all_response_names_pl = {}
 all_query_names_pl_for_missing = {}
 
 
+def create_file_write_content(file_name, content):
+    directory_name = "Datas"
+
+    if not os.path.exists(directory_name):
+        os.makedirs(directory_name)
+
+    f = open(directory_name + "/" + str(file_name) + ".txt", "w")
+    f.write(str(content))
+    f.close()
+    print(f"  Created file: {str(file_name)}")
+
+
 # Input: IP Address with dashes (e.g. "8-8-8-8")
 # Output: Name of the operator (e.g. "Google1")
 def get_operator_name_from_ip(ip_addr_with_dashes):
@@ -114,12 +129,11 @@ def get_values_of_dict(dictionary):
 
 
 # If a query name does not have the defined structure, skip examining the packet
-# TODO: Filter query names with a regex
 def is_query_name_valid(query_name):
-    if "-pl" not in query_name or "packetloss.syssec-research.mmci.uni-saarland.de" not in query_name:
-        # print(f"Invalid query name for: {query}")
-        return False
-    elif "public-pl" in query_name:
+    query_pattern = "^[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+-pl[0-9]{1,2}\.packetloss\.syssec-research\.mmci\.uni-saarland\.de\.$"
+    search_result = re.search(query_pattern, query_name, re.IGNORECASE)
+    if search_result is None:
+        print(f"Invalid query name: {query_name}")
         return False
     else:
         return True
@@ -129,13 +143,13 @@ def is_query_name_valid(query_name):
 def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
     # Client IP is 139.19.117.1
     if "client" in pcap_name:
-        if src_ip != "139.19.117.1" and dst_ip != "139.19.117.1":
+        if src_ip != client_ip_addr and dst_ip != client_ip_addr:
             # print(f"  IP of client packet invalid: {src_ip}, {dst_ip}")
             return False
     # Server IP is 139.19.117.11
     elif "auth" in pcap_name:
 
-        if src_ip != "139.19.117.11" and dst_ip != "139.19.117.11":
+        if src_ip != auth_ip_addr and dst_ip != auth_ip_addr:
             # print(f"  IP of auth packet invalid: {src_ip}, {dst_ip}")
             return False
     return True
@@ -147,7 +161,7 @@ def initialize_dictionaries(pcap_type):
         query_duplicate_by_pl[current_pl_rate] = 0
         all_queries_count_pl[current_pl_rate] = 0
         # Only reset this after an auth pcap is read
-        if pcap_type == "client":
+        if "client" in pcap_type:
             all_query_names_pl_for_missing[current_pl_rate] = []
         all_responses_count_pl[current_pl_rate] = 0
         rcode_0_udp_count_pl[current_pl_rate] = 0
@@ -191,10 +205,12 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # Filter packet if source or destination IP is not valid
                 if not is_src_and_dst_ip_valid(pcap_file_name, src_ip, dst_ip):
                     # print(f" Invalid IP Skipping")
+                    # print(f"    dst_ip: {dst_ip}")
+                    # print(f"    src_ip: {src_ip}")
                     continue
 
                 # Query name of packet
-                query_name = packet[DNSQR].qname.decode("utf-8")
+                query_name = packet[DNSQR].qname.decode("utf-8").lower()
                 if not is_query_name_valid(query_name):
                     # print(f" Query name does not match: {query_name}")
                     continue
@@ -257,30 +273,32 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 # print(f"  Arrival time of packet: {packet_time}")
                 # print(f"  Time difference to previous packet: {time_diff_to_previous}")
 
-                # Store query names on client pcap to detect missing queries on auth pcap
-                if "client" in pcap_file_name:
-                    if query_name not in all_query_names_pl_for_missing[current_pl_rate]:
-                        all_query_names_pl_for_missing[current_pl_rate].append(query_name)
-                        # print(f"  Length Added: {len(all_query_names_pl_for_missing[current_pl_rate])}")
-                # After reading all the client pcaps, delete all the client queries which are also in auth pcap
-                elif "auth" in pcap_file_name:
-                    # print(f"    Length Auth: {len(all_query_names_pl_for_missing[current_pl_rate])}")
-                    if query_name in all_query_names_pl_for_missing[current_pl_rate]:
-                        all_query_names_pl_for_missing[current_pl_rate].remove(query_name)
-                        # print(f"    Length Deleted: {len(all_query_names_pl_for_missing[current_pl_rate])}")
-
                 # DNS query
                 if is_response_packet == 0:
+
                     # Filter non-relevant client packets by IP filtering
                     if "client" in pcap_file_name:
-                        if src_ip != "139.19.117.1":
-                            # print(f"Invalid IP for {query_name}")
+                        if src_ip != client_ip_addr:
+                            # print(f"Invalid IP client src_ip {src_ip} for {query_name}")
                             continue
 
                     elif "auth" in pcap_file_name:
-                        if dst_ip != "139.19.117.11":
-                            # print(f"Invalid IP for {query_name}")
+                        if dst_ip != auth_ip_addr:
+                            # print(f"Invalid IP auth dst_ip {dst_ip} for {query_name}")
                             continue
+
+                    # TODO: Test this, it was above the "if is_response_packet == 0:"
+                    # Store query names on client pcap to detect missing queries on auth pcap
+                    if "client" in pcap_file_name:
+                        if query_name not in all_query_names_pl_for_missing[current_pl_rate]:
+                            all_query_names_pl_for_missing[current_pl_rate].append(query_name)
+                            # print(f"  Length Added: {len(all_query_names_pl_for_missing[current_pl_rate])}")
+                    # After reading all the client pcaps, delete all the client queries which are also in auth pcap
+                    elif "auth" in pcap_file_name:
+                        # print(f"    Length Auth: {len(all_query_names_pl_for_missing[current_pl_rate])}")
+                        if query_name in all_query_names_pl_for_missing[current_pl_rate]:
+                            all_query_names_pl_for_missing[current_pl_rate].remove(query_name)
+                            # print(f"    Length Deleted: {len(all_query_names_pl_for_missing[current_pl_rate])}")
 
                     # Count unique query names of pl for dns retransmission plot
                     if (current_pl_rate, query_name) not in all_query_names_pl:
@@ -306,12 +324,12 @@ def read_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
                     # Filter non-relevant response packets by IP filtering
                     if "client" in pcap_file_name:
-                        if dst_ip != "139.19.117.1":
+                        if dst_ip != client_ip_addr:
                             # print(f"Invalid IP for {query_name}")
                             continue
 
                     elif "auth" in pcap_file_name:
-                        if src_ip != "139.19.117.11":
+                        if src_ip != auth_ip_addr:
                             # print(f"Invalid IP for {query_name}")
                             continue
 
@@ -475,6 +493,20 @@ def create_combined_plots(file_name_prefix, directory_name, plots_directory_name
                 current_pl_rate]) * 100
         except ZeroDivisionError:
             rcode_0_tcp_rates[index] = 0
+
+    create_file_write_content(f"rcode_0_counts_{file_name_prefix}_{plots_directory_name}", rcode_0_counts_)
+    create_file_write_content(f"rcode_2_counts_{file_name_prefix}_{plots_directory_name}", rcode_2_counts)
+    create_file_write_content(f"rcode_5__{file_name_prefix}_{plots_directory_name}", rcode_5_counts)
+    create_file_write_content(f"other_rcode_counts_{file_name_prefix}_{plots_directory_name}", other_rcode_counts)
+
+    create_file_write_content(f"rcode_0_rates_{file_name_prefix}_{plots_directory_name}", rcode_0_rates)
+    create_file_write_content(f"rcode_2_rates_{file_name_prefix}_{plots_directory_name}", rcode_2_rates)
+    create_file_write_content(f"rcode_5_rates_{file_name_prefix}_{plots_directory_name}", rcode_5_rates)
+    create_file_write_content(f"other_rcode_rates_{file_name_prefix}_{plots_directory_name}", other_rcode_rates)
+
+    create_file_write_content(f"rcode_0_udp_rates_{file_name_prefix}_{plots_directory_name}", rcode_0_udp_rates)
+    create_file_write_content(f"rcode_0_tcp_rates_{file_name_prefix}_{plots_directory_name}", rcode_0_tcp_rates)
+    create_file_write_content(f"all_responses_count_pl_{file_name_prefix}_{plots_directory_name}", all_responses_count_pl)
 
     # print(f"all_responses_count_pl: {all_responses_count_pl}")
     # print(f"rcode_0_rates: {rcode_0_rates}")
@@ -1191,9 +1223,14 @@ def create_plots_of_type(file_name, pcap_file_prefix, resolvers_to_filter, direc
     # create rate plot
     create_combined_plots(file_name, rate_plots_directory_name, directory_type)
 
+    create_file_write_content(f"rcodes_by_pl_{file_name}_{pcap_file_prefix}", rcodes_by_pl)
+
     extracted_latencies = extract_latencies_from_dict()
     ok_latencies = extracted_latencies[0]
     servfail_latencies = extracted_latencies[1]
+
+    create_file_write_content(f"ok_latencies_{file_name}_{pcap_file_prefix}", ok_latencies)
+    create_file_write_content(f"servfail_latencies_{file_name}_{pcap_file_prefix}", servfail_latencies)
 
     # print(f"@@@@ servfail_latencies: {servfail_latencies}")
 
@@ -1238,9 +1275,15 @@ def create_plots_of_type(file_name, pcap_file_prefix, resolvers_to_filter, direc
     for pl_rate, query_name in all_response_names_pl:
         # Check if there was really a retransmission
         # (count should be > 1 bcs first one is the original, not the duplicate)
-        result = all_response_names_pl[pl_rate, query_name]
+        # - 1 because 1 means the response query name was seen only once (no retransmission)
+        result = all_response_names_pl[pl_rate, query_name] - 1
         if result > 1:
             response_retransmission_count_list[str(pl_rate)].append(result)
+
+    create_file_write_content(f"all_query_names_pl_{file_name}_{pcap_file_prefix}", all_query_names_pl)
+    create_file_write_content(f"all_response_names_pl_{file_name}_{pcap_file_prefix}", all_response_names_pl)
+    create_file_write_content(f"query_retransmission_count_list_{file_name}_{pcap_file_prefix}", query_retransmission_count_list)
+    create_file_write_content(f"response_retransmission_count_list_{file_name}_{pcap_file_prefix}", response_retransmission_count_list)
 
     # print(f"query_retransmission_count_list: {query_retransmission_count_list}")
     # print(f"response_retransmission_count_list: {response_retransmission_count_list}")
@@ -1297,6 +1340,9 @@ def create_plot_for(file_name, selected_resolvers_to_plot):
 
     # print(f"  all_query_names_pl_for_missing:\n{all_query_names_pl_for_missing}")
     # print(f"  missing_query_count_list:\n{missing_query_count_list}")
+
+    create_file_write_content(f"missing_query_count_list{file_name}", missing_query_count_list)
+    create_file_write_content(f"all_query_names_pl_for_missing{file_name}", all_query_names_pl_for_missing)
 
     create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_count_list,
                     auth_plots_directory_name, "Missing Queries", "Missing Query Count")

@@ -51,7 +51,7 @@ Truncated Experiment:
 		- Latency of RCODE OK packets
 		- Latency of RCODE Error packets
     - Rate plot of client and authoritative server as stacked bar chart: RCODE OK (UDP and TCP rates), SERVFAIL, REFUSED and other RCODE rates.
-	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
+	- Unanswered query plot of client and authoritative server as bar plot (Queries which has no corresponding response packets)
 	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
 		- Query retransmissions 

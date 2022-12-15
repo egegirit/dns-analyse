@@ -564,6 +564,11 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
     create_file_write_content(f"{data_path}/Unanswered_Query_Count_(PacketLoss)_Count", unanswered_query_count_by_pl)
     create_file_write_content(f"{data_path}/Responses_With_No_Query_Count_(PacketLoss)_Count", responses_with_no_query_count_by_pl)
 
+    create_file_write_content(f"{data_path}/Response_Rcode_0_UDP_Count_(PacketLoss)_Count",
+                              rcode_0_udp_count_pl)
+    create_file_write_content(f"{data_path}/Response_Rcode_0_TCP_Count_(PacketLoss)_Count",
+                              rcode_0_tcp_count_pl)
+
     # extracted_latencies = extract_latencies_from_dict()
     # ok_latencies = extracted_latencies[0]
     # servfail_latencies = extracted_latencies[1]

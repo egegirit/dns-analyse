@@ -1,6 +1,6 @@
 import sys
 
-packetloss_rates = ["pl0", "pl10", "pl20", "pl30", "pl40", "pl50", "pl60", "pl70", "pl80", "pl85", "pl90", "pl95"]
+packetloss_rates = ["pl0", "pl10", "pl20", "pl30", "pl40", "pl50", "pl60", "pl70", "pl80", "pl85", "pl90", "pl95", "pl100"]
 
 # DNS Open Resolver IP Addresses
 resolver_ip_addresses = [

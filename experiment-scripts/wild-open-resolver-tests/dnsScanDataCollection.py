@@ -176,7 +176,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     continue
 
                 # Query name of packet
-                query_name = packet[DNSQR].qname.decode("utf-8").lower()
+                query_name = packet[DNS].qd.qname.decode("utf-8").lower()
                 if not is_query_name_valid(query_name):
                     # print(f" Query name does not match: {query_name}")
                     continue
@@ -347,6 +347,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
 
             except Exception as e:
                 print(f"  Error reading packet: {e}")
+                print(f"  Type: {type(e)}")  # the exception instance
+                print(f"  Args: {e.args}")  # arguments stored in .args
+                traceback.print_exc()
                 # packet.show()
         index += 1
 

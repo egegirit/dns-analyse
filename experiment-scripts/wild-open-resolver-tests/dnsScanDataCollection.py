@@ -345,7 +345,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                         ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query] = []
                     ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query].append(rcode)
 
-            except IndexError as i:
+            except (IndexError, UnicodeDecodeError):
                 # Don't print IndexErrors such as DNSQR Layer not found
                 pass
             except Exception as e:
@@ -353,6 +353,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 print(f"  Error Type: {type(e)}")  # the exception instance
                 traceback.print_exc()
                 # packet.show()
+                
         index += 1
 
     # After examining all the packets in the pcap file,

@@ -949,13 +949,13 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
     for key, value in all_queries_dict.items():
         # Check if there was really a retransmission
         # (count should be > 1 bcs first one is the original, not the duplicate)
-        if value > 1:
+        if value > 0:
             # TCP
             if key[2] == 6:
-                tcp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value - 1)
+                tcp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value)
             # UDP
             elif key[2] == 17:
-                udp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value - 1)
+                udp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value)
 
     create_multi_bar_plot(file_name, root_directory_of_plots, "Query Retransmission", "Query Retransmission Count",
                           udp_query_retransmission_count_list, tcp_query_retransmission_count_list)
@@ -988,13 +988,13 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
     for key, value in all_queries_dict.items():
         # Retransmission occurs when a query is seen more than 1 times,
         # If a query is seen 2 times, the retransmission count is 2 - 1, because the first query was the original one
-        if value > 1:
+        if value > 0:
             # Query was sent with UDP
             if key[2] == 17:
-                udp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value - 1)
+                udp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value)
             # Query was sent with TCP
             if key[2] == 6:
-                tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value - 1)
+                tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value)
 
     print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
     print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
@@ -1004,7 +1004,7 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
     create_violin_plot(retransmission_plots_directory_name, file_name, tcp_query_counts_of_pl,
                        "DNS TCP Query Retransmissions", "TCP Query Retransmission Counts")
 
-    # TODO: Create violin plot for Response retransmission ranges
+    # Create violin plot for Response retransmission ranges
     udp_response_counts_of_pl = [[]] * len(packetloss_rates)
     tcp_response_counts_of_pl = [[]] * len(packetloss_rates)
     # (pl-rate, query-name, protocol-number): integer

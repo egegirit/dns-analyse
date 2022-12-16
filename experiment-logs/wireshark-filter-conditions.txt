@@ -211,10 +211,6 @@ Dyn stale phases
 # Client stale pcap filter:
 (dns.qry.name matches "stale-") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)
 
-# Wild open resolver wireshark filter (client):
-(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.8 || ip.dst == 139.19.117.8)
-
-
 Truncation answers:
 (((dns.qry.name matches "94-140-14-14-")) && (tcp)) && (dns.flags.rcode == 0)
 
@@ -224,3 +220,18 @@ Truncatin auth wireshark filter:
 
 (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1) && !(dns.qry.name matches "public-pl") && !(dns.qry.name matches "ns1.packetloss.syssec-research.mmci.uni-saarland.de")
 
+Upper or lower case:
+(?i)
+(this|or|that)
+
+# Wild open resolver wireshark filter (client):
+(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.8 || ip.dst == 139.19.117.8)
+
+# Wild open resolver wireshark filter (auth):
+(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)
+
+Wild open resolver regex filter + IP filter:
+(dns.qry.name matches "^[a-zA-Z0-9]{5}_[a-zA-Z0-9]{8}.public\\-pl[0-9]{1,2}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)
+
+Packetloss experiment wireshark regex filter:
+(dns.qry.name matches "^[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-pl[0-9]{1,3}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$") 

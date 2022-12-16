@@ -14,71 +14,71 @@ client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
 
 # TODO: OPERATORS FOR THE FIRST PCAP
-# operators = {
-#     "AdGuard-1": "94-140-14-14",
-#     "AdGuard-2": "94-140-14-15",
-#     "CleanBrowsing-1": "185-228-168-168",
-#     "CleanBrowsing-2": "185-228-168-9",
-#     "Cloudflare-1": "1-1-1-1",
-#     "Cloudflare-2": "1-0-0-1",
-#     "Dyn-1": "216-146-35-35",
-#     "Dyn-2": "216-146-36-36",
-#     "Google-1": "8-8-8-8",
-#     "Google-2": "8-8-4-4",
-#     "Neustar-1": "64-6-64-6",
-#     "Neustar-2": "156-154-70-1",
-#     "OpenDNS-1": "208-67-222-222",
-#     "OpenDNS-2": "208-67-222-2",
-#     "Quad9-1": "9-9-9-9",
-#     "Quad9-2": "9-9-9-11",
-#     "Yandex-1": "77-88-8-1",
-#     "Yandex-2": "77-88-8-8"
-# }
-
-# All operators with their IP Addresses with dashes
 operators = {
     "AdGuard-1": "94-140-14-14",
     "AdGuard-2": "94-140-14-15",
-    "AdGuard-3": "94-140-14-140",
-
     "CleanBrowsing-1": "185-228-168-168",
     "CleanBrowsing-2": "185-228-168-9",
-    "CleanBrowsing-3": "185-228-168-10",
-
     "Cloudflare-1": "1-1-1-1",
-    "Cloudflare-2": "1-1-1-2",
-    "Cloudflare-3": "1-1-1-3",
-
+    "Cloudflare-2": "1-0-0-1",
     "Dyn-1": "216-146-35-35",
-
+    "Dyn-2": "216-146-36-36",
     "Google-1": "8-8-8-8",
-
+    "Google-2": "8-8-4-4",
     "Neustar-1": "64-6-64-6",
-    "Neustar-2": "156-154-70-2",
-    "Neustar-3": "156-154-70-3",
-    "Neustar-4": "156-154-70-4",
-    "Neustar-5": "156-154-70-5",
-
+    "Neustar-2": "156-154-70-1",
     "OpenDNS-1": "208-67-222-222",
     "OpenDNS-2": "208-67-222-2",
-    "OpenDNS-3": "208-67-222-123",
-
     "Quad9-1": "9-9-9-9",
     "Quad9-2": "9-9-9-11",
-    "Quad9-3": "9-9-9-10",
-
     "Yandex-1": "77-88-8-1",
-    "Yandex-2": "77-88-8-2",
-    "Yandex-3": "77-88-8-3",
-
-    "Level3-1": "209-244-0-3",
-    "Level3-2": "209-244-0-4",
-
-    "Norton-1": "199-85-126-10",
-    "Norton-2": "199-85-126-20",
-    "Norton-3": "199-85-126-30",
-
+    "Yandex-2": "77-88-8-8"
 }
+
+# All operators with their IP Addresses with dashes
+# operators = {
+#     "AdGuard-1": "94-140-14-14",
+#     "AdGuard-2": "94-140-14-15",
+#     "AdGuard-3": "94-140-14-140",
+#
+#     "CleanBrowsing-1": "185-228-168-168",
+#     "CleanBrowsing-2": "185-228-168-9",
+#     "CleanBrowsing-3": "185-228-168-10",
+#
+#     "Cloudflare-1": "1-1-1-1",
+#     "Cloudflare-2": "1-1-1-2",
+#     "Cloudflare-3": "1-1-1-3",
+#
+#     "Dyn-1": "216-146-35-35",
+#
+#     "Google-1": "8-8-8-8",
+#
+#     "Neustar-1": "64-6-64-6",
+#     "Neustar-2": "156-154-70-2",
+#     "Neustar-3": "156-154-70-3",
+#     "Neustar-4": "156-154-70-4",
+#     "Neustar-5": "156-154-70-5",
+#
+#     "OpenDNS-1": "208-67-222-222",
+#     "OpenDNS-2": "208-67-222-2",
+#     "OpenDNS-3": "208-67-222-123",
+#
+#     "Quad9-1": "9-9-9-9",
+#     "Quad9-2": "9-9-9-11",
+#     "Quad9-3": "9-9-9-10",
+#
+#     "Yandex-1": "77-88-8-1",
+#     "Yandex-2": "77-88-8-2",
+#     "Yandex-3": "77-88-8-3",
+#
+#     "Level3-1": "209-244-0-3",
+#     "Level3-2": "209-244-0-4",
+#
+#     "Norton-1": "199-85-126-10",
+#     "Norton-2": "199-85-126-20",
+#     "Norton-3": "199-85-126-30",
+#
+# }
 
 all_responses_count_pl = {}
 all_queries_count_pl = {}
@@ -203,7 +203,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
             # print(f"=====================================")
             # print(f"Showing packet ({index})")
             # packet.show()
-            # try:
+            try:
                 rcode = int(packet[DNS].rcode)
                 # If the RCODE is format-error, skip packet
                 if rcode == 1:
@@ -401,8 +401,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"  @@ Duplicate response packet detected for {query_name}, {dns_id}")
                         pass
 
-            # except Exception as e:
-            #     print(f"  Error reading packet: {e}")
+            except Exception as e:
+                print(f"  Error reading packet: {e}")
                 # packet.show()
         index += 1
 
@@ -658,11 +658,11 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
 # "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
 # "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
 # "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
-
-all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-"Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-"Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-"Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
+#
+# all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
+# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
+# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
+# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
 
 # --------------
 
@@ -670,10 +670,10 @@ all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "Clea
 # "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
 # "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
 
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-#                  "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-#                  "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-#                  "Yandex-1", "Yandex-2"]
+all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
+                 "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
+                 "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
+                 "Yandex-1", "Yandex-2"]
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:

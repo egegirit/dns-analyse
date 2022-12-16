@@ -952,10 +952,10 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
         if value > 0:
             # TCP
             if key[2] == 6:
-                tcp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value)
+                tcp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += value
             # UDP
             elif key[2] == 17:
-                udp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value)
+                udp_query_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += value
 
     create_multi_bar_plot(file_name, root_directory_of_plots, "Query Retransmission", "Query Retransmission Count",
                           udp_query_retransmission_count_list, tcp_query_retransmission_count_list)

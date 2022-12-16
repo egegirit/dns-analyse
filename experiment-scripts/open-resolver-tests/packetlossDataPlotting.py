@@ -154,7 +154,10 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
+    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
+    if n == 13:
+        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
+    arr = np.array(arr_to_use)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -442,7 +445,10 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
+    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
+    if n == 13:
+        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
+    arr = np.array(arr_to_use)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -506,7 +512,10 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5])  # Positions of the bars
+    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
+    if n == 13:
+        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
+    arr = np.array(arr_to_use)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -763,11 +772,12 @@ def create_violin_plot(directory_name, file_name_prefix, data_param, plot_title,
     ax.set_title(f"{plot_title} " + file_name_prefix)
 
     # Handle zero values with a -1 dummy value
-    data_list
+    empty_list_indexes = []
     plot_upper_limit = 1
     for i in range(len(data_list)):
         if len(data_list[i]) == 0:
-            data_list[i] = [0]
+            data_list[i] = [-1]
+            empty_list_indexes.append(i)
         else:
             # Find maximum count for top limit of plot
             for number in data_list[i]:
@@ -787,8 +797,11 @@ def create_violin_plot(directory_name, file_name_prefix, data_param, plot_title,
     # But if the list was empty and we added a dummy value, subtract it from the plot text
     data_count_string = ""
     for i in range(len(data_list)):
+        length_of_list_index = len(data_list[i])
+        if i in empty_list_indexes:
+            length_of_list_index -= 1
         data_count_string += "PL " + str(packetloss_rates[i]) + ": " + str(
-            len(data_list[i])) + "\n"
+            length_of_list_index) + "\n"
 
     left, width = .25, .5
     bottom, height = .25, .5

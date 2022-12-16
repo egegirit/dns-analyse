@@ -221,7 +221,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     continue
 
                 # Query name of packet
-                query_name = packet[DNSQR].qname.decode("utf-8").lower()
+                query_name = packet[DNS].qd.qname.decode("utf-8").lower()
                 if not is_query_name_valid(query_name):
                     # print(f" Query name does not match: {query_name}")
                     continue

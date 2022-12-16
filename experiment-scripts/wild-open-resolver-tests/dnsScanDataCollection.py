@@ -137,7 +137,7 @@ def initialize_dictionaries(pcap_type):
 
 # Read the pcap file with the given packetloss rate
 def read_single_pcap(pcap_file_name, current_pl_rate):
-    print(f"    Reading file: {pcap_file_name}")
+    print(f"    Reading file: {pcap_file_name}  (Start at {datetime.now()})")
 
     # Store the dns packets by their attributes: (dns_id, query_name, is_response_packet) in a hash table
     # to find corresponding responses to queries
@@ -353,7 +353,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 print(f"  Error Type: {type(e)}")  # the exception instance
                 traceback.print_exc()
                 # packet.show()
-                
+
+        # See how far we are when running the script
+        if index % 200000 == 0:
+            print(f"      Packet number: ({datetime.now()}) {index}")
         index += 1
 
     # After examining all the packets in the pcap file,

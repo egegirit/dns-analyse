@@ -1,0 +1,1 @@
+{0: [], 10: [], 20: [], 30: [], 40: ['94-140-14-140-2-pl40.packetloss.syssec-research.mmci.uni-saarland.de.'], 50: [], 60: [], 70: [], 80: [], 85: [], 90: ['94-140-14-140-1-pl90.packetloss.syssec-research.mmci.uni-saarland.de.', '94-140-14-140-34-pl90.packetloss.syssec-research.mmci.uni-saarland.de.'], 95: [], 100: []}

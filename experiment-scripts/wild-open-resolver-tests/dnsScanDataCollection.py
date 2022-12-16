@@ -33,6 +33,8 @@ all_query_names_pl_for_missing = {}
 
 tcp_counterpart_of_udp_query = {}
 
+ip_plrate_to_response_rcodes = {}
+
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -162,8 +164,6 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     # print(f" Query name does not match: {query_name}")
                     continue
 
-                # Query name regex:
-                # ^[a-zA-Z0-9]{5}_[a-zA-Z0-9]{8}.public\\-pl[0-9]{1,2}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$
                 # Extract ip address and pl rate from query name, find the corresponding operator name
                 pl_rate_of_packet = query_name.split("public-pl")[1].split(".")[0]
                 random_5_character_of_query = query_name.split("_")[0]
@@ -179,8 +179,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 # port = packet.sport
                 proto = packet[IP].proto  # 6 is TCP, 17 is UDP
                 is_response_packet = int(packet[DNS].qr)  # Packet is a query (0), or a response (1)
-                dns_id = packet[DNS].id
-                answer_count = int(packet[DNS].ancount)
+                dns_id = packet[DNS].id  # DNS ID
+                answer_count = int(packet[DNS].ancount)  # Count of answers
 
                 # Arrival time of the packet
                 packet_time = float(packet.time)
@@ -202,14 +202,16 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 # print(f"  Arrival time of packet: {packet_time}")
                 # print(f"  Time difference to previous packet: {time_diff_to_previous}")
 
-                # DNS query
+                # Packet is a query
                 if is_response_packet == 0:
-                    # Filter non-relevant client packets by IP filtering
+                    # Filter non-relevant packets by IP filtering
+                    # For client pcaps, the query source should be the client IP
                     if "client" in pcap_file_name:
                         if src_ip != client_ip_addr:
                             # print(f"Invalid IP client src_ip {src_ip} for {query_name}")
                             continue
 
+                    # For auth pcaps, the query destination should be the auth IP
                     elif "auth" in pcap_file_name:
                         if dst_ip != auth_ip_addr:
                             # print(f"Invalid IP auth dst_ip {dst_ip} for {query_name}")
@@ -240,6 +242,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                             pass
 
                     # Count unique query names of pl for dns retransmission plot
+                    # Because we are counting retransmissions, the first found query count will be set to 0
                     if (current_pl_rate, query_name, proto) not in all_query_names_pl:
                         all_query_names_pl[current_pl_rate, query_name, proto] = 0
                     else:
@@ -255,9 +258,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     else:
                         # print(f"Query duplicate: {query_name}, {dns_id}")
                         query_duplicate_by_pl[current_pl_rate] += 1
-                # DNS response
+                # Packet is a DNS response
                 elif is_response_packet == 1:
-
                     # if answer_count > 0:
                     #     ans_type = int(packet[DNS].an.type)
 
@@ -317,6 +319,14 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     else:
                         # print(f"  @@ Duplicate response packet detected for {query_name}, {dns_id}")
                         pass
+
+                    # After all the packet filterings are done, if the packet is a response:
+                    # For all packetloss rates, note the observed response codes of the IP Adresses in a list,
+                    # this might be used later to filter some resolver that always send a non-OK rcode.
+                    # In this case, the rcodes of that filter must be non 0 for all packetloss rates
+                    if (current_pl_rate, ip_addr_of_query) not in ip_plrate_to_response_rcodes:
+                        ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query] = []
+                    ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query].append(rcode)
 
             except Exception as e:
                 print(f"  Error reading packet: {e}")
@@ -387,6 +397,7 @@ def reset_for_next_plot():
     global rcode_0_udp_count_pl
     global rcode_0_tcp_count_pl
     global tcp_counterpart_of_udp_query
+    global ip_plrate_to_response_rcodes
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -400,6 +411,7 @@ def reset_for_next_plot():
     rcode_0_udp_count_pl = {}
     rcode_0_tcp_count_pl = {}
     tcp_counterpart_of_udp_query = {}
+    ip_plrate_to_response_rcodes = {}
 
     # print(f"Clean up for next plotting DONE")
 
@@ -485,6 +497,7 @@ def extract_data_from(file_name, pcap_file_prefix):
     create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
     create_file_write_content(f"{data_path}/All_Queries_(PacketLoss_QueryName_Protocol)_Count", all_query_names_pl)
     create_file_write_content(f"{data_path}/All_Responses_(PacketLoss_QueryName_Protocol)_Count", all_response_names_pl)
+    create_file_write_content(f"{data_path}/IP_PLRate_to_RCODEs", ip_plrate_to_response_rcodes)
 
 
 def extract_datas_from_pcap(file_name):

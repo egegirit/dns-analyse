@@ -41,6 +41,8 @@ response_rcode_0_udp_count_file = "Response_Rcode_0_UDP_Count_(PacketLoss)_Count
 response_rcode_0_tcp_count_file = "Response_Rcode_0_TCP_Count_(PacketLoss)_Count.txt"
 missing_query_names_on_auth_file = "Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames].txt"
 all_responses_of_of_counts_file = "All_Responses_(PacketLoss)_Count.txt"
+ip_plrate_to_response_rcodes = "IP_PLRate_to_RCODEs.txt"
+
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -862,16 +864,6 @@ def create_unanswered_plot(file_name, root_directory_of_plots):
     unanswered_query_count_dict = convert_string_to_dict(
         read_dict_from_file(directory_to_read + "/" + file_name + "/" + unanswered_query_count_file))
 
-    # Unanswered rates! Not count
-    # unanswered_query_rates = [0] * len(packetloss_rates)
-    # for index in range(len(packetloss_rates)):
-    #     # TODO: Separate graph for unanswered queries
-    #     try:
-    #         unanswered_query_rates[index] = (unanswered_query_count_dict[packetloss_rates[index]] /
-    #                                          query_counts_of_pl[packetloss_rates[index]]) * 100
-    #     except ZeroDivisionError:
-    #         unanswered_query_rates[index] = 0
-
     # Create unanswered query plot
     create_bar_plot(file_name, unanswered_query_plots_directory_name, list(unanswered_query_count_dict.values()),
                     root_directory_of_plots, "Unanswered Queries", "Unanswered Query Count")
@@ -987,6 +979,10 @@ def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_
 
     # Create retransmission plots
     create_retransmission_plots(file_name, root_directory_of_plots)
+
+    # TODO: plots rcodes of IPs for PL rates, or dont, just use this to filter resolver IPs
+    ip_plrate_to_response_rcodes_dict = convert_string_to_dict(
+        read_dict_from_file(directory_of_datas_to_read + "/" + file_name + "/" + ip_plrate_to_response_rcodes))
 
 
 def create_plots_for(file_name):

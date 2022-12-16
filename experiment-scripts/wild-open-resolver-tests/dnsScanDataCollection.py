@@ -10,9 +10,11 @@ from scapy.layers.dns import DNS, DNSQR
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
+# IPs of the server and client are used to filter irrelevant packets
 client_ip_addr = "139.19.117.8"
 auth_ip_addr = "139.19.117.11"
 
+# The dictionaries to store extracted information
 all_responses_count_pl = {}
 all_queries_count_pl = {}
 unanswered_query_count_by_pl = {}
@@ -20,10 +22,8 @@ responses_with_no_query_count_by_pl = {}
 latencies_by_pl_and_rcode = {}
 query_duplicate_by_pl = {}
 rcodes_by_pl = {}
-
 rcode_0_udp_count_pl = {}
 rcode_0_tcp_count_pl = {}
-
 all_query_names_pl = {}
 all_response_names_pl = {}
 
@@ -32,7 +32,6 @@ all_response_names_pl = {}
 all_query_names_pl_for_missing = {}
 
 tcp_counterpart_of_udp_query = {}
-
 ip_plrate_to_response_rcodes = {}
 
 
@@ -87,13 +86,13 @@ def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
             return False
     # Server IP is 139.19.117.11
     elif "auth" in pcap_name:
-
         if src_ip != auth_ip_addr and dst_ip != auth_ip_addr:
             # print(f"  IP of auth packet invalid: {src_ip}, {dst_ip}")
             return False
     return True
 
 
+# Initialize dictionaries with empty values
 def initialize_dictionaries(pcap_type):
     rcodes = [0, 2, 5]
     for current_pl_rate in packetloss_rates:
@@ -118,7 +117,7 @@ def initialize_dictionaries(pcap_type):
             # all_response_names_pl[current_pl_rate, prot] = 0
 
 
-# Read the pcap file with the given packetloss rate while filtering the specified resolver packets
+# Read the pcap file with the given packetloss rate
 def read_single_pcap(pcap_file_name, current_pl_rate):
     print(f"    Reading file: {pcap_file_name}")
 
@@ -164,7 +163,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     # print(f" Query name does not match: {query_name}")
                     continue
 
-                # Extract ip address and pl rate from query name, find the corresponding operator name
+                # Extract ip address and pl rate from query name,
                 pl_rate_of_packet = query_name.split("public-pl")[1].split(".")[0]
                 random_5_character_of_query = query_name.split("_")[0]
                 hex_decoded_ip = query_name.split("_")[1].split(".public-pl")[0]
@@ -334,10 +333,13 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
         index += 1
 
     # After examining all the packets in the pcap file,
-    # check the all_packets array to get unanswered queries
+    # calculate unanswered query count,
+    # the remaining queries in the queries dict are unanswered because all the
+    # queries with a response packet to it are deleted before
     if current_pl_rate not in unanswered_query_count_by_pl:
         unanswered_query_count_by_pl[current_pl_rate] = 0
     unanswered_query_count_by_pl[current_pl_rate] = len(queries)
+    # Response counts, which has no corresponding query packets
     if current_pl_rate not in responses_with_no_query_count_by_pl:
         responses_with_no_query_count_by_pl[current_pl_rate] = 0
     responses_with_no_query_count_by_pl[current_pl_rate] = len(responses)
@@ -416,6 +418,8 @@ def reset_for_next_plot():
     # print(f"Clean up for next plotting DONE")
 
 
+# Missing query information is only relevant for auth pcaps,
+# reset this only after reading auth pcaps
 def reset_after_auth_pcaps():
     global all_query_names_pl_for_missing
     all_query_names_pl_for_missing = {}
@@ -425,6 +429,7 @@ def reset_after_auth_pcaps():
     # print(f"Clean up after auth DONE")
 
 
+# Split latencies into OK latencies and ServFail latencies
 def extract_latencies_from_dict():
     global latencies_by_pl_and_rcode
     keys_of_latency = list(latencies_by_pl_and_rcode.keys())

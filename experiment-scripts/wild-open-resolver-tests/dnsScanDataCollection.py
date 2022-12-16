@@ -49,15 +49,33 @@ def create_file_write_content(file_name, content):
     print(f"  Created file: {str(file_name)}")
 
 
-# Input: IP Address with dashes (e.g. "8-8-8-8")
-# Output: Name of the operator (e.g. "Google1")
-def get_operator_name_from_ip(ip_addr_with_dashes):
-    # print(f"  get_operator_name_from_ip() got parameter: {ip_addr_with_dashes}")
-    for operator, ip_addr in operators.items():
-        if ip_addr == ip_addr_with_dashes:
-            return operator
-    else:
-        return "Not found!"
+# Encode an IP like "78.111.72.138" to its 8 byte hexadecimal encoding "0d274a62"
+def encode_hexadecimal(ip_with_dots):
+    # Split the string into a list of decimal numbers
+    numbers = ip_with_dots.split('.')
+
+    # Convert each decimal number to its hexadecimal equivalent
+    hex_numbers = [hex(int(n))[2:] for n in numbers]
+
+    # Concatenate the hexadecimal numbers together
+    hex_string = ''.join(hex_numbers)
+
+    # Return the 8-byte hexadecimal encoded string
+    return hex_string[:8]
+
+
+# Decode "0d274a62" to "78.111.72.138"
+def decode_hexadecimal(encoded_ip):
+    # Split the encoded string into a list of hexadecimal numbers
+    hex_numbers = [encoded_ip[i:i+2] for i in range(0, len(encoded_ip), 2)]
+
+    # Convert each hexadecimal number to its decimal equivalent
+    numbers = [int(h, 16) for h in hex_numbers]
+
+    # Concatenate the decimal numbers together with dots
+    ip_with_dots = '.'.join(str(n) for n in numbers)
+
+    return ip_with_dots
 
 
 # Return all the values (lists) of the given dictionary

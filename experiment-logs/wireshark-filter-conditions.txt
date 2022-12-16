@@ -224,14 +224,14 @@ Upper or lower case:
 (?i)
 (this|or|that)
 
-# Wild open resolver wireshark filter (client):
-(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.8 || ip.dst == 139.19.117.8)
-
-# Wild open resolver wireshark filter (auth):
-(dns.qry.name matches ".public-pl") && (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)
-
-Wild open resolver regex filter + IP filter:
-(dns.qry.name matches "^[a-zA-Z0-9]{5}_[a-zA-Z0-9]{8}.public\\-pl[0-9]{1,2}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)
-
 Packetloss experiment wireshark regex filter:
 (dns.qry.name matches "^[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-[0-9]{1,3}\\-pl[0-9]{1,3}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$") 
+
+# Wild open resolver wireshark filter client IP filter:
+(ip.src == 139.19.117.8 || ip.dst == 139.19.117.8)
+
+# Wild open resolver wireshark query regex filter:
+(dns.qry.name matches "^[a-zA-Z0-9]{5}_[a-zA-Z0-9]{8}.public\\-pl[0-9]{1,2}\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$")
+
+Wild open resolver query regex filter + IP filter for auth + Packetloss rate 10:
+(dns.qry.name matches "^[a-zA-Z0-9]{5}_[a-zA-Z0-9]{8}\\.public\\-pl10\\.packetloss\\.syssec\\-research\\.mmci\\.uni\\-saarland\\.de$") && (ip.src == 139.19.117.11 || ip.dst == 139.19.117.11)

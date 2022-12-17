@@ -651,7 +651,7 @@ def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_lim
     latency_list = latencies.copy()
 
     print(f"    Creating violin plot: {file_name_prefix}")
-    # print(f"   Inside the folder: {directory_name}")
+    # print(f"   Inside the folder: {root_directory_name}")
     # print(f"   Log-scale: {log_scale}")
 
     # Split the _OK or _Error part from the resolver name
@@ -747,17 +747,17 @@ def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_lim
 
 
 # Create retransmission plot
-def create_violin_plot(directory_name, file_name_prefix, data_param, plot_title, y_label):
+def create_violin_plot(root_directory_name, file_name_prefix, data_param, plot_title, y_label):
     data_list = data_param.copy()
 
     print(f"    Creating violin plot: {file_name_prefix}")
-    # print(f"   Inside the folder: {directory_name}")
+    # print(f"   Inside the folder: {root_directory_name}")
     # print(f"   Log-scale: {log_scale}")
 
     # Split the _OK or _Error part from the resolver name
     operator_name = file_name_prefix.split("_")[0]
 
-    save_path = f"{directory_name}/{operator_name}/{retransmission_plots_directory_name}"
+    save_path = f"{root_directory_name}/{operator_name}/{retransmission_plots_directory_name}"
     create_folder(save_path)
 
     # Create violin plot
@@ -1022,12 +1022,12 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
     # print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
     # print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
 
-    create_violin_plot(retransmission_plots_directory_name, file_name, udp_query_counts_of_pl,
+    create_violin_plot(root_directory_of_plots, file_name, udp_query_counts_of_pl,
                        "DNS UDP Query Retransmissions", "UDP Query Retransmission Counts")
-    create_violin_plot(retransmission_plots_directory_name, file_name, tcp_query_counts_of_pl,
+    create_violin_plot(root_directory_of_plots, file_name, tcp_query_counts_of_pl,
                        "DNS TCP Query Retransmissions", "TCP Query Retransmission Counts")
 
-    # TODO: Create violin plot for Response retransmission ranges
+    # Create violin plot for Response retransmission ranges
     udp_response_counts_of_pl = [[]] * len(packetloss_rates)
     tcp_response_counts_of_pl = [[]] * len(packetloss_rates)
     # (pl-rate, query-name, protocol-number): integer
@@ -1045,9 +1045,9 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
     # print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
     # print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
 
-    create_violin_plot(retransmission_plots_directory_name, file_name, udp_response_counts_of_pl,
+    create_violin_plot(root_directory_of_plots, file_name, udp_response_counts_of_pl,
                        "DNS UDP Response Retransmissions", "UDP Response Retransmission Counts")
-    create_violin_plot(retransmission_plots_directory_name, file_name, tcp_response_counts_of_pl,
+    create_violin_plot(root_directory_of_plots, file_name, tcp_response_counts_of_pl,
                        "DNS TCP Response Retransmissions", "TCP Response Retransmission Counts")
 
 

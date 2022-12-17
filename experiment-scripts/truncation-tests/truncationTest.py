@@ -15,8 +15,6 @@ sleep_time = 1
 # Time to sleep between packetloss configurations. (600 seconds = 10 minutes)
 sleep_time_between_packetloss_config = 600
 
-max_worker_count = 30
-
 # Determines how many times the program sends the query
 execute_count = 1
 
@@ -70,6 +68,8 @@ resolver_ip_addresses = [
     "199.85.126.20",  # Norton_2
     "199.85.126.30"  # Norton_3
 ]
+
+max_worker_count = len(resolver_ip_addresses)
 
 # Set the interface names for packet capture with tcpdump
 interface_1 = (

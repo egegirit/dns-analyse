@@ -47,6 +47,8 @@ resolver_ip_addresses = [
     "77.88.8.8",  # Yandex 2   (secondary.dns.yandex.ru )
 ]
 
+max_worker_count = len(resolver_ip_addresses)
+
 # Set the interface names for packet capture with tcpdump
 interface_1 = (
     "bond0"  # The interface of authoritative server without the packetloss filter
@@ -284,7 +286,7 @@ for current_packetloss_rate in packetloss_rates:
         # Measure the time of parallelization (Optional)
         start = time.perf_counter()
         # Context manager
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
             # Using list comprehension to build the results list
             # submit() schedules the callable to be executed and returns a 
             # future object representing the execution of the callable.

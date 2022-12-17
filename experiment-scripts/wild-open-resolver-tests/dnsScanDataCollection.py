@@ -34,6 +34,12 @@ all_query_names_pl_for_missing = {}
 tcp_counterpart_of_udp_query = {}
 ip_plrate_to_response_rcodes = {}
 
+# If a dns query is retransmitted 2 times and the 2. retransmission has a response packet to it
+# then dont count as unanswered here.
+unanswered_query_name_count = {}
+
+latencies_first_query_first_resp_OK = {}
+
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -125,6 +131,8 @@ def initialize_dictionaries(pcap_type):
         all_responses_count_pl[current_pl_rate] = 0
         rcode_0_udp_count_pl[current_pl_rate] = 0
         rcode_0_tcp_count_pl[current_pl_rate] = 0
+        latencies_first_query_first_resp_OK[current_pl_rate] = []
+        unanswered_query_name_count[current_pl_rate] = 0
 
         for rcode in rcodes:
             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
@@ -143,6 +151,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
     # to find corresponding responses to queries
     queries = {}
     responses = {}
+
+    # Calculate latency between first query and first response for RCODE 0 answers
+    first_latency_queries = {}
+    first_latency_responses = {}
 
     # Read the packets in the pcap file one by one
     index = 1
@@ -275,6 +287,15 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     else:
                         # print(f"Query duplicate: {query_name}, {dns_id}")
                         query_duplicate_by_pl[current_pl_rate] += 1
+
+                    # Calculate latency between first query and first OK response to it
+                    # Here, store the first query packets, in elif is_response_packet == 1: find the response
+                    if (query_name, is_response_packet) not in first_latency_queries:
+                        first_latency_queries[query_name, is_response_packet] = packet_time
+                    #     print(f"Length: {len(first_latency_queries)}")
+                    # else:
+                    #     print(f"Duplicate query name: {query_name}")
+
                 # Packet is a DNS response
                 elif is_response_packet == 1:
                     # if answer_count > 0:
@@ -371,6 +392,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
     if current_pl_rate not in responses_with_no_query_count_by_pl:
         responses_with_no_query_count_by_pl[current_pl_rate] = 0
     responses_with_no_query_count_by_pl[current_pl_rate] = len(responses)
+
+    if current_pl_rate not in unanswered_query_name_count:
+        unanswered_query_name_count[current_pl_rate] = 0
+    unanswered_query_name_count[current_pl_rate] = len(first_latency_queries)
 
 
 # Input: "10" Output 1

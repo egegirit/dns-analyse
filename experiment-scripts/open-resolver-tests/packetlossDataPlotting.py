@@ -228,9 +228,9 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
         else:
             rcode_other_counts[get_index_of_packetloss_rate(key[0])] += value
 
-    print(f"response_counts_of_pl: {response_counts_of_pl}")
-    print(f"udp_response_counts_of_pl: {udp_response_counts_of_pl}")
-    print(f"tcp_response_counts_of_pl: {tcp_response_counts_of_pl}")
+    # print(f"response_counts_of_pl: {response_counts_of_pl}")
+    # print(f"udp_response_counts_of_pl: {udp_response_counts_of_pl}")
+    # print(f"tcp_response_counts_of_pl: {tcp_response_counts_of_pl}")
 
     rcode_0_rates = [0] * len(packetloss_rates)
     rcode_0_udp_rates = [0] * len(packetloss_rates)
@@ -1019,8 +1019,8 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             if key[2] == 6:
                 tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value)
 
-    print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
-    print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
+    # print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
+    # print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
 
     create_violin_plot(retransmission_plots_directory_name, file_name, udp_query_counts_of_pl,
                        "DNS UDP Query Retransmissions", "UDP Query Retransmission Counts")
@@ -1042,8 +1042,8 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             if key[2] == 6:
                 tcp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value - 1)
 
-    print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
-    print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
+    # print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
+    # print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
 
     create_violin_plot(retransmission_plots_directory_name, file_name, udp_response_counts_of_pl,
                        "DNS UDP Response Retransmissions", "UDP Response Retransmission Counts")

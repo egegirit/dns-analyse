@@ -102,7 +102,7 @@ tcp_counterpart_of_udp_query = {}
 
 # If a dns query is retransmitted 2 times and the 2. retransmission has a response packet to it
 # then dont count as unanswered here.
-unanswered_query_name_count = {}
+query_names_with_no_ok_response_count = {}
 
 latencies_first_query_first_resp_OK = {}
 
@@ -179,7 +179,7 @@ def initialize_dictionaries(pcap_type):
         rcode_0_udp_count_pl[current_pl_rate] = 0
         rcode_0_tcp_count_pl[current_pl_rate] = 0
         latencies_first_query_first_resp_OK[current_pl_rate] = []
-        unanswered_query_name_count[current_pl_rate] = 0
+        query_names_with_no_ok_response_count[current_pl_rate] = 0
 
         for rcode in rcodes:
             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
@@ -444,9 +444,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # print(f"Unanswered query count/query packet count that doesn't have response: {len(queries)}")
     # print(f"Responses that doesn't have corresponding queries: {len(responses)}")
 
-    if current_pl_rate not in unanswered_query_name_count:
-        unanswered_query_name_count[current_pl_rate] = 0
-    unanswered_query_name_count[current_pl_rate] = len(first_latency_queries)
+    if current_pl_rate not in query_names_with_no_ok_response_count:
+        query_names_with_no_ok_response_count[current_pl_rate] = 0
+    query_names_with_no_ok_response_count[current_pl_rate] = len(first_latency_queries)
 
 
 # Input: "10" Output 1
@@ -504,7 +504,7 @@ def reset_for_next_plot():
     global rcode_0_tcp_count_pl
     global tcp_counterpart_of_udp_query
     global latencies_first_query_first_resp_OK
-    global unanswered_query_name_count
+    global query_names_with_no_ok_response_count
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -611,8 +611,8 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
 
     create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
                               latencies_first_query_first_resp_OK)
-    create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
-                              unanswered_query_name_count)
+    create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_Count_(PacketLoss)_[Counts]",
+                              query_names_with_no_ok_response_count)
 
     # for keys in list(all_query_names_pl.keys()):
     #     print(f"Key 2: {keys[2]}")

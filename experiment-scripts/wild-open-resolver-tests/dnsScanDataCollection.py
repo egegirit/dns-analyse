@@ -36,7 +36,7 @@ ip_plrate_to_response_rcodes = {}
 
 # If a dns query is retransmitted 2 times and the 2. retransmission has a response packet to it
 # then dont count as unanswered here.
-unanswered_query_name_count = {}
+query_names_with_no_ok_response_count = {}
 
 latencies_first_query_first_resp_OK = {}
 
@@ -132,7 +132,7 @@ def initialize_dictionaries(pcap_type):
         rcode_0_udp_count_pl[current_pl_rate] = 0
         rcode_0_tcp_count_pl[current_pl_rate] = 0
         latencies_first_query_first_resp_OK[current_pl_rate] = []
-        unanswered_query_name_count[current_pl_rate] = 0
+        query_names_with_no_ok_response_count[current_pl_rate] = 0
 
         for rcode in rcodes:
             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
@@ -405,9 +405,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
         responses_with_no_query_count_by_pl[current_pl_rate] = 0
     responses_with_no_query_count_by_pl[current_pl_rate] = len(responses)
 
-    if current_pl_rate not in unanswered_query_name_count:
-        unanswered_query_name_count[current_pl_rate] = 0
-    unanswered_query_name_count[current_pl_rate] = len(first_latency_queries)
+    if current_pl_rate not in query_names_with_no_ok_response_count:
+        query_names_with_no_ok_response_count[current_pl_rate] = 0
+    query_names_with_no_ok_response_count[current_pl_rate] = len(first_latency_queries)
 
 
 # Input: "10" Output 1
@@ -466,7 +466,7 @@ def reset_for_next_plot():
     global tcp_counterpart_of_udp_query
     global ip_plrate_to_response_rcodes
     global latencies_first_query_first_resp_OK
-    global unanswered_query_name_count
+    global query_names_with_no_ok_response_count
 
     all_query_names_pl = {}
     all_response_names_pl = {}

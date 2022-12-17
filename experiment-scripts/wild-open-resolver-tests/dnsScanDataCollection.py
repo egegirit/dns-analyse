@@ -95,7 +95,7 @@ def is_query_name_valid(query_name):
     query_pattern = "^[A-Za-z0-9]{5}_[A-Za-z0-9]{8}\.public-pl[0-9]{1,2}\.packetloss\.syssec-research\.mmci\.uni-saarland\.de\.$"
     search_result = re.search(query_pattern, query_name, re.IGNORECASE)
     if search_result is None:
-        print(f"Invalid query name: {query_name}")
+        # print(f"Invalid query name: {query_name}")
         return False
     else:
         return True
@@ -333,9 +333,13 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
 
                         # Store the latency directly using the rcode and current packetloss rate
                         # Create the latency keys if not created before
+                        if (current_pl_rate, rcode) not in latencies_by_pl_and_rcode:
+                            latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
                         latencies_by_pl_and_rcode[current_pl_rate, rcode].append(latency)
 
                         # Count the RCODEs of the packets of the pl rate
+                        if (current_pl_rate, rcode) not in rcodes_by_pl:
+                            rcodes_by_pl[current_pl_rate, rcode] = 0
                         rcodes_by_pl[current_pl_rate, rcode] += 1
 
                         # For RCODE 0 responses, check if its UDP or TCP and count it
@@ -364,6 +368,15 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     if (current_pl_rate, ip_addr_of_query) not in ip_plrate_to_response_rcodes:
                         ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query] = []
                     ip_plrate_to_response_rcodes[current_pl_rate, ip_addr_of_query].append(rcode)
+
+                    # Calculate latency between first query and first OK response to it
+                    # We found a response to a query name, check if RCODE is 0 and calculate latency
+                    if (query_name, 0) in first_latency_queries and rcode == 0:
+                        latency = float(packet_time - first_latency_queries[query_name, 0])
+                        latencies_first_query_first_resp_OK[current_pl_rate].append(latency)
+                        del first_latency_queries[query_name, 0]
+                        # print(f"Response to query found: {query_name}")
+                        # print(f"Length: {len(first_latency_queries)}")
 
             except (IndexError, UnicodeDecodeError):
                 # Don't print IndexErrors such as DNSQR Layer not found
@@ -452,6 +465,8 @@ def reset_for_next_plot():
     global rcode_0_tcp_count_pl
     global tcp_counterpart_of_udp_query
     global ip_plrate_to_response_rcodes
+    global latencies_first_query_first_resp_OK
+    global unanswered_query_name_count
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -466,6 +481,8 @@ def reset_for_next_plot():
     rcode_0_tcp_count_pl = {}
     tcp_counterpart_of_udp_query = {}
     ip_plrate_to_response_rcodes = {}
+    latencies_first_query_first_resp_OK = {}
+    unanswered_query_name_count = {}
 
     # print(f"Clean up for next plotting DONE")
 

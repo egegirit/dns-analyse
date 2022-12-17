@@ -17,71 +17,71 @@ client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
 
 # TODO: OPERATORS FOR THE FIRST PCAP
-# operators = {
-#     "AdGuard-1": "94-140-14-14",
-#     "AdGuard-2": "94-140-14-15",
-#     "CleanBrowsing-1": "185-228-168-168",
-#     "CleanBrowsing-2": "185-228-168-9",
-#     "Cloudflare-1": "1-1-1-1",
-#     "Cloudflare-2": "1-0-0-1",
-#     "Dyn-1": "216-146-35-35",
-#     "Dyn-2": "216-146-36-36",
-#     "Google-1": "8-8-8-8",
-#     "Google-2": "8-8-4-4",
-#     "Neustar-1": "64-6-64-6",
-#     "Neustar-2": "156-154-70-1",
-#     "OpenDNS-1": "208-67-222-222",
-#     "OpenDNS-2": "208-67-222-2",
-#     "Quad9-1": "9-9-9-9",
-#     "Quad9-2": "9-9-9-11",
-#     "Yandex-1": "77-88-8-1",
-#     "Yandex-2": "77-88-8-8"
-# }
-
-# All operators with their IP Addresses with dashes
 operators = {
     "AdGuard-1": "94-140-14-14",
     "AdGuard-2": "94-140-14-15",
-    "AdGuard-3": "94-140-14-140",
-
     "CleanBrowsing-1": "185-228-168-168",
     "CleanBrowsing-2": "185-228-168-9",
-    "CleanBrowsing-3": "185-228-168-10",
-
     "Cloudflare-1": "1-1-1-1",
-    "Cloudflare-2": "1-1-1-2",
-    "Cloudflare-3": "1-1-1-3",
-
+    "Cloudflare-2": "1-0-0-1",
     "Dyn-1": "216-146-35-35",
-
+    "Dyn-2": "216-146-36-36",
     "Google-1": "8-8-8-8",
-
+    "Google-2": "8-8-4-4",
     "Neustar-1": "64-6-64-6",
-    "Neustar-2": "156-154-70-2",
-    "Neustar-3": "156-154-70-3",
-    "Neustar-4": "156-154-70-4",
-    "Neustar-5": "156-154-70-5",
-
+    "Neustar-2": "156-154-70-1",
     "OpenDNS-1": "208-67-222-222",
     "OpenDNS-2": "208-67-222-2",
-    "OpenDNS-3": "208-67-222-123",
-
     "Quad9-1": "9-9-9-9",
     "Quad9-2": "9-9-9-11",
-    "Quad9-3": "9-9-9-10",
-
     "Yandex-1": "77-88-8-1",
-    "Yandex-2": "77-88-8-2",
-    "Yandex-3": "77-88-8-3",
-
-    "Level3-1": "209-244-0-3",
-    "Level3-2": "209-244-0-4",
-
-    "Norton-1": "199-85-126-10",
-    "Norton-2": "199-85-126-20",
-    "Norton-3": "199-85-126-30",
-
+    "Yandex-2": "77-88-8-8"
 }
+
+# All operators with their IP Addresses with dashes
+# operators = {
+#     "AdGuard-1": "94-140-14-14",
+#     "AdGuard-2": "94-140-14-15",
+#     "AdGuard-3": "94-140-14-140",
+#
+#     "CleanBrowsing-1": "185-228-168-168",
+#     "CleanBrowsing-2": "185-228-168-9",
+#     "CleanBrowsing-3": "185-228-168-10",
+#
+#     "Cloudflare-1": "1-1-1-1",
+#     "Cloudflare-2": "1-1-1-2",
+#     "Cloudflare-3": "1-1-1-3",
+#
+#     "Dyn-1": "216-146-35-35",
+#
+#     "Google-1": "8-8-8-8",
+#
+#     "Neustar-1": "64-6-64-6",
+#     "Neustar-2": "156-154-70-2",
+#     "Neustar-3": "156-154-70-3",
+#     "Neustar-4": "156-154-70-4",
+#     "Neustar-5": "156-154-70-5",
+#
+#     "OpenDNS-1": "208-67-222-222",
+#     "OpenDNS-2": "208-67-222-2",
+#     "OpenDNS-3": "208-67-222-123",
+#
+#     "Quad9-1": "9-9-9-9",
+#     "Quad9-2": "9-9-9-11",
+#     "Quad9-3": "9-9-9-10",
+#
+#     "Yandex-1": "77-88-8-1",
+#     "Yandex-2": "77-88-8-2",
+#     "Yandex-3": "77-88-8-3",
+#
+#     "Level3-1": "209-244-0-3",
+#     "Level3-2": "209-244-0-4",
+#
+#     "Norton-1": "199-85-126-10",
+#     "Norton-2": "199-85-126-20",
+#     "Norton-3": "199-85-126-30",
+#
+# }
 
 directory_of_client_datas = "ClientData"
 directory_of_auth_datas = "AuthData"
@@ -529,7 +529,7 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
     create_folder(save_path)
 
     udp_rects = ax.bar(arr, udp_list, width, bottom=0, color='dodgerblue')
-    tcp_rects = ax.bar(arr+width, tcp_list, width, bottom=0, color='red')
+    tcp_rects = ax.bar(arr + width, tcp_list, width, bottom=0, color='red')
 
     # Title of the graph, x and y label
     plot_title = f"{plot_title} ({file_name})"
@@ -587,7 +587,8 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
 
 
 # Create box plot for the calculated latencies
-def create_latency_box_plot(root_directory_name, file_name_prefix, bottom_limit, upper_limit, latency_list, log_scale=False):
+def create_latency_box_plot(root_directory_name, file_name_prefix, bottom_limit, upper_limit, latency_list,
+                            log_scale=False):
     print(f"    Creating box plot: {file_name_prefix}")
 
     # Filter the _OK or _SERVFAIL
@@ -646,7 +647,8 @@ def create_latency_box_plot(root_directory_name, file_name_prefix, bottom_limit,
 
 
 # Create violin plots of the calculated latencies
-def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_limit, upper_limit, latencies, log_scale=False):
+def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_limit, upper_limit, latencies,
+                               log_scale=False):
     # Workaround for preventing parameter variable overwrite outside the scope of this function
     latency_list = latencies.copy()
 
@@ -950,12 +952,12 @@ def create_unanswered_plot(file_name, root_directory_of_plots):
     query_names_with_no_ok_response_counts_dict = convert_string_to_dict(
         read_dict_from_file(directory_to_read + "/" + file_name + "/" + query_names_with_no_ok_response_counts_file))
 
-    create_bar_plot(file_name, unanswered_query_plots_directory_name, list(query_names_with_no_ok_response_counts_dict.values()),
+    create_bar_plot(file_name, unanswered_query_plots_directory_name,
+                    list(query_names_with_no_ok_response_counts_dict.values()),
                     root_directory_of_plots, "Unanswered Query Names", "Unanswered Query Names Count")
 
 
 def create_retransmission_plots(file_name, root_directory_of_plots):
-
     directory_to_read = ""
     if "client" in root_directory_of_plots.lower():
         directory_to_read = directory_of_client_datas
@@ -1001,16 +1003,23 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             elif key[2] == 17:
                 udp_response_retransmission_count_list[get_index_of_packetloss_rate(key[0])] += (value - 1)
 
-    create_multi_bar_plot(file_name, root_directory_of_plots, "Response Retransmission", "Response Retransmission Count",
+    create_multi_bar_plot(file_name, root_directory_of_plots, "Response Retransmission",
+                          "Response Retransmission Count",
                           udp_response_retransmission_count_list, tcp_response_retransmission_count_list)
 
     # Create violin plot for Query retransmission ranges
-    udp_query_counts_of_pl = [[]] * len(packetloss_rates)
-    tcp_query_counts_of_pl = [[]] * len(packetloss_rates)
+
+    udp_query_counts_of_pl = []
+    tcp_query_counts_of_pl = []
+    for pl in packetloss_rates:
+        udp_query_counts_of_pl.append([])
+        tcp_query_counts_of_pl.append([])
+
     # (pl-rate, query-name, protocol-number): integer
-    for key, value in all_queries_dict.items():
+    for key in list(all_queries_dict.keys()):
         # Retransmission occurs when a query is seen more than 1 times,
         # If a query is seen 2 times, the retransmission count is 2 - 1, because the first query was the original one
+        value = all_queries_dict[key]
         if value > 0:
             # Query was sent with UDP
             if key[2] == 17:
@@ -1019,6 +1028,7 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             if key[2] == 6:
                 tcp_query_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value)
 
+    # print(f"Query retransmission ranges:")
     # print(f"udp_query_counts_of_pl: {udp_query_counts_of_pl}")
     # print(f"tcp_query_counts_of_pl: {tcp_query_counts_of_pl}")
 
@@ -1028,8 +1038,12 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
                        "DNS TCP Query Retransmissions", "TCP Query Retransmission Counts")
 
     # Create violin plot for Response retransmission ranges
-    udp_response_counts_of_pl = [[]] * len(packetloss_rates)
-    tcp_response_counts_of_pl = [[]] * len(packetloss_rates)
+    udp_response_counts_of_pl = []
+    tcp_response_counts_of_pl = []
+    for pl in packetloss_rates:
+        udp_response_counts_of_pl.append([])
+        tcp_response_counts_of_pl.append([])
+
     # (pl-rate, query-name, protocol-number): integer
     for key, value in all_response_dict.items():
         # Retransmission occurs when a query is seen more than 1 times,
@@ -1042,8 +1056,8 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             if key[2] == 6:
                 tcp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value - 1)
 
-    # print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
-    # print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
+    print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
+    print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
 
     create_violin_plot(root_directory_of_plots, file_name, udp_response_counts_of_pl,
                        "DNS UDP Response Retransmissions", "UDP Response Retransmission Counts")
@@ -1052,7 +1066,6 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
 
 
 def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_to_read):
-
     # Create rate plot
     create_rate_plot(file_name, root_directory_of_plots, directory_of_datas_to_read)
 

@@ -1018,6 +1018,30 @@ def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_
     # Create retransmission plots
     create_retransmission_plots(file_name, root_directory_of_plots)
 
+    # Create stale record plot
+    create_stale_record_plots(file_name, root_directory_of_plots)
+
+
+def create_stale_record_plots(file_name, root_directory_of_plots):
+
+    directory_to_read = ""
+    if "client" in root_directory_of_plots.lower():
+        directory_to_read = directory_of_client_datas
+    elif "auth" in root_directory_of_plots.lower():
+        directory_to_read = directory_of_auth_datas
+
+    stale_records_iterations_dict = convert_string_to_dict(
+        read_dict_from_file(directory_to_read + "/" + file_name + "/" + stale_records_iterations_file))
+
+    # RCODE list
+    rcode_list = list(stale_records_iterations_dict.values())
+    rcode_list_length = len(rcode_list)
+    x_axis_time = [ttl] * rcode_list_length
+    for i in range(rcode_list_length):
+        x_axis_time[i] *= i
+
+        
+
 
 def create_plots_for(file_name):
     print(f"Creating plot with name: {file_name}")
@@ -1048,31 +1072,6 @@ def create_plots_for(file_name):
     create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_on_auth_count_list,
                     auth_root_plot_folder_name, "Missing Queries", "Missing Query Count")
 
-
-# New Operators
-# "AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
-#
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3",
-#                  "Cloudflare-1",
-#                  "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3",
-#                  "Neustar-4",
-#                  "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1",
-#                  "Yandex-2",
-#                  "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
-
-# --------------
-
-# Old PCAP Operators
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
-# "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-#                  "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-#                  "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-#                  "Yandex-1", "Yandex-2"]
 
 all_resolvers = list(operators.keys())
 

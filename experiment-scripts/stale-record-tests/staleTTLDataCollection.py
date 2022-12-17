@@ -57,7 +57,7 @@ latencies_first_query_first_resp_OK = {}
 # E.g. "8.8.8.8": [1,1,0] means Google-1 had 2 stale record and then ServFail
 stale_records_iterations = {}
 
-ttl_wait_time = 60
+ttl_list = [60, 300, 900, 3600]
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -199,8 +199,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                 pl_rate_of_packet = splitted_query[5]
                 random_chars_of_query = splitted_query[6]
                 pcap_ttl_value = splitted_query[7].split(".")[0].split("TTL")[1]
-                global ttl_wait_time
-                pcap_ttl_value = ttl_wait_time
+
                 operator_name = get_operator_name_from_ip(ip_with_dashes)
 
                 print(f"Query name: {query_name}")
@@ -551,42 +550,45 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
         root_folder_name ="ClientData"
     elif "auth" in pcap_file_prefix:
         root_folder_name = "AuthData"
-    create_folder(root_folder_name)
-
-    # Path to store datas
-    data_path = root_folder_name + "/" + file_name
-
-    # Create the folder for the current resolver/option
-    create_folder(data_path)
 
     # read the pcap files
-    for current_pl_rate in packetloss_rates:
-        print(f"  Current packetloss rate: {current_pl_rate}")
-        pcap_file_name = pcap_file_prefix + str(current_pl_rate) + ".pcap"
-        read_single_pcap(pcap_file_name, current_pl_rate, resolvers_to_filter)
+    for ttl in ttl_list:
+        # Path to store datas
+        data_path = root_folder_name + "TTL" + str(ttl) + "/" + file_name
 
-    create_file_write_content(f"{data_path}/RCODE_Counts_(PacketLoss_RCODE)_Count", rcodes_by_pl)
-    create_file_write_content(f"{data_path}/Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count", tcp_counterpart_of_udp_query)
-    create_file_write_content(f"{data_path}/All_Responses_(PacketLoss)_Count", all_responses_count_pl)
-    create_file_write_content(f"{data_path}/Unanswered_Query_Count_(PacketLoss)_Count", unanswered_query_count_by_pl)
-    create_file_write_content(f"{data_path}/Responses_With_No_Query_Count_(PacketLoss)_Count", responses_with_no_query_count_by_pl)
+        # Create the folder for the current resolver/option
+        create_folder(data_path)
 
-    create_file_write_content(f"{data_path}/Response_Rcode_0_UDP_Count_(PacketLoss)_Count",
-                              rcode_0_udp_count_pl)
-    create_file_write_content(f"{data_path}/Response_Rcode_0_TCP_Count_(PacketLoss)_Count",
-                              rcode_0_tcp_count_pl)
+        pcap_file_name = pcap_file_prefix + str(ttl) + ".pcap"
+        read_single_pcap(pcap_file_name, packetloss_rates[0], resolvers_to_filter)
 
-    create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
+        create_file_write_content(f"{data_path}/RCODE_Counts_(PacketLoss_RCODE)_Count", rcodes_by_pl)
+        create_file_write_content(f"{data_path}/Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count", tcp_counterpart_of_udp_query)
+        create_file_write_content(f"{data_path}/All_Responses_(PacketLoss)_Count", all_responses_count_pl)
+        create_file_write_content(f"{data_path}/Unanswered_Query_Count_(PacketLoss)_Count", unanswered_query_count_by_pl)
+        create_file_write_content(f"{data_path}/Responses_With_No_Query_Count_(PacketLoss)_Count", responses_with_no_query_count_by_pl)
 
-    create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
-                              latencies_first_query_first_resp_OK)
-    create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
-                              query_names_with_no_ok_response_count)
-    create_file_write_content(f"{data_path}/Stale_Record_Iterations_(IP-Of-Resolver)_[RCODEs]",
-                              stale_records_iterations)
+        create_file_write_content(f"{data_path}/Response_Rcode_0_UDP_Count_(PacketLoss)_Count",
+                                  rcode_0_udp_count_pl)
+        create_file_write_content(f"{data_path}/Response_Rcode_0_TCP_Count_(PacketLoss)_Count",
+                                  rcode_0_tcp_count_pl)
 
-    create_file_write_content(f"{data_path}/All_Queries_(PacketLoss_QueryName_Protocol)_Count", all_query_names_pl)
-    create_file_write_content(f"{data_path}/All_Responses_(PacketLoss_QueryName_Protocol)_Count", all_response_names_pl)
+        create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
+
+        create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
+                                  latencies_first_query_first_resp_OK)
+        create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
+                                  query_names_with_no_ok_response_count)
+        create_file_write_content(f"{data_path}/Stale_Record_Iterations_(IP-Of-Resolver)_[RCODEs]",
+                                  stale_records_iterations)
+
+        create_file_write_content(f"{data_path}/All_Queries_(PacketLoss_QueryName_Protocol)_Count", all_query_names_pl)
+        create_file_write_content(f"{data_path}/All_Responses_(PacketLoss_QueryName_Protocol)_Count", all_response_names_pl)
+
+        if "auth" in pcap_file_prefix:
+            # create_file_write_content(f"missing_query_count_list{file_name}", missing_query_count_list)
+            create_file_write_content(f"{data_path}/Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames]",
+                                      all_query_names_pl_for_missing)
 
 
 def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
@@ -606,8 +608,8 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
     print(f"Filtering: {resolvers_to_filter}")
 
     # Prefixes of the pcap file names
-    client_prefix = "tcpdump_log_client_bond0_"
-    auth_prefix = "tcpdump_log_auth_bond0_"
+    client_prefix = "client_HEI_TTL"
+    auth_prefix = "auth_HEI_TTL"
 
     # Create client plots
     extract_data_from(file_name, client_prefix, resolvers_to_filter)
@@ -620,16 +622,6 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
 
     # Create auth plots
     extract_data_from(file_name, auth_prefix, resolvers_to_filter)
-
-    # Check if client or auth data, create root folder for datas
-    root_folder_name = "AuthData"
-    create_folder(root_folder_name)
-
-    # Path to store datas
-    data_path = root_folder_name + "/" + file_name
-
-    # create_file_write_content(f"missing_query_count_list{file_name}", missing_query_count_list)
-    create_file_write_content(f"{data_path}/Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames]", all_query_names_pl_for_missing)
 
     # reset the dictionaries for the next plotting/pcaps
     reset_for_next_plot()

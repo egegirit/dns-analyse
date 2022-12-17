@@ -388,9 +388,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 # packet.show()
 
         # See how far we are when running the script
-        if index % 200000 == 0:
+        if index % 250000 == 0:
             print(f"      Packet number: ({datetime.now()}) {index}")
             input("Press any key to continue: ")
+            print(f"Continuing...")
         index += 1
 
     # After examining all the packets in the pcap file,

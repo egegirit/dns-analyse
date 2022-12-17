@@ -372,7 +372,7 @@ for current_packetloss_rate in packetloss_rates:
     print(f"  {current_packetloss_rate}% Packetloss Config Finished")
 
     # If we are in the last iteration, no need to wait
-    if current_packetloss_rate != 95:
+    if current_packetloss_rate != packetloss_rates[-1]:
         print(
             f"  Sleeping for {sleep_time_between_packetloss_config} seconds for the next packetloss iteration."
         )

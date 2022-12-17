@@ -91,6 +91,8 @@ caches_of_resolvers = {
     "9.9.9.11": 8,  # Quad9 2
 }
 
+max_worker_count = len(resolver_ip_addresses)
+
 
 # Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
 # Returns True when no error.
@@ -452,7 +454,7 @@ for current_packetloss_rate in packetloss_rates:
     print(f"\nPREFETCH PHASE BEGIN, SENDING QUERIES")
 
     # Context manager
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
         results = [executor.submit(send_queries_to_resolvers,
                                    current_resolver_ip,
                                    current_packetloss_rate,
@@ -478,7 +480,7 @@ for current_packetloss_rate in packetloss_rates:
     print(f"\nSTALE PHASE BEGIN, SENDING QUERIES")
 
     # Context manager
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_worker_count) as executor:
         results = [executor.submit(stale_phase,
                                    current_resolver_ip,
                                    generated_chars)

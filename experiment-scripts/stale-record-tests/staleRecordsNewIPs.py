@@ -26,8 +26,6 @@ sleep_time_between_packetloss_config = 600
 # The TTL value of the A records on the authoritative server
 ttl_value_of_records = 130
 
-max_worker_count = 30
-
 # How many A records there are for each IP
 # This also determines the count of the results we will get for each IP and each Packetloss config
 count_of_a_records = 4
@@ -125,6 +123,7 @@ caches_of_resolvers = {
     "199.85.126.30": 4  # Norton_3
 }
 
+max_worker_count = len(resolver_ip_addresses)
 
 # Simulate packetloss with iptables, in case of an exception, the code attempts to remove the rule
 # Returns True when no error.

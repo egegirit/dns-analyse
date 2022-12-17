@@ -92,7 +92,7 @@ def get_values_of_dict(dictionary):
 
 # If a query name does not have the defined structure, skip examining the packet
 def is_query_name_valid(query_name):
-    query_pattern = "^stale-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[a-zA-Z0-9]{3}-TTL[0-9]{2,4}\.packetloss\.syssec\-research\.mmci\.uni\-saarland\.de$"
+    query_pattern = "^stale-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[0-9]{1,3}-[a-zA-Z0-9]{3}-TTL[0-9]{2,4}\.packetloss\.syssec\-research\.mmci\.uni\-saarland\.de.$"
     search_result = re.search(query_pattern, query_name, re.IGNORECASE)
     if search_result is None:
         # print(f"Invalid query name: {query_name}")
@@ -198,16 +198,16 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                                  splitted_query[3] + "-" + splitted_query[4]
                 pl_rate_of_packet = splitted_query[5]
                 random_chars_of_query = splitted_query[6]
-                pcap_ttl_value = splitted_query[7].split(".")[0].split("TTL")[1]
+                # pcap_ttl_value = splitted_query[7].split(".")[0].split("TTL")[1]
 
                 operator_name = get_operator_name_from_ip(ip_with_dashes)
 
-                print(f"Query name: {query_name}")
-                print(f"  ip_with_dashes: {ip_with_dashes}")
-                print(f"  pl_rate_of_packet: {pl_rate_of_packet}")
-                print(f"  random_chars_of_query: {random_chars_of_query}")
-                print(f"  pcap_ttl_value: {pcap_ttl_value}")
-                print(f"  operator_name: {operator_name}")
+                # print(f"Query name: {query_name}")
+                # print(f"  ip_with_dashes: {ip_with_dashes}")
+                # print(f"  pl_rate_of_packet: {pl_rate_of_packet}")
+                # print(f"  random_chars_of_query: {random_chars_of_query}")
+                # print(f"  pcap_ttl_value: {pcap_ttl_value}")
+                # print(f"  operator_name: {operator_name}")
 
                 # Filter if packetloss rate of packet does not match the pl rate of pcap file
                 if str(current_pl_rate) != str(pl_rate_of_packet):

@@ -194,17 +194,12 @@ def initialize_dictionaries(pcap_type):
 def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     print(f"    Reading file: {pcap_file_name}")
 
-    # Get a list of all packets (Very slow if the PCAP file is large)
-    # all_packets = rdpcap(pcap_file_name)
-    # print(f"Count of packets in pcap: {len(all_packets)}")
-
     # Store the dns packets by their attributes: (dns_id, query_name, is_response_packet) in a hash table
     queries = {}
     responses = {}
 
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
-    first_latency_responses = {}
 
     # Read the packets in the pcap file one by one
     index = 1

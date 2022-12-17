@@ -104,10 +104,12 @@ all_rcode_counts_file = "RCODE_Counts_(PacketLoss_RCODE)_Count.txt"
 tcp_counterpart_of_udp_query_file = "Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count.txt"
 responses_with_no_query_file = "Responses_With_No_Query_Count_(PacketLoss)_Count.txt"
 unanswered_query_count_file = "Unanswered_Query_Count_(PacketLoss)_Count.txt"
+unanswered_query_name_counts_file = "Unanswered_Query_Names_Count_(PacketLoss)_[Counts].txt"
 response_rcode_0_udp_count_file = "Response_Rcode_0_UDP_Count_(PacketLoss)_Count.txt"
 response_rcode_0_tcp_count_file = "Response_Rcode_0_TCP_Count_(PacketLoss)_Count.txt"
 missing_query_names_on_auth_file = "Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames].txt"
 all_responses_of_of_counts_file = "All_Responses_(PacketLoss)_Count.txt"
+latencies_first_query_first_ok_resp_file = "Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies].txt"
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -916,6 +918,17 @@ def create_latency_plots(file_name, root_directory_of_plots):
     create_latency_box_plot(root_directory_of_plots, file_name + "_Error", 0, upper_limit,
                             rcode_2_resp_latencies, log_scale=False)
 
+    # Create latency between first query first OK response plot
+    first_latencies_dict = convert_string_to_dict(
+        read_dict_from_file(directory_to_read + "/" + file_name + "/" + latencies_first_query_first_ok_resp_file))
+
+    first_latency_values_as_list = list(first_latencies_dict.values())
+
+    create_latency_violin_plot(root_directory_of_plots, file_name + "_1st-Query-1st-OK-Response", 0, upper_limit,
+                               first_latency_values_as_list, log_scale=False)
+    create_latency_box_plot(root_directory_of_plots, file_name + "_1st-Query-1st-OK-Response", 0, upper_limit,
+                            first_latency_values_as_list, log_scale=False)
+
 
 def create_unanswered_plot(file_name, root_directory_of_plots):
     # Extract unanswered data
@@ -929,19 +942,15 @@ def create_unanswered_plot(file_name, root_directory_of_plots):
     unanswered_query_count_dict = convert_string_to_dict(
         read_dict_from_file(directory_to_read + "/" + file_name + "/" + unanswered_query_count_file))
 
-    # Unanswered rates! Not count
-    # unanswered_query_rates = [0] * len(packetloss_rates)
-    # for index in range(len(packetloss_rates)):
-    #     # TODO: Separate graph for unanswered queries
-    #     try:
-    #         unanswered_query_rates[index] = (unanswered_query_count_dict[packetloss_rates[index]] /
-    #                                          query_counts_of_pl[packetloss_rates[index]]) * 100
-    #     except ZeroDivisionError:
-    #         unanswered_query_rates[index] = 0
-
     # Create unanswered query plot
     create_bar_plot(file_name, unanswered_query_plots_directory_name, list(unanswered_query_count_dict.values()),
                     root_directory_of_plots, "Unanswered Queries", "Unanswered Query Count")
+
+    unanswered_query_name_count_dict = convert_string_to_dict(
+        read_dict_from_file(directory_to_read + "/" + file_name + "/" + unanswered_query_name_counts_file))
+
+    create_bar_plot(file_name, unanswered_query_plots_directory_name, list(unanswered_query_name_count_dict.values()),
+                    root_directory_of_plots, "Unanswered Query Names", "Unanswered Query Names Count")
 
 
 def create_retransmission_plots(file_name, root_directory_of_plots):

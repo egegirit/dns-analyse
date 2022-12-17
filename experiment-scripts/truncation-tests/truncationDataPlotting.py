@@ -950,7 +950,7 @@ def create_unanswered_plot(file_name, root_directory_of_plots):
         read_dict_from_file(directory_to_read + "/" + file_name + "/" + query_names_with_no_ok_response_counts_file))
 
     create_bar_plot(file_name, unanswered_query_plots_directory_name, list(query_names_with_no_ok_response_counts_dict.values()),
-                    root_directory_of_plots, "Queries With No Responses", "Query With No Responses Count")
+                    root_directory_of_plots, "Queries With No OK Responses", "Query With No OK Responses Count")
 
 
 def create_retransmission_plots(file_name, root_directory_of_plots):

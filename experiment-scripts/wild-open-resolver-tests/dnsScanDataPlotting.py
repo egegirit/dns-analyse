@@ -37,7 +37,7 @@ all_rcode_counts_file = "RCODE_Counts_(PacketLoss_RCODE)_Count.txt"
 tcp_counterpart_of_udp_query_file = "Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count.txt"
 responses_with_no_query_file = "Responses_With_No_Query_Count_(PacketLoss)_Count.txt"
 unanswered_query_count_file = "Unanswered_Query_Count_(PacketLoss)_Count.txt"
-unanswered_query_name_counts_file = "Unanswered_Query_Names_Count_(PacketLoss)_[Counts].txt"
+query_names_with_no_ok_response_counts_file = "Unanswered_Query_Names_Count_(PacketLoss)_[Counts].txt"
 response_rcode_0_udp_count_file = "Response_Rcode_0_UDP_Count_(PacketLoss)_Count.txt"
 response_rcode_0_tcp_count_file = "Response_Rcode_0_TCP_Count_(PacketLoss)_Count.txt"
 missing_query_names_on_auth_file = "Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames].txt"
@@ -881,11 +881,11 @@ def create_unanswered_plot(file_name, root_directory_of_plots):
     create_bar_plot(file_name, unanswered_query_plots_directory_name, list(unanswered_query_count_dict.values()),
                     root_directory_of_plots, "Unanswered Queries", "Unanswered Query Count")
 
-    unanswered_query_name_count_dict = convert_string_to_dict(
-        read_dict_from_file(directory_to_read + "/" + file_name + "/" + unanswered_query_name_counts_file))
+    query_names_with_no_ok_response_counts_dict = convert_string_to_dict(
+        read_dict_from_file(directory_to_read + "/" + file_name + "/" + query_names_with_no_ok_response_counts_file))
 
-    create_bar_plot(file_name, unanswered_query_plots_directory_name, list(unanswered_query_name_count_dict.values()),
-                    root_directory_of_plots, "Unanswered Query Names", "Unanswered Query Names Count")
+    create_bar_plot(file_name, unanswered_query_plots_directory_name, list(query_names_with_no_ok_response_counts_dict.values()),
+                    root_directory_of_plots, "Queries With No Responses", "Query With No Responses Count")
 
 
 def create_retransmission_plots(file_name, root_directory_of_plots):

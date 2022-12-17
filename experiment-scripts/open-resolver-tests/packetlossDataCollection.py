@@ -100,6 +100,11 @@ all_query_names_pl_for_missing = {}
 
 tcp_counterpart_of_udp_query = {}
 
+# If a dns query is retransmitted 2 times and the 2. retransmission has a response packet to it
+# then dont count as unanswered here.
+unanswered_query_name_count = {}
+
+latencies_first_query_first_resp_OK = {}
 
 # Create a folder with the given name
 def create_folder(folder_name):
@@ -173,6 +178,8 @@ def initialize_dictionaries(pcap_type):
         all_responses_count_pl[current_pl_rate] = 0
         rcode_0_udp_count_pl[current_pl_rate] = 0
         rcode_0_tcp_count_pl[current_pl_rate] = 0
+        latencies_first_query_first_resp_OK[current_pl_rate] = []
+        unanswered_query_name_count[current_pl_rate] = 0
 
         for rcode in rcodes:
             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
@@ -194,6 +201,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # Store the dns packets by their attributes: (dns_id, query_name, is_response_packet) in a hash table
     queries = {}
     responses = {}
+
+    # Calculate latency between first query and first response for RCODE 0 answers
+    first_latency_queries = {}
+    first_latency_responses = {}
 
     # Read the packets in the pcap file one by one
     index = 1
@@ -338,6 +349,15 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     else:
                         # print(f"Query duplicate: {query_name}, {dns_id}")
                         query_duplicate_by_pl[current_pl_rate] += 1
+
+                    # Calculate latency between first query and first OK response to it
+                    # Here, store the first query packets, in elif is_response_packet == 1: find the response
+                    if (query_name, is_response_packet) not in first_latency_queries:
+                        first_latency_queries[query_name, is_response_packet] = packet_time
+                    #     print(f"Length: {len(first_latency_queries)}")
+                    # else:
+                    #     print(f"Duplicate query name: {query_name}")
+
                 # DNS response
                 elif is_response_packet == 1:
 
@@ -401,8 +421,19 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"  @@ Duplicate response packet detected for {query_name}, {dns_id}")
                         pass
 
+                    # Calculate latency between first query and first OK response to it
+                    # We found a response to a query name, check if RCODE is 0 and calculate latency
+                    if (query_name, 0) in first_latency_queries and rcode == 0:
+                        latency = float(packet_time - first_latency_queries[query_name, 0])
+                        latencies_first_query_first_resp_OK[current_pl_rate].append(latency)
+                        del first_latency_queries[query_name, 0]
+                        # print(f"Response to query found: {query_name}")
+                        # print(f"Length: {len(first_latency_queries)}")
+
             except Exception as e:
                 print(f"  Error reading packet: {e}")
+                print(f"  Error Type: {type(e)}")  # the exception instance
+                traceback.print_exc()
                 # packet.show()
         index += 1
 
@@ -417,6 +448,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
     # print(f"Unanswered query count/query packet count that doesn't have response: {len(queries)}")
     # print(f"Responses that doesn't have corresponding queries: {len(responses)}")
+
+    if current_pl_rate not in unanswered_query_name_count:
+        unanswered_query_name_count[current_pl_rate] = 0
+    unanswered_query_name_count[current_pl_rate] = len(first_latency_queries)
 
 
 # Input: "10" Output 1
@@ -473,6 +508,8 @@ def reset_for_next_plot():
     global rcode_0_udp_count_pl
     global rcode_0_tcp_count_pl
     global tcp_counterpart_of_udp_query
+    global latencies_first_query_first_resp_OK
+    global unanswered_query_name_count
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -486,6 +523,8 @@ def reset_for_next_plot():
     rcode_0_udp_count_pl = {}
     rcode_0_tcp_count_pl = {}
     tcp_counterpart_of_udp_query = {}
+    latencies_first_query_first_resp_OK = {}
+    unanswered_query_name_count = {}
 
     # print(f"Clean up for next plotting DONE")
 
@@ -574,6 +613,11 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
     # servfail_latencies = extracted_latencies[1]
 
     create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
+
+    create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
+                              latencies_first_query_first_resp_OK)
+    create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
+                              unanswered_query_name_count)
 
     # for keys in list(all_query_names_pl.keys()):
     #     print(f"Key 2: {keys[2]}")

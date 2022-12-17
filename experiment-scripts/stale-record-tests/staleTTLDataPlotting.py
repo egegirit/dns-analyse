@@ -1040,8 +1040,6 @@ def create_stale_record_plots(file_name, root_directory_of_plots):
     for i in range(rcode_list_length):
         x_axis_time[i] *= i
 
-        
-
 
 def create_plots_for(file_name):
     print(f"Creating plot with name: {file_name}")

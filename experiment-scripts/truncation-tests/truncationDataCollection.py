@@ -604,41 +604,12 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
     create_file_write_content(f"{data_path}/Response_Rcode_0_TCP_Count_(PacketLoss)_Count",
                               rcode_0_tcp_count_pl)
 
-    # extracted_latencies = extract_latencies_from_dict()
-    # ok_latencies = extracted_latencies[0]
-    # servfail_latencies = extracted_latencies[1]
-
     create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
 
     create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
                               latencies_first_query_first_resp_OK)
     create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
                               query_names_with_no_ok_response_count)
-
-    # for keys in list(all_query_names_pl.keys()):
-    #     print(f"Key 2: {keys[2]}")
-    #     # Check if there was really a retransmission
-    #     # (count should be > 1 bcs first one is the original, not the duplicate)
-    #     result = all_query_names_pl[keys]
-    #     if result > 1:
-    #         # TCP
-    #         if keys[2] == 6:
-    #             tcp_query_retransmission_count_list[keys[0]].append(result)
-    #         elif keys[2] == 17:
-    #             udp_query_retransmission_count_list[keys[0]].append(result)
-    #             print(f"  UDP key 0: {keys[0]}")
-
-    # for keys in list(all_response_names_pl.keys()):
-    #     # Check if there was really a retransmission
-    #     # (count should be > 1 bcs first one is the original, not the duplicate)
-    #     # - 1 because 1 means the response query name was seen only once (no retransmission)
-    #     result = all_response_names_pl[keys] - 1
-    #     if result > 1:
-    #         # TCP
-    #         if keys[2] == 6:
-    #             tcp_response_retransmission_count_list[keys[0]].append(result)
-    #         elif keys[2] == 17:
-    #             udp_response_retransmission_count_list[keys[0]].append(result)
 
     create_file_write_content(f"{data_path}/All_Queries_(PacketLoss_QueryName_Protocol)_Count", all_query_names_pl)
     create_file_write_content(f"{data_path}/All_Responses_(PacketLoss_QueryName_Protocol)_Count", all_response_names_pl)
@@ -693,27 +664,7 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
     reset_after_auth_pcaps()
 
 
-# New Operators
-# "AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
-
-all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-"Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-"Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-"Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
-
-# --------------
-
-# Old PCAP Operators
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
-# "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-#                  "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-#                  "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-#                  "Yandex-1", "Yandex-2"]
+all_resolvers = list(operators.keys())
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:

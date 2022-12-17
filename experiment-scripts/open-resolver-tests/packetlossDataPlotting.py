@@ -1008,7 +1008,6 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
                           udp_response_retransmission_count_list, tcp_response_retransmission_count_list)
 
     # Create violin plot for Query retransmission ranges
-
     udp_query_counts_of_pl = []
     tcp_query_counts_of_pl = []
     for pl in packetloss_rates:
@@ -1056,8 +1055,8 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
             if key[2] == 6:
                 tcp_response_counts_of_pl[get_index_of_packetloss_rate(key[0])].append(value - 1)
 
-    print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
-    print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
+    # print(f"udp_query_counts_of_pl: {udp_response_counts_of_pl}")
+    # print(f"tcp_query_counts_of_pl: {tcp_response_counts_of_pl}")
 
     create_violin_plot(root_directory_of_plots, file_name, udp_response_counts_of_pl,
                        "DNS UDP Response Retransmissions", "UDP Response Retransmission Counts")

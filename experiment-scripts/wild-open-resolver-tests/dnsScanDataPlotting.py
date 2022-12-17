@@ -939,8 +939,11 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
                           udp_response_retransmission_count_list, tcp_response_retransmission_count_list)
 
     # Create violin plot for Query retransmission ranges
-    udp_query_counts_of_pl = [[]] * len(packetloss_rates)
-    tcp_query_counts_of_pl = [[]] * len(packetloss_rates)
+    udp_query_counts_of_pl = []
+    tcp_query_counts_of_pl = []
+    for pl in packetloss_rates:
+        udp_query_counts_of_pl.append([])
+        tcp_query_counts_of_pl.append([])
     # (pl-rate, query-name, protocol-number): integer
     for key, value in all_queries_dict.items():
         # Retransmission occurs when a query is seen more than 1 times,
@@ -962,8 +965,12 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
                        "DNS TCP Query Retransmissions", "TCP Query Retransmission Counts")
 
     # Create violin plot for Response retransmission ranges
-    udp_response_counts_of_pl = [[]] * len(packetloss_rates)
-    tcp_response_counts_of_pl = [[]] * len(packetloss_rates)
+    udp_response_counts_of_pl = []
+    tcp_response_counts_of_pl = []
+    for pl in packetloss_rates:
+        udp_response_counts_of_pl.append([])
+        tcp_response_counts_of_pl.append([])
+
     # (pl-rate, query-name, protocol-number): integer
     for key, value in all_response_dict.items():
         # Retransmission occurs when a query is seen more than 1 times,

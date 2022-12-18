@@ -1,0 +1,1 @@
+{0: ['185-228-168-168-27-pl0.packetloss.syssec-research.mmci.uni-saarland.de.'], 10: [], 20: [], 30: [], 40: [], 50: [], 60: [], 70: [], 80: [], 85: [], 90: ['185-228-168-168-1-pl90.packetloss.syssec-research.mmci.uni-saarland.de.'], 95: []}

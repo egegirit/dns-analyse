@@ -205,6 +205,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
 
+    query_names_with_no_ok_response_to_it = {}
+
     # Read the packets in the pcap file one by one
     index = 1
     for packet in PcapReader(pcap_file_name):
@@ -358,8 +360,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     #     print(f"Duplicate query name: {query_name}")
 
                     # Unique query name found
-                    if (query_name, is_response_packet) not in query_names_with_no_ok_response_to_it:
-                        query_names_with_no_ok_response_to_it[query_name, is_response_packet] = rcode
+                    if query_name not in query_names_with_no_ok_response_to_it:
+                        query_names_with_no_ok_response_to_it[query_name] = 0
                     else:
                         # Query name was seen before
                         if (current_pl_rate, query_name) not in retransmitted_query_names_and_retr_counts:
@@ -445,8 +447,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"Response to query found: {query_name}")
                         # print(f"Length: {len(first_latency_queries)}")
 
-                    if (query_name, 0) in query_names_with_no_ok_response_to_it and rcode == 0 and answer_count > 0:
-                        del query_names_with_no_ok_response_to_it[query_name, 0]
+                    # Found an OK response to a query
+                    if query_name in query_names_with_no_ok_response_to_it and rcode == 0 and answer_count > 0:
+                        del query_names_with_no_ok_response_to_it[query_name]
 
             except Exception as e:
                 print(f"  Error reading packet: {e}")
@@ -544,6 +547,7 @@ def reset_for_next_plot():
     rcode_0_tcp_count_pl = {}
     tcp_counterpart_of_udp_query = {}
     latencies_first_query_first_resp_OK = {}
+    query_names_with_no_ok_response_count = {}
     query_names_with_no_ok_response_to_it = {}
     retransmitted_query_names_and_retr_counts = {}
 
@@ -722,23 +726,6 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
     # Reset missing query count
     reset_after_auth_pcaps()
 
-
-# New Operators
-# "AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
-#
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
-
-# --------------
-
-# Old PCAP Operators
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
-# "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
 
 all_resolvers = list(operators.keys())
 

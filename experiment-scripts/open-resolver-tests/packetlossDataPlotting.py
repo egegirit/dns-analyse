@@ -1147,13 +1147,13 @@ def create_plots_for(file_name):
                 retransmission_success[key[0]] = []
             retransmission_success[key[0]].append(1)
 
-    create_bar_plot_for_retransmission_succes_rate(file_name, retransmission_plots_directory_name, retransmission_success,
+    create_bar_plot_for_retransmission_success_rate(file_name, retransmission_plots_directory_name, retransmission_success,
                                                    auth_root_plot_folder_name, "Retransmission Success Rates",
                                                    "Retransmission Success Rates")
 
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
-def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_name, retransmission_success, root_directory_name, plot_title, y_label):
+def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_name, retransmission_success, root_directory_name, plot_title, y_label):
 
     success_ratios = {}
     for key, value in retransmission_success.items():
@@ -1183,7 +1183,7 @@ def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_n
     arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
+    bar_pos = arr  # Position of the bar (middle of the x-axis tick/packetloss rate)
 
     save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
     create_folder(save_path)
@@ -1199,7 +1199,7 @@ def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_n
     plt.title(plot_title, x=0.5, y=1.1)
 
     # Limits of the X and Y axis
-    plt.ylim(bottom=0)
+    plt.ylim(bottom=0, top=100)
 
     # ax.set_xticks(bar_pos)
     ax.set_xticklabels(tuple(x_axis))
@@ -1236,31 +1236,6 @@ def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_n
     plt.cla()
     plt.close()
 
-
-# New Operators
-# "AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3", "Cloudflare-1",
-# "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3", "Neustar-4",
-# "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1", "Yandex-2",
-# "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"
-
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "AdGuard-3", "CleanBrowsing-1", "CleanBrowsing-2", "CleanBrowsing-3",
-#                  "Cloudflare-1",
-#                  "Cloudflare-2", "Cloudflare-3", "Dyn-1", "Google-1", "Neustar-1", "Neustar-2", "Neustar-3",
-#                  "Neustar-4",
-#                  "Neustar-5", "OpenDNS-1", "OpenDNS-2", "OpenDNS-3", "Quad9-1", "Quad9-2", "Quad9-3", "Yandex-1",
-#                  "Yandex-2",
-#                  "Yandex-3", "Level3-1", "Level3-2", "Norton-1", "Norton-2", "Norton-3"]
-
-# --------------
-
-# Old PCAP Operators
-# "AdGuard1", "AdGuard2", "CleanBrowsing1", "CleanBrowsing2", "Cloudflare1", "Cloudflare2", "Dyn1", "Dyn2", "Google1",
-# "Google2", "Neustar1", "Neustar2", "OpenDNS1", "OpenDNS2", "Quad91", "Quad92", "Yandex1", "Yandex2"
-
-# all_resolvers = ["AdGuard-1", "AdGuard-2", "CleanBrowsing-1", "CleanBrowsing-2",
-#                  "Cloudflare-1", "Cloudflare-2", "Dyn-1", "Dyn-2", "Google-1", "Google-2",
-#                  "Neustar-1", "Neustar-2", "OpenDNS-1", "OpenDNS-2", "Quad9-1", "Quad9-2",
-#                  "Yandex-1", "Yandex-2"]
 
 all_resolvers = list(operators.keys())
 

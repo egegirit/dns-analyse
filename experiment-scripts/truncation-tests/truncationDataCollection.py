@@ -364,7 +364,6 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     # else:
                     #     print(f"Duplicate query name: {query_name}")
 
-
                 # DNS response
                 elif is_response_packet == 1:
 

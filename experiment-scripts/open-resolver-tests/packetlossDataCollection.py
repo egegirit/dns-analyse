@@ -203,6 +203,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
 
+    first_latency_queries_for_no_ok_response_queries = {}
+
     # Read the packets in the pcap file one by one
     index = 1
     for packet in PcapReader(pcap_file_name):
@@ -355,6 +357,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     # else:
                     #     print(f"Duplicate query name: {query_name}")
 
+                    if (query_name, is_response_packet) not in first_latency_queries_for_no_ok_response_queries:
+                        first_latency_queries_for_no_ok_response_queries[query_name, is_response_packet] = packet_time
+
                 # DNS response
                 elif is_response_packet == 1:
 
@@ -434,6 +439,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"Response to query found: {query_name}")
                         # print(f"Length: {len(first_latency_queries)}")
 
+                    if (query_name, 0) in first_latency_queries_for_no_ok_response_queries and rcode == 0 and answer_count:
+                        del first_latency_queries_for_no_ok_response_queries[query_name, 0]
+
             except Exception as e:
                 print(f"  Error reading packet: {e}")
                 print(f"  Error Type: {type(e)}")  # the exception instance
@@ -455,7 +463,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
     if current_pl_rate not in query_names_with_no_ok_response_count:
         query_names_with_no_ok_response_count[current_pl_rate] = 0
-    query_names_with_no_ok_response_count[current_pl_rate] = len(first_latency_queries)
+    query_names_with_no_ok_response_count[current_pl_rate] = len(first_latency_queries_for_no_ok_response_queries)
 
 
 # Input: "10" Output 1

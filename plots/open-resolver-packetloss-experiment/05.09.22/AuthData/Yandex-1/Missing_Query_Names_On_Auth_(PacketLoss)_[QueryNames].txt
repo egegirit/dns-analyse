@@ -1,1 +1,0 @@
-{0: [], 10: [], 20: [], 30: [], 40: [], 50: [], 60: [], 70: ['77-88-8-1-47-pl70.packetloss.syssec-research.mmci.uni-saarland.de.'], 80: [], 85: [], 90: [], 95: ['77-88-8-1-34-pl95.packetloss.syssec-research.mmci.uni-saarland.de.', '77-88-8-1-37-pl95.packetloss.syssec-research.mmci.uni-saarland.de.']}

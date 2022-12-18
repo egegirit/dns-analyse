@@ -10,9 +10,9 @@ from ripe.atlas.sagan import DnsResult
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
-asn_file_name = "1000-probes-atlas-API.txt"
+asn_file_name = "1000-probes.txt"
 
-directory_name_of_logs = "packet_capture_logs"
+directory_name_of_logs = "stale_record_ripe_atlas_logs"
 file_name_of_msm_logs = "selected-probes-logs.txt"
 
 # Store the extracted asn_id's in this list
@@ -62,6 +62,7 @@ def send_query_from_asn(counter_value):
         # Configure the DNS query
         query_class="IN",
         query_type="A",
+        # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
@@ -111,13 +112,14 @@ def send_query_from_asn(counter_value):
     # Create request from given probe ID
     atlas_request = AtlasCreateRequest(
         start_time=scheduled_time,
+        # stop_time=1671389437,
         key=ATLAS_API_KEY,
         measurements=[dns],
         # All probes with the selected asn_id's
         sources=sources,
         # Always set this to true
         # The measurement will only be run once
-        is_oneoff=True
+        is_oneoff=False
     )
 
     print(f"  Starting measurement")
@@ -159,6 +161,7 @@ def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tu
     print(f"Wrote to file: {str(measurement_tuple)}")
 
     f.close()
+
 
 # Extract the asn values from the global probe_dict variable
 # and store them in the global list as_ids

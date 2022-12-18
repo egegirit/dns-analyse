@@ -152,6 +152,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
     queries = {}
     responses = {}
 
+    already_ok_answered_queries = {}
+
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
 
@@ -371,10 +373,18 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
 
                     # Calculate latency between first query and first OK response to it
                     # We found a response to a query name, check if RCODE is 0 and calculate latency
-                    if (query_name, 0) in first_latency_queries and rcode == 0:
+                    if current_pl_rate not in already_ok_answered_queries:
+                        already_ok_answered_queries[current_pl_rate] = []
+
+                    if (query_name, 0) in first_latency_queries and rcode == 0 and answer_count > 0 \
+                            and query_name not in already_ok_answered_queries[current_pl_rate]:
                         latency = float(packet_time - first_latency_queries[query_name, 0])
                         latencies_first_query_first_resp_OK[current_pl_rate].append(latency)
+                        # if "AdGuard-1" in operator_name and "-pl30." in query_name:
+                        #     print(f"  Query: {query_name}")
+                        #     print(f"  Latency: {latency}")
                         del first_latency_queries[query_name, 0]
+                        already_ok_answered_queries[current_pl_rate].append(query_name)
                         # print(f"Response to query found: {query_name}")
                         # print(f"Length: {len(first_latency_queries)}")
 

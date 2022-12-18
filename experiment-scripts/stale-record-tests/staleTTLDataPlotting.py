@@ -105,10 +105,7 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
-    if n == 13:
-        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
-    arr = np.array(arr_to_use)  # Positions of the bars
+    arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -396,10 +393,7 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
-    if n == 13:
-        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
-    arr = np.array(arr_to_use)  # Positions of the bars
+    arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -526,10 +520,7 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
-    arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
-    if n == 13:
-        arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
-    arr = np.array(arr_to_use)  # Positions of the bars
+    arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
@@ -850,32 +841,8 @@ def create_violin_plot(directory_name, file_name_prefix, data_param, plot_title,
 # Input: "10" Output 1
 def get_index_of_packetloss_rate(input):
     pl_rate = str(input)
-    if pl_rate == "0":
-        return 0
-    if pl_rate == "10":
-        return 1
-    if pl_rate == "20":
-        return 2
-    if pl_rate == "30":
-        return 3
-    if pl_rate == "40":
-        return 4
-    if pl_rate == "50":
-        return 5
-    if pl_rate == "60":
-        return 6
-    if pl_rate == "70":
-        return 7
-    if pl_rate == "80":
-        return 8
-    if pl_rate == "85":
-        return 9
-    if pl_rate == "90":
-        return 10
-    if pl_rate == "95":
-        return 11
     if pl_rate == "100":
-        return 12
+        return 0
     return None
 
 
@@ -1073,7 +1040,7 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
 def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_to_read, current_ttl):
 
     # Create rate plot
-    create_rate_plot(file_name, root_directory_of_plots, directory_of_datas_to_read)
+    # create_rate_plot(file_name, root_directory_of_plots, directory_of_datas_to_read)
 
     # Create latency plots
     create_latency_plots(file_name, root_directory_of_plots)
@@ -1117,6 +1084,9 @@ def create_plots_for(file_name, current_ttl):
     # Create root folder for client plots
     client_root_plot_folder_name = f"ClientPlotsTTL{current_ttl}"
     create_folder(client_root_plot_folder_name)
+
+    global directory_of_client_datas
+    global directory_of_auth_datas
 
     directory_of_client_datas =  f"ClientDataTTL{current_ttl}"
     directory_of_auth_datas = f"AuthDataTTL{current_ttl}"

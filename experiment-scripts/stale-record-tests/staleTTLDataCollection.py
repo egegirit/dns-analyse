@@ -56,6 +56,7 @@ latencies_first_query_first_resp_OK = {}
 # encode 0 -> RCODE ServFail, 1 -> Stale record
 # E.g. "8.8.8.8": [1,1,0] means Google-1 had 2 stale record and then ServFail
 stale_records_iterations = {}
+response_rcode_timings = {}
 
 ttl_list = [60, 300, 900, 3600]
 
@@ -394,6 +395,10 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     if operator_name not in stale_records_iterations:
                         stale_records_iterations[operator_name] = []
                     stale_records_iterations[operator_name].append(rcode)
+                    # For response packets, check RCODE and save them as list
+                    if (operator_name, rcode) not in response_rcode_timings:
+                        response_rcode_timings[operator_name, rcode] = []
+                    response_rcode_timings[operator_name, rcode].append(packet_time)
 
             except Exception as e:
                 print(f"  Error reading packet: {e}")
@@ -476,6 +481,7 @@ def reset_for_next_plot():
     global latencies_first_query_first_resp_OK
     global query_names_with_no_ok_response_count
     global stale_records_iterations
+    global response_rcode_timings
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -492,6 +498,7 @@ def reset_for_next_plot():
     latencies_first_query_first_resp_OK = {}
     unanswered_query_name_count = {}
     stale_records_iterations = {}
+    response_rcode_timings = {}
 
     # print(f"Clean up for next plotting DONE")
 
@@ -562,6 +569,9 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
         pcap_file_name = pcap_file_prefix + str(ttl) + ".pcap"
         read_single_pcap(pcap_file_name, packetloss_rates[0], resolvers_to_filter)
 
+        create_file_write_content(f"{data_path}/Stale_Record_Iterations_(IP-Of-Resolver)_[RCODEs]",
+                                  stale_records_iterations)
+
         create_file_write_content(f"{data_path}/RCODE_Counts_(PacketLoss_RCODE)_Count", rcodes_by_pl)
         create_file_write_content(f"{data_path}/Tcp_Counterpart_Of_Udp_Query_(PacketLoss)_Count", tcp_counterpart_of_udp_query)
         create_file_write_content(f"{data_path}/All_Responses_(PacketLoss)_Count", all_responses_count_pl)
@@ -579,8 +589,9 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
                                   latencies_first_query_first_resp_OK)
         create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_Count_(PacketLoss)_[Counts]",
                                   query_names_with_no_ok_response_count)
-        create_file_write_content(f"{data_path}/Stale_Record_Iterations_(IP-Of-Resolver)_[RCODEs]",
-                                  stale_records_iterations)
+
+        create_file_write_content(f"{data_path}/Response_Rcode_Timings_(IP-Of-Resolver_Rcode)_[Packet_time]",
+                                  response_rcode_timings)
 
         create_file_write_content(f"{data_path}/All_Queries_(PacketLoss_QueryName_Protocol)_Count", all_query_names_pl)
         create_file_write_content(f"{data_path}/All_Responses_(PacketLoss_QueryName_Protocol)_Count", all_response_names_pl)

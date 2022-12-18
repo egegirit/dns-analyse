@@ -134,7 +134,7 @@ for current_ttl in ttl_values:
         if (file_name, "error") not in all_latencies_by_rcode_and_ip_normalised:
             all_latencies_by_rcode_and_ip_normalised[file_name, "error"] = servfail_timings
 
-    # print(f"all_latencies_by_rcode_and_ip_normalised: {all_latencies_by_rcode_and_ip_normalised}")
+    print(f"all_latencies_by_rcode_and_ip_normalised: {all_latencies_by_rcode_and_ip_normalised}")
 
     for i in range(maximum_length_of_list):
         for file_name in all_resolvers:
@@ -147,7 +147,7 @@ for current_ttl in ttl_values:
             except Exception:
                 all_list_of_stales[i].append(dummy_value)
 
-    # print(f"all_list_of_stales: {all_list_of_stales}")
+    print(f"all_list_of_stales: {all_list_of_stales}")
 
     for i in range(maximum_length_of_list):
         for file_name in all_resolvers:
@@ -158,9 +158,9 @@ for current_ttl in ttl_values:
                     all_list_of_errors[i].append(all_latencies_by_rcode_and_ip_normalised[file_name, "error"][i])
             # If no more list entries for a resolver, dummy value
             except Exception:
-                all_list_of_errors[i].append(-1)
+                all_list_of_errors[i].append(dummy_value)
 
-    # print(f"all_list_of_stales: {all_list_of_errors}")
+    # print(f"all_list_of_errors: {all_list_of_errors}")
 
     # Columns are interpreted together
 

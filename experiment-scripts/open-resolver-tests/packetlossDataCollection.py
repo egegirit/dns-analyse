@@ -87,6 +87,8 @@ responses_with_no_query_count_by_pl = {}
 latencies_by_pl_and_rcode = {}
 query_duplicate_by_pl = {}
 rcodes_by_pl = {}
+retransmitted_query_names_and_retr_counts = {}
+query_names_with_no_ok_response_to_it = {}
 
 rcode_0_udp_count_pl = {}
 rcode_0_tcp_count_pl = {}
@@ -203,7 +205,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
 
-    first_latency_queries_for_no_ok_response_queries = {}
+    query_names_with_no_ok_response_to_it = {}
 
     # Read the packets in the pcap file one by one
     index = 1
@@ -357,8 +359,14 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                     # else:
                     #     print(f"Duplicate query name: {query_name}")
 
-                    if (query_name, is_response_packet) not in first_latency_queries_for_no_ok_response_queries:
-                        first_latency_queries_for_no_ok_response_queries[query_name, is_response_packet] = packet_time
+                    # Unique query name found
+                    if (query_name, is_response_packet) not in query_names_with_no_ok_response_to_it:
+                        query_names_with_no_ok_response_to_it[query_name, is_response_packet] = rcode
+                    else:
+                        # Query name was seen before
+                        if (current_pl_rate, query_name) not in retransmitted_query_names_and_retr_counts:
+                            retransmitted_query_names_and_retr_counts[current_pl_rate, query_name] = 0
+                        retransmitted_query_names_and_retr_counts[current_pl_rate, query_name] += 1
 
                 # DNS response
                 elif is_response_packet == 1:
@@ -439,8 +447,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
                         # print(f"Response to query found: {query_name}")
                         # print(f"Length: {len(first_latency_queries)}")
 
-                    if (query_name, 0) in first_latency_queries_for_no_ok_response_queries and rcode == 0 and answer_count:
-                        del first_latency_queries_for_no_ok_response_queries[query_name, 0]
+                    if (query_name, 0) in query_names_with_no_ok_response_to_it and rcode == 0 and answer_count > 0:
+                        del query_names_with_no_ok_response_to_it[query_name, 0]
 
             except Exception as e:
                 print(f"  Error reading packet: {e}")
@@ -463,7 +471,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
     if current_pl_rate not in query_names_with_no_ok_response_count:
         query_names_with_no_ok_response_count[current_pl_rate] = 0
-    query_names_with_no_ok_response_count[current_pl_rate] = len(first_latency_queries_for_no_ok_response_queries)
+    query_names_with_no_ok_response_count[current_pl_rate] = len(query_names_with_no_ok_response_to_it)
 
 
 # Input: "10" Output 1
@@ -522,6 +530,8 @@ def reset_for_next_plot():
     global tcp_counterpart_of_udp_query
     global latencies_first_query_first_resp_OK
     global query_names_with_no_ok_response_count
+    global query_names_with_no_ok_response_to_it
+    global retransmitted_query_names_and_retr_counts
 
     all_query_names_pl = {}
     all_response_names_pl = {}
@@ -536,7 +546,8 @@ def reset_for_next_plot():
     rcode_0_tcp_count_pl = {}
     tcp_counterpart_of_udp_query = {}
     latencies_first_query_first_resp_OK = {}
-    unanswered_query_name_count = {}
+    query_names_with_no_ok_response_to_it = {}
+    retransmitted_query_names_and_retr_counts = {}
 
     # print(f"Clean up for next plotting DONE")
 
@@ -630,6 +641,11 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
                               latencies_first_query_first_resp_OK)
     create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_Count_(PacketLoss)_[Counts]",
                               query_names_with_no_ok_response_count)
+
+    create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_(QueryName_IsResponse)_[Counts]",
+                              query_names_with_no_ok_response_to_it)
+    create_file_write_content(f"{data_path}/Retr_Query_Names_and_Counts_Pl_(PL_QueryName)_[Counts]",
+                              retransmitted_query_names_and_retr_counts)
 
     # for keys in list(all_query_names_pl.keys()):
     #     print(f"Key 2: {keys[2]}")

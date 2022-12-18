@@ -110,6 +110,8 @@ response_rcode_0_tcp_count_file = "Response_Rcode_0_TCP_Count_(PacketLoss)_Count
 missing_query_names_on_auth_file = "Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames].txt"
 all_responses_of_of_counts_file = "All_Responses_(PacketLoss)_Count.txt"
 latencies_first_query_first_ok_resp_file = "Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies].txt"
+query_names_with_no_ok_response_file = "Query_Names_With_No_OK_Response_(QueryName_IsResponse)_[Counts].txt"
+retransmitted_query_names_and_retr_counts_file = "Retr_Query_Names_and_Counts_Pl_(PL_QueryName)_[Counts].txt"
 
 
 # Create a folder with the given name
@@ -1116,6 +1118,56 @@ def create_plots_for(file_name):
 
     create_bar_plot(file_name, missing_query_plots_directory_name, missing_query_on_auth_count_list,
                     auth_root_plot_folder_name, "Missing Queries", "Missing Query Count")
+
+    # Create plots to show how retransmissions resolved queries
+    q_dict = convert_string_to_dict(
+        read_dict_from_file(directory_of_client_datas + "/" + file_name + "/" + query_names_with_no_ok_response_file))
+
+    retr_dict = convert_string_to_dict(
+        read_dict_from_file(
+            directory_of_auth_datas + "/" + file_name + "/" + retransmitted_query_names_and_retr_counts_file))
+
+    all_query_names_with_no_ok_responses = []
+    for key, value in q_dict.items():
+        if key[0] not in all_query_names_with_no_ok_responses:
+            all_query_names_with_no_ok_responses.append(key[0])
+
+    # (PL) = [List of 0s and 1s] 0: failed retransmissions, 1s: success
+    retransmission_success = {}
+
+    for key, value in retr_dict.items():
+        # Retransmission did not resolve te query
+        if key[1] in all_query_names_with_no_ok_responses:
+            if (key[0], 0) not in retransmission_success:
+                retransmission_success[key[0]] = []
+            retransmission_success[key[0]].append(0)
+        # Retransmission resolved te query
+        else:
+            if (key[0], 0) not in retransmission_success:
+                retransmission_success[key[0]] = []
+            retransmission_success[key[0]].append(1)
+
+    success_ratios = {}
+    for key, value in retransmission_success.items():
+        success_count = 0
+        fail_count = 0
+        for i in value:
+            if i == 0:
+                fail_count += 1
+            elif i == 1:
+                success_count += 1
+        try:
+            success_ratios[key] = success_count / (success_count + fail_count)
+        except ZeroDivisionError:
+            print(f"Division Error")
+            success_ratios[key] = 0
+
+    print(f" ### retransmission_success: {retransmission_success}")
+    print(f" ### success_ratios: {success_ratios}")
+
+    create_bar_plot_for_retransmission_succes_rate(file_name, retransmission_plots_directory_name, success_ratios,
+                                                   auth_root_plot_folder_name, "Retransmission Success Rates",
+                                                   "Retransmission Success Rates")
 
 
 # New Operators

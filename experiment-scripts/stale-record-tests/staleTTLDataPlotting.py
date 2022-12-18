@@ -1118,6 +1118,9 @@ def create_plots_for(file_name, current_ttl):
     client_root_plot_folder_name = f"ClientPlotsTTL{current_ttl}"
     create_folder(client_root_plot_folder_name)
 
+    directory_of_client_datas =  f"ClientDataTTL{current_ttl}"
+    directory_of_auth_datas = f"AuthDataTTL{current_ttl}"
+
     # Create client plots
     create_plots_of_type(file_name, client_root_plot_folder_name, directory_of_client_datas, current_ttl)
 

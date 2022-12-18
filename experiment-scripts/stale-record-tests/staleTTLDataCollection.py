@@ -577,7 +577,7 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
 
         create_file_write_content(f"{data_path}/Latencies_First_Q_First_OKResp_(PacketLoss)_[Latencies]",
                                   latencies_first_query_first_resp_OK)
-        create_file_write_content(f"{data_path}/Unanswered_Query_Names_Count_(PacketLoss)_[Counts]",
+        create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_Count_(PacketLoss)_[Counts]",
                                   query_names_with_no_ok_response_count)
         create_file_write_content(f"{data_path}/Stale_Record_Iterations_(IP-Of-Resolver)_[RCODEs]",
                                   stale_records_iterations)

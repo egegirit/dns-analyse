@@ -94,7 +94,7 @@ unanswered_query_plots_directory_name = "UnansweredQueryPlots"
 missing_query_plots_directory_name = "MissingQueryPlots"
 retransmission_plots_directory_name = "RetransmissionPlots"
 client_latency_upper_limit = 20
-auth_latency_upper_limit = 5
+auth_latency_upper_limit = 10
 
 # File names of the text files that we will extract data from
 all_queries_file = "All_Queries_(PacketLoss_QueryName_Protocol)_Count.txt"

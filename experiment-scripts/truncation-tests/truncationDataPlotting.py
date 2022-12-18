@@ -94,7 +94,7 @@ unanswered_query_plots_directory_name = "UnansweredQueryPlots"
 missing_query_plots_directory_name = "MissingQueryPlots"
 retransmission_plots_directory_name = "RetransmissionPlots"
 client_latency_upper_limit = 20
-auth_latency_upper_limit = 5
+auth_latency_upper_limit = 10
 
 # File names of the text files that we will extract data from
 all_queries_file = "All_Queries_(PacketLoss_QueryName_Protocol)_Count.txt"
@@ -673,7 +673,7 @@ def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_lim
     ax.set_xlabel('Packetloss in percentage')
     ax.set_title(f"Response Latency of " + file_name_prefix)
 
-    plt.ylim(bottom=bottom_limit, top=upper_limit)
+
 
     # Handle zero values with a -1 dummy value
     empty_list_indexes = []
@@ -683,6 +683,13 @@ def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_lim
             empty_list_indexes.append(i)
 
     print(f"  empty_list_indexes: {empty_list_indexes}")
+    max_latency = upper_limit
+    for lst in latency_list:
+        for latency in lst:
+            if latency > max_latency:
+                max_latency = latency
+
+    plt.ylim(bottom=bottom_limit, top=max_latency)
 
     # list_indexes_with_non_empty_values = []
     # for i in range(len(latency_list)):

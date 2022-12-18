@@ -11,7 +11,9 @@ from scapy.layers.dns import DNS, DNSQR
 import ast
 
 # The packetloss rates that are simulated in the experiment
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
+packetloss_rates = [100]
+
+ttl_values = [60, 300, 900, 3600]
 
 client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
@@ -38,6 +40,7 @@ rate_plots_directory_name = "RatePlots"
 unanswered_query_plots_directory_name = "UnansweredQueryPlots"
 missing_query_plots_directory_name = "MissingQueryPlots"
 retransmission_plots_directory_name = "RetransmissionPlots"
+stale_records_plots_directory_name = "StaleRecordPlots"
 client_latency_upper_limit = 20
 auth_latency_upper_limit = 5
 
@@ -389,7 +392,7 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
 
 # Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
 def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_name, plot_title, y_label):
-    print(f"    Creating unanswered bar plot")
+    print(f"    Creating bar plot")
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
     width = 0.21  # the width of the bars
@@ -448,6 +451,69 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
     # save plot as png
     # plt.savefig((file_name + '_StaleRecordPlot.png'))
     print(f"      Created box plot: {save_path}")
+    # Clear plots
+    plt.cla()
+    plt.close()
+
+
+def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_list, root_directory_name, plot_title, y_label):
+    print(f"    Creating stale record bar plot")
+    n = len(x_axis_list)  # Amount of bars in the chart
+    ind = np.arange(n)  # the x locations for the groups
+    width = 0.21  # the width of the bars
+
+    arr = np.array(ind)  # Positions of the bars
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
+
+    save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
+    create_folder(save_path)
+
+    rects = ax.bar(bar_pos, data_list, width, bottom=0, color='yellow')
+
+    # Title of the graph, x and y label
+    plot_title = f"{plot_title} ({file_name_prefix})"
+    plt.xlabel("Packetloss rate")
+    plt.ylabel(f"{y_label}")
+
+    # Title position
+    plt.title(plot_title, x=0.5, y=1.1)
+
+    # Limits of the X and Y axis
+    plt.ylim(bottom=0)
+
+    ax.set_xticks(bar_pos)
+    ax.set_xticklabels(tuple(packetloss_rates))
+
+    # Create legend at the top left of the plot
+    # ax.legend((non_stale_rects[0]), ('OK'), framealpha=0.5, bbox_to_anchor=(0.1, 1.25))
+
+    # Write the exact count of the non-stale packets in the middle of non-stale bars
+    def autolabel(rects):
+        index = 0
+        for rect in rects:
+            if data_list[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
+                        f"#{data_list[index]}",
+                        ha='center', va='bottom')
+            index += 1
+
+    autolabel(rects)
+
+    # plt.show()
+
+    figure = plt.gcf()  # get current figure
+    figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
+
+    title_without_whitespace = plot_title.replace(' ', '')
+
+    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.png", dpi=100, bbox_inches='tight')
+
+    # save plot as png
+    # plt.savefig((file_name + '_StaleRecordPlot.png'))
+    print(f"      Created bar plot: {save_path}")
     # Clear plots
     plt.cla()
     plt.close()
@@ -1004,7 +1070,7 @@ def create_retransmission_plots(file_name, root_directory_of_plots):
                        "DNS TCP Response Retransmissions", "TCP Response Retransmission Counts")
 
 
-def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_to_read):
+def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_to_read, current_ttl):
 
     # Create rate plot
     create_rate_plot(file_name, root_directory_of_plots, directory_of_datas_to_read)
@@ -1019,11 +1085,10 @@ def create_plots_of_type(file_name, root_directory_of_plots, directory_of_datas_
     create_retransmission_plots(file_name, root_directory_of_plots)
 
     # Create stale record plot
-    create_stale_record_plots(file_name, root_directory_of_plots)
+    create_stale_record_plots(file_name, root_directory_of_plots, current_ttl)
 
 
-def create_stale_record_plots(file_name, root_directory_of_plots):
-
+def create_stale_record_plots(file_name, root_directory_of_plots, current_ttl):
     directory_to_read = ""
     if "client" in root_directory_of_plots.lower():
         directory_to_read = directory_of_client_datas
@@ -1036,27 +1101,32 @@ def create_stale_record_plots(file_name, root_directory_of_plots):
     # RCODE list
     rcode_list = list(stale_records_iterations_dict.values())
     rcode_list_length = len(rcode_list)
-    x_axis_time = [ttl] * rcode_list_length
+    x_axis_time = [current_ttl] * rcode_list_length
     for i in range(rcode_list_length):
-        x_axis_time[i] *= i
+        x_axis_time[i] *= (i + 1)
+
+    create_stale_bar_plot(file_name, stale_records_plots_directory_name, rcode_list, x_axis_time,
+                    root_directory_of_plots, "Stale Records", "Stale Records")
 
 
-def create_plots_for(file_name):
+
+def create_plots_for(file_name, current_ttl):
     print(f"Creating plot with name: {file_name}")
+    print(f"TTL: {current_ttl}")
 
     # Create root folder for client plots
-    client_root_plot_folder_name = "ClientPlots"
+    client_root_plot_folder_name = f"ClientPlotsTTL{current_ttl}"
     create_folder(client_root_plot_folder_name)
 
     # Create client plots
-    create_plots_of_type(file_name, client_root_plot_folder_name, directory_of_client_datas)
+    create_plots_of_type(file_name, client_root_plot_folder_name, directory_of_client_datas, current_ttl)
 
     # Create root folder for auth plots
-    auth_root_plot_folder_name = "AuthPlots"
+    auth_root_plot_folder_name = f"AuthPlotsTTL{current_ttl}"
     create_folder(auth_root_plot_folder_name)
 
     # Create auth plots
-    create_plots_of_type(file_name, auth_root_plot_folder_name, directory_of_auth_datas)
+    create_plots_of_type(file_name, auth_root_plot_folder_name, directory_of_auth_datas, current_ttl)
 
     # Create missing query plots for auth
     # (pl-rate): [query-names]
@@ -1073,12 +1143,13 @@ def create_plots_for(file_name):
 
 all_resolvers = list(operators.keys())
 
-# Create separate plots for all resolver IPs
-for resolver in all_resolvers:
-    # try:
-    create_plots_for(resolver)
-    # except Exception as e:
-    #     print(f"Error creating plots for: {resolver}")
-    #     print(f"{str(e)}")
+for ttl in ttl_values:
+    # Create separate plots for all resolver IPs
+    for resolver in all_resolvers:
+        # try:
+        create_plots_for(resolver, ttl)
+        # except Exception as e:
+        #     print(f"Error creating plots for: {resolver}")
+        #     print(f"{str(e)}")
 
-create_plots_for("OverallBehaviour")
+    create_plots_for("OverallBehaviour")

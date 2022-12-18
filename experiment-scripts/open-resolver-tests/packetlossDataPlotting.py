@@ -1147,6 +1147,14 @@ def create_plots_for(file_name):
                 retransmission_success[key[0]] = []
             retransmission_success[key[0]].append(1)
 
+    create_bar_plot_for_retransmission_succes_rate(file_name, retransmission_plots_directory_name, retransmission_success,
+                                                   auth_root_plot_folder_name, "Retransmission Success Rates",
+                                                   "Retransmission Success Rates")
+
+
+# Create stacked bar chart (rates of: non_stale, stale, refused and servfail packets)
+def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_name, retransmission_success, root_directory_name, plot_title, y_label):
+
     success_ratios = {}
     for key, value in retransmission_success.items():
         success_count = 0
@@ -1165,9 +1173,68 @@ def create_plots_for(file_name):
     print(f" ### retransmission_success: {retransmission_success}")
     print(f" ### success_ratios: {success_ratios}")
 
-    create_bar_plot_for_retransmission_succes_rate(file_name, retransmission_plots_directory_name, success_ratios,
-                                                   auth_root_plot_folder_name, "Retransmission Success Rates",
-                                                   "Retransmission Success Rates")
+    x_axis = list(success_ratios.keys())
+    data_list = list(success_ratios.values())
+
+    print(f"    Creating bar plot")
+    n = len(x_axis)  # Amount of bars in the chart
+    ind = np.arange(n)  # the x locations for the groups
+    width = 0.21  # the width of the bars
+    arr = np.array(ind)  # Positions of the bars
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bar_pos = arr + width / 2  # Position of the bar (middle of the x-axis tick/packetloss rate)
+
+    save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
+    create_folder(save_path)
+
+    rects = ax.bar(bar_pos, data_list, width, bottom=0, color='dodgerblue')
+
+    # Title of the graph, x and y label
+    plot_title = f"{plot_title} ({file_name_prefix})"
+    plt.xlabel("Packetloss rate")
+    plt.ylabel(f"{y_label}")
+
+    # Title position
+    plt.title(plot_title, x=0.5, y=1.1)
+
+    # Limits of the X and Y axis
+    plt.ylim(bottom=0)
+
+    # ax.set_xticks(bar_pos)
+    ax.set_xticklabels(tuple(x_axis))
+
+    # Create legend at the top left of the plot
+    # ax.legend((non_stale_rects[0]), ('OK'), framealpha=0.5, bbox_to_anchor=(0.1, 1.25))
+
+    # Write the exact count of the non-stale packets in the middle of non-stale bars
+    def autolabel(rects):
+        index = 0
+        for rect in rects:
+            if data_list[index] != 0:
+                h = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
+                        f"#{data_list[index]}",
+                        ha='center', va='bottom')
+            index += 1
+
+    autolabel(rects)
+
+    # plt.show()
+
+    figure = plt.gcf()  # get current figure
+    figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
+
+    title_without_whitespace = plot_title.replace(' ', '')
+
+    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.png", dpi=100, bbox_inches='tight')
+
+    # save plot as png
+    # plt.savefig((file_name + '_StaleRecordPlot.png'))
+    print(f"      Created box plot: {save_path}")
+    # Clear plots
+    plt.cla()
+    plt.close()
 
 
 # New Operators

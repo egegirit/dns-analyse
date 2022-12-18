@@ -60,6 +60,7 @@ response_rcode_timings = {}
 
 ttl_list = [60, 300, 900, 3600]
 
+
 # Create a folder with the given name
 def create_folder(folder_name):
     if not os.path.exists(folder_name):
@@ -600,6 +601,11 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
             # create_file_write_content(f"missing_query_count_list{file_name}", missing_query_count_list)
             create_file_write_content(f"{data_path}/Missing_Query_Names_On_Auth_(PacketLoss)_[QueryNames]",
                                       all_query_names_pl_for_missing)
+            reset_for_next_plot()
+            initialize_dictionaries("auth")
+        else:
+            reset_for_next_plot()
+            initialize_dictionaries("client")
 
 
 def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):

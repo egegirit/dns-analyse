@@ -11,12 +11,15 @@ Packetloss Experiments:
 	- Latency plots of client and authoritative server as box and violin plots:
 		- Latency of RCODE OK packets
 		- Latency of RCODE Error packets
+		- Latencies between first query and first RCODE OK reponse.
     - Rate plot of client and authoritative server as stacked bar chart: RCODE OK (UDP and TCP rates), SERVFAIL, REFUSED and other RCODE rates.
-	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
-	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- Unanswered query plot of client and authoritative server:
+		- Queries with no corresponding RCODE OK packets as bar plot
+		- Queries that has no corresponding response packets as bar plot
+	- Missing query plot on authoritative server side as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
-		- Query retransmissions 
-		- Response retransmissions
+		- Query retransmissions (TCP and UDP separate)
+		- Response retransmissions (TCP and UDP separate)
 		
 Stale Record Experiments:
 
@@ -31,12 +34,15 @@ Stale Record Experiments:
 	- Latency plots of client and authoritative server as box and violin plots:
 		- Latency of RCODE OK packets
 		- Latency of RCODE Error packets
+		- Latencies between first query and first RCODE OK reponse.
     - Rate plot of client and authoritative server as stacked bar chart: Non-stale OK Records, Stale OK Records, SERVFAIL, REFUSED and other RCODE rates.
-	- Unanswered query plot  of client and authoritative server as bar plot (Queries which has no corresponding response packets)
-	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- Unanswered query plot of client and authoritative server:
+		- Queries with no corresponding RCODE OK packets as bar plot
+		- Queries that has no corresponding response packets as bar plot
+	- Missing query plot on authoritative server side as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
-		- Query retransmissions 
-		- Response retransmissions	
+		- Query retransmissions (TCP and UDP separate)
+		- Response retransmissions (TCP and UDP separate)
 		
 Truncated Experiment:
 
@@ -50,9 +56,12 @@ Truncated Experiment:
 	- Latency plots of client and authoritative server as box and violin plots:
 		- Latency of RCODE OK packets
 		- Latency of RCODE Error packets
+		- Latencies between first query and first RCODE OK reponse.
     - Rate plot of client and authoritative server as stacked bar chart: RCODE OK (UDP and TCP rates), SERVFAIL, REFUSED and other RCODE rates.
-	- Unanswered query plot of client and authoritative server as bar plot (Queries which has no corresponding response packets)
-	- Missing query plot as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
+	- Unanswered query plot of client and authoritative server:
+		- Queries with no corresponding RCODE OK packets as bar plot
+		- Queries that has no corresponding response packets as bar plot
+	- Missing query plot on authoritative server side as bar plot (Queries that are visible in client pcaps but did not arrive at auth pcaps)
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
-		- Query retransmissions 
-		- Response retransmissions
+		- Query retransmissions (TCP and UDP separate)
+		- Response retransmissions (TCP and UDP separate)

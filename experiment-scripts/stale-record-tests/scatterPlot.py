@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+from matplotlib.patches import Patch
 import numpy as np
 import os
 import ast
@@ -26,7 +28,7 @@ def convert_string_to_dict(string_obj):
     return ast.literal_eval(string_obj)
 
 
-ttl_values = [3600]  # [60, 300, 900, 3600]
+ttl_values = [60, 300, 900, 3600]  # [60, 300, 900, 3600]
 all_resolvers = ["Cloudflare-1", "Cloudflare-2", "Cloudflare-3", "Dyn-1", "OpenDNS-1", "OpenDNS-3"]
 file_name_to_read = "Response_Rcode_Timings_(IP-Of-Resolver_Rcode)_[Packet_time].txt"
 
@@ -36,6 +38,7 @@ marker_of_error_packets = "s"
 marker_of_stale_packets = "s"
 size_of_error_packets = 10
 size_of_stale_packets = 10
+dummy_value = np.nan
 
 for current_ttl in ttl_values:
     print(f"TTL Value: {current_ttl}")
@@ -142,7 +145,7 @@ for current_ttl in ttl_values:
                     all_list_of_stales[i].append(all_latencies_by_rcode_and_ip_normalised[file_name, "stale"][i])
             # If no more list entries for a resolver, dummy value
             except Exception:
-                all_list_of_stales[i].append(-2)
+                all_list_of_stales[i].append(dummy_value)
 
     # print(f"all_list_of_stales: {all_list_of_stales}")
 
@@ -179,9 +182,11 @@ for current_ttl in ttl_values:
         ax1.scatter(lst, all_resolvers, s=size_of_error_packets, c=color_of_error_packets,
                     marker=marker_of_error_packets)  # label='first'
 
-    # plt.legend(loc='upper left')
+    green = Patch(facecolor='green', edgecolor='green', label='Stale Record')
+    red = Patch(facecolor='red', edgecolor='red', label='ServFail')
+    ax1.legend(handles=[green, red], loc='upper left', framealpha=0.5, bbox_to_anchor=(0.0, 1.25))
 
-    plt.show()
+    # plt.show()
 
     # Save to
     plt.savefig(f"{client_root_plot_folder_name}/StaleDurationTTL{current_ttl}Plot.png", dpi=100, bbox_inches='tight')

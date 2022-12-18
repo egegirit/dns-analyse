@@ -205,8 +205,6 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     # Calculate latency between first query and first response for RCODE 0 answers
     first_latency_queries = {}
 
-    query_names_with_no_ok_response_to_it = {}
-
     # Read the packets in the pcap file one by one
     index = 1
     for packet in PcapReader(pcap_file_name):

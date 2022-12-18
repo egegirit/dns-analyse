@@ -1138,12 +1138,12 @@ def create_plots_for(file_name):
     for key, value in retr_dict.items():
         # Retransmission did not resolve te query
         if key[1] in all_query_names_with_no_ok_responses:
-            if (key[0], 0) not in retransmission_success:
+            if (key[0]) not in retransmission_success:
                 retransmission_success[key[0]] = []
             retransmission_success[key[0]].append(0)
         # Retransmission resolved te query
         else:
-            if (key[0], 0) not in retransmission_success:
+            if (key[0]) not in retransmission_success:
                 retransmission_success[key[0]] = []
             retransmission_success[key[0]].append(1)
 
@@ -1165,7 +1165,7 @@ def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_n
             elif i == 1:
                 success_count += 1
         try:
-            success_ratios[key] = success_count / (success_count + fail_count)
+            success_ratios[key] = success_count / (success_count + fail_count) * 100
         except ZeroDivisionError:
             print(f"Division Error")
             success_ratios[key] = 0
@@ -1214,7 +1214,7 @@ def create_bar_plot_for_retransmission_succes_rate(file_name_prefix, directory_n
             if data_list[index] != 0:
                 h = rect.get_height()
                 ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"#{data_list[index]}",
+                        f"{int(data_list[index])}",
                         ha='center', va='bottom')
             index += 1
 

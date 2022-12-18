@@ -450,7 +450,7 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
     plt.close()
 
 
-def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_list, root_directory_name, plot_title, y_label):
+def create_stale_bar_plot(file_name_prefix, directory_name, data_param, x_axis_list, root_directory_name, plot_title, y_label):
     print(f"    Creating stale record bar plot")
     n = len(x_axis_list)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
@@ -464,10 +464,19 @@ def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_li
     save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
     create_folder(save_path)
 
+    data_list = data_param.copy()
+    index = 0
+    for rcode in data_list:
+        if rcode != 0:
+            data_list[index] = 0
+        elif rcode == 0:
+            data_list[index] = 1
+        index += 1
+
     # print(f"data_list rcodes: {data_list}")
     # print(f"x_axis_list time: {x_axis_list}")
 
-    rects = ax.bar(bar_pos, data_list, width, bottom=0, color='yellow')
+    rects = ax.bar(bar_pos, data_list, width, bottom=0, color='red')
 
     # Title of the graph, x and y label
     plot_title = f"{plot_title} ({file_name_prefix})"
@@ -1125,4 +1134,4 @@ for ttl in ttl_values:
         #     print(f"Error creating plots for: {resolver}")
         #     print(f"{str(e)}")
 
-    create_plots_for("OverallBehaviour")
+    create_plots_for("OverallBehaviour", ttl)

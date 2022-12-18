@@ -454,7 +454,7 @@ def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_li
     print(f"    Creating stale record bar plot")
     n = len(x_axis_list)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
-    width = 0.21  # the width of the bars
+    width = 1  # the width of the bars
 
     arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
@@ -463,6 +463,9 @@ def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_li
 
     save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
     create_folder(save_path)
+
+    # print(f"data_list rcodes: {data_list}")
+    # print(f"x_axis_list time: {x_axis_list}")
 
     rects = ax.bar(bar_pos, data_list, width, bottom=0, color='yellow')
 
@@ -477,8 +480,8 @@ def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_li
     # Limits of the X and Y axis
     plt.ylim(bottom=0)
 
-    ax.set_xticks(bar_pos)
-    ax.set_xticklabels(tuple(packetloss_rates))
+    ax.set_xticks(bar_pos, fontsize=8, rotation=90)
+    ax.set_xticklabels(tuple(x_axis_list))
 
     # Create legend at the top left of the plot
     # ax.legend((non_stale_rects[0]), ('OK'), framealpha=0.5, bbox_to_anchor=(0.1, 1.25))
@@ -487,14 +490,13 @@ def create_stale_bar_plot(file_name_prefix, directory_name, data_list, x_axis_li
     def autolabel(rects):
         index = 0
         for rect in rects:
-            if data_list[index] != 0:
-                h = rect.get_height()
-                ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
-                        f"#{data_list[index]}",
-                        ha='center', va='bottom')
+            h = rect.get_height()
+            ax.text(rect.get_x() + rect.get_width() / 2., h / 2,
+                    f"#{data_list[index]}",
+                    ha='center', va='bottom')
             index += 1
 
-    autolabel(rects)
+    # autolabel(rects)
 
     # plt.show()
 
@@ -1059,21 +1061,19 @@ def create_stale_record_plots(file_name, root_directory_of_plots, current_ttl):
     directory_to_read = ""
     if "client" in root_directory_of_plots.lower():
         directory_to_read = directory_of_client_datas
-    elif "auth" in root_directory_of_plots.lower():
-        directory_to_read = directory_of_auth_datas
 
-    stale_records_iterations_dict = convert_string_to_dict(
-        read_dict_from_file(directory_to_read + "/" + file_name + "/" + stale_records_iterations_file))
+        stale_records_iterations_dict = convert_string_to_dict(
+            read_dict_from_file(directory_to_read + "/" + file_name + "/" + stale_records_iterations_file))
 
-    # RCODE list
-    rcode_list = list(stale_records_iterations_dict.values())
-    rcode_list_length = len(rcode_list)
-    x_axis_time = [current_ttl] * rcode_list_length
-    for i in range(rcode_list_length):
-        x_axis_time[i] *= (i + 1)
+        # RCODE list
+        rcode_list = list(stale_records_iterations_dict.values())[0]
+        rcode_list_length = len(rcode_list)
+        x_axis_time = [current_ttl] * rcode_list_length
+        for i in range(rcode_list_length):
+            x_axis_time[i] *= (i + 1)
 
-    create_stale_bar_plot(file_name, stale_records_plots_directory_name, rcode_list, x_axis_time,
-                    root_directory_of_plots, "Stale Records", "Stale Records")
+        create_stale_bar_plot(file_name, stale_records_plots_directory_name, rcode_list, x_axis_time,
+                        root_directory_of_plots, "Stale Records", "Stale Records")
 
 
 

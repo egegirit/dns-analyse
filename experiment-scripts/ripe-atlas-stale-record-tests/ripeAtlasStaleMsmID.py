@@ -29,7 +29,7 @@ as_ids = []
 # Interval meaning:
 # The number of seconds each probe participating in the measurement
 # will wait before attempting to perform the measurement again
-# Intervall value must be equal or greater than 60
+# Interval value must be equal or greater than 60
 
 # Send query every x seconds in prefetching phase (send frequency)
 prefetching_query_interval_in_seconds = 60

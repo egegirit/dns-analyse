@@ -26,10 +26,15 @@ file_name_of_msm_logs = "ripe-stale-experiment-logs.txt"
 # Store the extracted asn_id's in this list
 as_ids = []
 
+# Interval meaning:
+# The number of seconds each probe participating in the measurement
+# will wait before attempting to perform the measurement again
+# Intervall value must be equal or greater than 60
+
 # Send query every x seconds in prefetching phase (send frequency)
-prefetching_query_interval_in_seconds = 1
+prefetching_query_interval_in_seconds = 60
 # Keep sending queries in prefetching phase till the duration is reached
-prefetching_duration_in_seconds = 60
+prefetching_duration_in_seconds = 3600  # prefetching_query_interval_in_seconds * 60
 # In stale phase, send queries from all probes every x seconds (send frequency)
 stale_phase_query_send_interval_in_seconds = 60
 # How long the stale phase should last
@@ -203,8 +208,7 @@ def start_experiment(interval_value, experiment_duration):
     # Build the query name from the counter value
     query_name = build_query_name_from_counter_and_pl()
     print(f"    Built query name: {query_name}")
-
-    print(f"  Creating DNS Query with interval {interval_value}")
+    print(f"  Creating DNS Query with interval {interval_value} and duration {experiment_duration}")
     dns = Dns(
         key=ATLAS_API_KEY,
         description=f"Ege Girit Stale Record Experiment",
@@ -343,7 +347,8 @@ for current_packetloss_rate in packetloss_rates:
 
     # Sleep till the records are stale
     print(f"Waiting for TTL ({ttl_value_of_a_records}) seconds before stale phase")
-    sleep_for_seconds(ttl_value_of_a_records + 2)
+    # +5 because we don't want to begin early, if ripe atlas processes the request a little bit late.
+    sleep_for_seconds(ttl_value_of_a_records + 5)
 
     print(f"Packetloss rate to simulate: {current_packetloss_rate}")
     # Simulate 100% Packetloss on the server for the stale phase

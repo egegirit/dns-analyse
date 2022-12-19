@@ -27,13 +27,13 @@ file_name_of_msm_logs = "ripe-stale-experiment-logs.txt"
 as_ids = []
 
 # Send query every x seconds in prefetching phase
-prefetching_query_interval_in_seconds = 3
+prefetching_query_interval_in_seconds = 60
 # Keep sending queries in prefetching phase till the duration is reached
-prefetching_duration_in_seconds = 10
+prefetching_duration_in_seconds = 120
 # How long the stale phase should last
-stale_phase_duration_in_seconds = 15
+stale_phase_duration_in_seconds = 120
 # In stale phase, send queries from all probes every x seconds (interval)
-stale_phase_query_send_frequency_in_seconds = 5
+stale_phase_query_send_frequency_in_seconds = 60
 
 # Sleep for 10 Minutes for delayed packets after stale phase
 sleep_time_after_stale_phase = 5

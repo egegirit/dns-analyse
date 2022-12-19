@@ -6,6 +6,7 @@ import signal
 from datetime import datetime, timedelta
 from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest
 # from ripe.atlas.sagan import DnsResult
+import json
 
 ####################################
 # Execute this script as root user #
@@ -14,10 +15,13 @@ from ripe.atlas.cousteau import Dns, AtlasSource, AtlasCreateRequest
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
-asn_file_name = "1000-probes.txt"
+asn_file_name = "2-probes.txt"
 
+# Folder to store pcaps and experiment logs
 directory_name_of_logs = "stale_record_ripe_atlas_logs"
-file_name_of_msm_logs = "selected-probes-logs.txt"
+
+# File name to create for the experiment logs
+file_name_of_msm_logs = "ripe-stale-experiment-logs.txt"
 
 # Store the extracted asn_id's in this list
 as_ids = []
@@ -32,10 +36,9 @@ stale_phase_duration_in_seconds = 7200
 stale_phase_query_send_frequency_in_seconds = 60
 prefetching_query_count_for_each_probe = 60
 
-# Minimum and maximum counter values for the domains
-counter_min = 0  # Inclusive
-counter_max = 20  # Exclusive
+ttl_value_of_a_records = 60
 
+# Timeout value of a dns query
 timeout_value = 30000
 
 # Set the interface names for packet capture with tcpdump
@@ -214,7 +217,7 @@ def start_prefetching_phase():
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
-        prepend_probe_id=False,
+        prepend_probe_id=True,
 
         # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
         use_probe_resolver=True,
@@ -247,6 +250,8 @@ def start_prefetching_phase():
         )
         sources.append(source)
 
+    print(f"  Source created")
+
     print(f"  Starting Prefetching Phase")
 
     start_time = time.time()
@@ -262,8 +267,6 @@ def start_prefetching_phase():
         past_time = datetime.utcnow()
         scheduled_time = past_time + timedelta(seconds=seconds_to_add)
 
-        print(f"    Request scheduled for: {scheduled_time}")
-
         # Create request from given probe ID
         atlas_request = AtlasCreateRequest(
             start_time=scheduled_time,
@@ -276,6 +279,8 @@ def start_prefetching_phase():
             # The measurement will only be run once
             is_oneoff=False
         )
+
+        print(f"    Request created and scheduled for: {scheduled_time}")
 
         print(f"    {i}. Iteration in Prefetching Phase")
         (is_success, response) = atlas_request.create()
@@ -319,7 +324,7 @@ def start_stale_phase():
         query_argument=query_name,
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
-        prepend_probe_id=False,
+        prepend_probe_id=True,
 
         # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
         use_probe_resolver=True,
@@ -370,8 +375,6 @@ def start_stale_phase():
         past_time = datetime.utcnow()
         scheduled_time = past_time + timedelta(seconds=seconds_to_add)
 
-        print(f"    Request scheduled for: {scheduled_time}")
-
         # Create request from given probe ID
         atlas_request = AtlasCreateRequest(
             start_time=scheduled_time,
@@ -384,6 +387,8 @@ def start_stale_phase():
             # The measurement will only be run once
             is_oneoff=False
         )
+
+        print(f"    Request created and scheduled for: {scheduled_time}")
 
         print(f"    {i}. Iteration in Stale Phase")
         (is_success, response) = atlas_request.create()
@@ -405,7 +410,7 @@ def start_stale_phase():
         if remaining_time <= 0:
             continue_experiment = False
         else:
-            print(f"        ({int(remaining_time)} seconds remaining for {ip_addr})")
+            print(f"        ({int(remaining_time)} seconds remaining)")
 
         i += 1
 
@@ -413,28 +418,26 @@ def start_stale_phase():
 
 
 # Create measurement logs in runtime so that if the program crashes, we can see the results obtained till the crash
-def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple, counter_value):
-    currrent_working_path = os.path.dirname(os.path.realpath(__file__))
-    print(f"Working path: {currrent_working_path}")
-    save_path = "/" + directory_name
+def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
+    # currrent_working_path = os.path.dirname(os.path.realpath(__file__))
+    # print(f"Working path: {currrent_working_path}")
+    # save_path = "/" + directory_name
+    #
+    # # Get the full path of the directory that we will save the log file into
+    # file_path = currrent_working_path + save_path
+    # #  os.path.join(currrent_working_path, save_path, file_name_to_save)
+    # print(f"Save: {save_path}")
+    # print(f"Full path of log directory: {file_path}")
 
-    # Get the full path of the directory that we will save the log file into
-    file_path = currrent_working_path + save_path
-    #  os.path.join(currrent_working_path, save_path, file_name_to_save)
-    print(f"Save: {save_path}")
-    print(f"Full path of log directory: {file_path}")
-
-    if not os.path.exists(file_path):
-        os.makedirs(file_path)
-        print(f"Creating directory {file_path}")
+    if not os.path.exists(directory_name):
+        os.makedirs(directory_name)
+        print(f"Creating directory {directory_name}")
 
     # Open/Create the log file in the given directory
-    f = open(file_path + "/" + file_name_to_save, "a")
+    f = open(directory_name + "/" + file_name_to_save, "a")
 
-    f.write("Counter: " + str(counter_value) + " -> "
-            + str(measurement_tuple) + "\n")
-    print(f"Wrote to file: \nCounter: " + str(counter_value) + " -> "
-            + str(measurement_tuple))
+    f.write(str(measurement_tuple) + "\n")
+    print(f"Wrote to file: \nCounter: " + str(measurement_tuple))
 
     f.close()
 

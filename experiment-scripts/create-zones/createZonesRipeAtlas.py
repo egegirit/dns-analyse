@@ -10,9 +10,9 @@ created_a_records = []
 
 ip_address_with_dots = "139.19.117.11"
 
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+packetloss_rates = [100]
 
-domain_count = 50
+domain_count = 1
 
 
 # Creates nameserver definitions

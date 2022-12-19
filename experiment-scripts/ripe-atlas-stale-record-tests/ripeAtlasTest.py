@@ -15,7 +15,7 @@ import json
 ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
-asn_file_name = "750-probes.txt"
+asn_file_name = "2-probes.txt"
 
 # Folder to store pcaps and experiment logs
 directory_name_of_logs = "stale_record_ripe_atlas_logs"
@@ -26,28 +26,28 @@ file_name_of_msm_logs = "ripe-stale-experiment-logs.txt"
 # Store the extracted asn_id's in this list
 as_ids = []
 
-# Send query every x seconds in prefetching phase (send frequency)
-prefetching_query_interval_in_seconds = 1
+# Send query every x seconds in prefetching phase
+prefetching_query_interval_in_seconds = 3
 # Keep sending queries in prefetching phase till the duration is reached
-prefetching_duration_in_seconds = 60
-# In stale phase, send queries from all probes every x seconds (send frequency)
-stale_phase_query_send_interval_in_seconds = 60
+prefetching_duration_in_seconds = 10
 # How long the stale phase should last
-stale_phase_duration_in_seconds = 7200
+stale_phase_duration_in_seconds = 15
+# In stale phase, send queries from all probes every x seconds (interval)
+stale_phase_query_send_frequency_in_seconds = 5
 
 # Sleep for 10 Minutes for delayed packets after stale phase
-sleep_time_after_stale_phase = 600
+sleep_time_after_stale_phase = 5
 
 # TTL value of the A records in the auth server
 # After prefetching phase, we have to wait for TTL Value seconds to
 # wait for the records to become stale on probe resolvers
-ttl_value_of_a_records = 60
+ttl_value_of_a_records = 3
 
 # Timeout value of a dns query
-timeout_value = 30000
+timeout_value = 10000
 
 # Set the interface names for packet capture with tcpdump
-interface_name = "bond0"  # The interface of authoritative server without the packetloss filter
+interface_name = "ens33"  # The interface of authoritative server without the packetloss filter
 
 # Packetloss rates to be simulated on the authoritative server
 packetloss_rates = [100]
@@ -87,8 +87,8 @@ def extract_asn_values(text_file_name):
 # Returns true if no exception occurred. False, if subprocess.run() created an exception.
 def disable_packetloss_simulation(packetloss_rate, interface_name_for_capture):
     print(f"  Disabling packetloss on {interface_name_for_capture} interface with following commands:")
-    disable_packetloss_1 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    disable_packetloss_2 = f'sudo iptables-legacy -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_1 = f'sudo iptables -D INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    disable_packetloss_2 = f'sudo iptables -D INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
 
     print("    " + disable_packetloss_1)
     print("    " + disable_packetloss_2)
@@ -135,8 +135,8 @@ def compress_log_files(directory_name):
 # Use `run()` with `check=True` when setting and deleting packetloss
 # Otherwise process might not have finished before the next code runs
 def simulate_packetloss(packetloss_rate, interface_name_for_capture):
-    packetloss_filter_command_1 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
-    packetloss_filter_command_2 = f'sudo iptables-legacy -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    packetloss_filter_command_1 = f'sudo iptables -A INPUT -d 139.19.117.11/32 --protocol tcp --match tcp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
+    packetloss_filter_command_2 = f'sudo iptables -A INPUT -d 139.19.117.11/32 --protocol udp --match udp --dport 53 --match statistic --mode random --probability {packetloss_rate / 100} --match comment --comment "Random packetloss for Ege Girit Bachelor" --jump DROP'
     print(
         f"  Simulating {packetloss_rate}% packetloss on interface {interface_name_for_capture} with the following command:"
     )
@@ -358,7 +358,7 @@ for current_packetloss_rate in packetloss_rates:
     # Start sending stale queries
     # Keep sending until the experiment finish time is reached
     print(f"Starting stale phase")
-    start_experiment(stale_phase_query_send_interval_in_seconds, stale_phase_duration_in_seconds)
+    start_experiment(stale_phase_query_send_frequency_in_seconds, stale_phase_duration_in_seconds)
     # Wait for the duration of the prefetching experiment
     print(f"Sleeping for {stale_phase_duration_in_seconds} during the ripe atlas experiment")
     sleep_for_seconds(stale_phase_duration_in_seconds)

@@ -1129,8 +1129,10 @@ def create_plots_for(file_name):
 
     all_query_names_with_no_ok_responses = []
     for key, value in q_dict.items():
-        if key[0] not in all_query_names_with_no_ok_responses:
-            all_query_names_with_no_ok_responses.append(key[0])
+        if key not in all_query_names_with_no_ok_responses:
+            all_query_names_with_no_ok_responses.append(key)
+
+    print(f"all_query_names_with_no_ok_responses: {all_query_names_with_no_ok_responses}")
 
     # (PL) = [List of 0s and 1s] 0: failed retransmissions, 1s: success
     retransmission_success = {}

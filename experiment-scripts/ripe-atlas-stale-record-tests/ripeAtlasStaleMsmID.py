@@ -187,15 +187,15 @@ def start_packet_captures(directory_name, current_pl_rate, interface_name_for_ca
 # from the given counter value and packetloss rate
 # Query structure: *.ripeatlas-<plrate>-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
 # Example: *.ripeatlas-pl95-15.packetloss.syssec-research.mmci.uni-saarland.de
-def build_query_name_from_counter_and_pl(current_counter):
-    return "$p-$t.ripeatlas-" + str(current_counter) + ".packetloss.syssec-research.mmci.uni-saarland.de"
+def build_query_name_from_counter_and_pl():
+    return "$p-$t.ripeatlas-stale.packetloss.syssec-research.mmci.uni-saarland.de"
 
 
 # Create a source from asn_id and send a query with domain_name as query name
 def start_prefetching_phase():
     print(f"  Building query name")
     # Build the query name from the counter value
-    query_name = build_query_name_from_counter_and_pl(1)
+    query_name = build_query_name_from_counter_and_pl()
     print(f"    Built query name: {query_name}")
 
     print(f"  Creating DNS Query")
@@ -302,7 +302,7 @@ def start_prefetching_phase():
 def start_stale_phase():
     print(f"Building query name")
     # Build the query name from the counter value
-    query_name = build_query_name_from_counter_and_pl(1)
+    query_name = build_query_name_from_counter_and_pl()
     print(f"    Built query name: {query_name}")
 
     print(f"Creating DNS Query")

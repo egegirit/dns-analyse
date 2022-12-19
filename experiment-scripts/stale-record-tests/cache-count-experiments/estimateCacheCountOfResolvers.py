@@ -14,7 +14,7 @@ resolver_ip_addresses = [
     # "185.228.168.168",  # CleanBrowsing 1  (family-filter-dns.cleanbrowsing.org )
     # "185.228.168.10",
     # "185.228.168.9",  # CleanBrowsing 2  (security-filter-dns.cleanbrowsing.org )
-    # "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
+    "1.1.1.1",  # Cloudflare 1     (one.one.one.one)
     # "1.1.1.2",
     # "1.1.1.3",
     # "216.146.35.35",  # Dyn 1  (resolver1.dyndnsinternetguide.com)
@@ -38,24 +38,24 @@ resolver_ip_addresses = [
     # "76.76.2.1",
     # "76.76.2.2",
     # "76.76.2.3",
-    "209.244.0.3",  # Level3_1
-	"209.244.0.4",  # Level3_2
-
-	"199.85.126.10",  # Norton_1
-	"199.85.126.20",  # Norton_2
-	"199.85.126.30"   # Norton_3
+    # "209.244.0.3",  # Level3_1
+    # "209.244.0.4",  # Level3_2
+    #
+    # "199.85.126.10",  # Norton_1
+    # "199.85.126.20",  # Norton_2
+    # "199.85.126.30"   # Norton_3
 ]
 
 skip_to_next = False
 
-file_name = "cache_count_logs_newIPs2.txt"
+file_name = "ripe_test.txt"
 f = open(file_name, "a")
 
 resolver = dns.resolver.Resolver()
 # Set the timeout of the query
 resolver.timeout = 10
 resolver.lifetime = 10
-query_name = "cachetest.cobalt106.messwithdns.com"
+query_name = "google.com"
 sleep_time = 1.1
 max_ttl_of_record = 700
 query_count = 60
@@ -137,11 +137,11 @@ def send_queries():
         print(f"\nDone sending queries to {ip_addr}\n")
         f.write(f"\nDone sending queries to {ip_addr}\n\n")
 
-        #temp_list = ttl_list.copy()
-        #same_query = 0
-        #calculated_ttls = []
+        # temp_list = ttl_list.copy()
+        # same_query = 0
+        # calculated_ttls = []
 
-        #for x in range(len(ttl_list)):
+        # for x in range(len(ttl_list)):
         #    if ttl_list[x] in calculated_ttls:
         #        continue
 
@@ -167,14 +167,14 @@ def send_queries():
         #            temp_list.remove(ttl_list[index_of_same_origin])
         #            del temp_list[index_of_same_origin]
 
-        #print(f"Unique Query TTLs: {temp_list}")
-        #print(f"TTLs of Same Queries: {calculated_ttls}")
-        #print(f"Same Query count: {same_query}")
-        #print(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}")
-        #f.write(f"Unique Query TTLs: {temp_list}\n")
-        #f.write(f"TTLs of Same Queries: {calculated_ttls}\n")
-        #f.write(f"Same Query count: {same_query}\n\n")
-        #f.write(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}\n\n")
+        # print(f"Unique Query TTLs: {temp_list}")
+        # print(f"TTLs of Same Queries: {calculated_ttls}")
+        # print(f"Same Query count: {same_query}")
+        # print(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}")
+        # f.write(f"Unique Query TTLs: {temp_list}\n")
+        # f.write(f"TTLs of Same Queries: {calculated_ttls}\n")
+        # f.write(f"Same Query count: {same_query}\n\n")
+        # f.write(f"Same_query - Total query = Cache count = {len(ttl_list) - same_query}\n\n")
 
         print(f"\n  Observed Max TTL count of {ip_addr}: {count_of_max_ttl}")
         f.write(f"\n  Observed Max TTL count of {ip_addr}: {count_of_max_ttl}\n")
@@ -185,5 +185,6 @@ def send_queries():
     f.close()
     print(f"\nEND\n")
     sys.exit()
+
 
 send_queries()

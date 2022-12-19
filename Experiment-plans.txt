@@ -20,6 +20,7 @@ Packetloss Experiments:
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
 		- Query retransmissions (TCP and UDP separate)
 		- Response retransmissions (TCP and UDP separate)
+		- Rate success plots as bar plot (If there was dns retransmission for a query of a packetloss rate, how many of them leads to OK/ServFail in the End)
 		
 Stale Record Experiments:
 
@@ -65,3 +66,4 @@ Truncated Experiment:
 	- DNS retransmission plots as bar plot (summation of retransmission of packetloss rates) and violin plot to see each queries max and min values for a packetloss rate:
 		- Query retransmissions (TCP and UDP separate)
 		- Response retransmissions (TCP and UDP separate)
+		- Rate success plots as bar plot (If there was dns retransmission for a query of a packetloss rate, how many of them leads to OK/ServFail in the End)

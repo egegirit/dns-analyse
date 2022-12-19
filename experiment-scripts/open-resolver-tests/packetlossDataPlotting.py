@@ -904,12 +904,12 @@ def create_latency_plots(file_name, root_directory_of_plots):
         elif key[1] == 2:
             rcode_2_resp_latencies.append(value)  # rcode_2_resp_latencies.append(value)
 
-    print(f"rcode_0_resp_latencies: {rcode_0_resp_latencies}")
+    # print(f"rcode_0_resp_latencies: {rcode_0_resp_latencies}")
 
     # for i in range(len(rcode_0_resp_latencies)):
     #     print(f"Length rcode_0_resp_latencies[{i}]: {len(rcode_0_resp_latencies[i])}")
 
-    print(f"rcode_2_resp_latencies: {rcode_2_resp_latencies}")
+    # print(f"rcode_2_resp_latencies: {rcode_2_resp_latencies}")
 
     # for i in range(len(rcode_2_resp_latencies)):
     #     print(f"Length rcode_0_resp_latencies[{i}]: {len(rcode_2_resp_latencies[i])}")
@@ -1132,7 +1132,7 @@ def create_plots_for(file_name):
         if key not in all_query_names_with_no_ok_responses:
             all_query_names_with_no_ok_responses.append(key)
 
-    print(f"all_query_names_with_no_ok_responses: {all_query_names_with_no_ok_responses}")
+    # print(f"all_query_names_with_no_ok_responses: {all_query_names_with_no_ok_responses}")
 
     # (PL) = [List of 0s and 1s] 0: failed retransmissions, 1s: success
     retransmission_success = {}
@@ -1172,8 +1172,8 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
             print(f"Division Error")
             success_ratios[key] = 0
 
-    print(f" ### retransmission_success: {retransmission_success}")
-    print(f" ### success_ratios: {success_ratios}")
+    # print(f" ### retransmission_success: {retransmission_success}")
+    # print(f" ### success_ratios: {success_ratios}")
 
     x_axis = list(success_ratios.keys())
     data_list = list(success_ratios.values())

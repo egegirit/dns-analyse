@@ -1179,7 +1179,7 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
     print(f"    Creating bar plot")
     n = len(x_axis)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
-    width = 0.21  # the width of the bars
+    width = 1  # the width of the bars
     arr = np.array(ind)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -1188,7 +1188,7 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
     save_path = f"{root_directory_name}/{file_name_prefix}/{directory_name}"
     create_folder(save_path)
 
-    rects = ax.bar(bar_pos, data_list, width, bottom=0, color='dodgerblue')
+    rects = ax.bar(x_axis, data_list, width, bottom=0, color='dodgerblue')
 
     # Title of the graph, x and y label
     plot_title = f"{plot_title} ({file_name_prefix})"
@@ -1202,7 +1202,7 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
     plt.ylim(bottom=0, top=100)
 
     # ax.set_xticks(bar_pos)
-    ax.set_xticklabels(tuple(x_axis))
+    # ax.set_xticklabels(tuple(x_axis))
 
     # Create legend at the top left of the plot
     # ax.legend((non_stale_rects[0]), ('OK'), framealpha=0.5, bbox_to_anchor=(0.1, 1.25))

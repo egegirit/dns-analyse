@@ -40,6 +40,16 @@ stale_phase_query_send_interval_in_seconds = 120
 # How long the stale phase should last
 stale_phase_duration_in_seconds = 7200
 
+# Kredit cost calculation:
+# Query cost = 10
+# Probe count = 750
+# Prefetch query count for one probe: 53  (prefetching_duration_in_seconds/prefetching_query_interval_in_seconds)
+# Prefetching phase kredit cost: 397500   (53 * 10 * 750)
+# Query amount to send per probe in stale phase: 60  (stale_phase_duration_in_seconds/stale_phase_query_send_interval_in_seconds)
+# Kredit cost of stale phase per probe: 600  (60 * 10)
+# Stale phase kredit cost: 450000  (600 * 750)
+# Total kredit cost: 847500.0  (prefetch cost + stale cost)
+
 # Sleep for 10 Minutes for delayed packets after stale phase
 sleep_time_after_stale_phase = 600
 

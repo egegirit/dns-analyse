@@ -41,21 +41,22 @@ def calculate_prefetch_query_count(cache_count_of_resolver, desired_probability=
 daily_kredit_limit = 1000000
 
 query_cost_of_oneoff_experiment = 10
-query_cost_of_timed_experiment = 20
 
 assumed_cache_count_of_probe_resolver = 18
-desired_probability = 0.96
+desired_probability = 0.95
 
-query_amount_per_minute_in_stale_phase = 1
-duration_of_stale_phase_in_minutes = 120  # 60
-probe_count = 750  # 1500
+query_send_intervall_in_prefetch = 60
+duration_of_prefetch_phase_in_secs = 3180
+query_send_intervall_in_stale_in_secs = 120
+duration_of_stale_phase_in_secs = 120 * 60
+probe_count = 750
 
 print(f"Daily kredit limit: {daily_kredit_limit}")
 print(f"Query cost of one off experiment: {query_cost_of_oneoff_experiment}")
 print(f"Assumed cache count of probe resolver: {assumed_cache_count_of_probe_resolver}")
 print(f"All cache hit chance: {desired_probability}")
-print(f"Query amount per probe per minute in stale phase: {query_amount_per_minute_in_stale_phase}")
-print(f"Duration of stale phase in minutes: {duration_of_stale_phase_in_minutes}")
+print(f"Query send intervall in stale phase in seconds: {query_send_intervall_in_stale_in_secs}")
+print(f"Duration of stale phase in minutes: {duration_of_stale_phase_in_secs}")
 print(f"Probe count: {probe_count}")
 
 prefetch_query_count_for_one_probe = calculate_prefetch_query_count(assumed_cache_count_of_probe_resolver,
@@ -63,11 +64,13 @@ prefetch_query_count_for_one_probe = calculate_prefetch_query_count(assumed_cach
 
 print(f"Prefetch query count for one probe: {prefetch_query_count_for_one_probe}")
 
-prefetching_phase_kredit_cost = prefetch_query_count_for_one_probe * probe_count
+prefetching_phase_kredit_cost = prefetch_query_count_for_one_probe * probe_count * query_cost_of_oneoff_experiment
 print(f"Prefetching phase kredit cost: {prefetching_phase_kredit_cost}")
 
-kredit_cost_of_stale_phase_per_probe = (duration_of_stale_phase_in_minutes / query_amount_per_minute_in_stale_phase) \
-                                       * query_cost_of_oneoff_experiment
+query_count_to_send_per_probe_in_stale_phase = duration_of_stale_phase_in_secs / query_send_intervall_in_stale_in_secs
+print(f"Query amount to send per probe in stale phase: {query_count_to_send_per_probe_in_stale_phase}")
+
+kredit_cost_of_stale_phase_per_probe = query_count_to_send_per_probe_in_stale_phase * query_cost_of_oneoff_experiment
 
 print(f"Kredit cost of stale phase per probe: {kredit_cost_of_stale_phase_per_probe}")
 
@@ -78,6 +81,9 @@ print(f"Stale phase kredit cost: {stale_phase_kredit_cost}")
 total_kredit_cost = prefetching_phase_kredit_cost + stale_phase_kredit_cost
 
 print(f"Total kredit cost: {total_kredit_cost}")
+
+if total_kredit_cost > daily_kredit_limit:
+    print(f"Limit reached!")
 
 # With 500 Probes:
 # Prefetching -> 350.000 Kredits

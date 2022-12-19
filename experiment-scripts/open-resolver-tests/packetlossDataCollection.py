@@ -192,6 +192,9 @@ def initialize_dictionaries(pcap_type):
             # all_response_names_pl[current_pl_rate, prot] = 0
 
 
+query_names_with_no_ok_response_to_it_no_reset_after_pl = {}
+
+
 # Read the pcap file with the given packetloss rate while filtering the specified resolver packets
 def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
     print(f"    Reading file: {pcap_file_name}")
@@ -207,6 +210,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
 
     global query_names_with_no_ok_response_to_it
     query_names_with_no_ok_response_to_it = {}
+
+    global query_names_with_no_ok_response_to_it_no_reset_after_pl
 
     # Read the packets in the pcap file one by one
     index = 1
@@ -475,6 +480,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate, filtered_resolvers):
         query_names_with_no_ok_response_count[current_pl_rate] = 0
     query_names_with_no_ok_response_count[current_pl_rate] = len(query_names_with_no_ok_response_to_it)
 
+    copied_dict = query_names_with_no_ok_response_to_it.copy()
+    query_names_with_no_ok_response_to_it_no_reset_after_pl.update(copied_dict)
+
 
 # Input: "10" Output 1
 def get_index_of_packetloss_rate(input):
@@ -645,10 +653,13 @@ def extract_data_from(file_name, pcap_file_prefix, resolvers_to_filter):
     create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_Count_(PacketLoss)_[Counts]",
                               query_names_with_no_ok_response_count)
 
+    # Changed from query_names_with_no_ok_response_to_it
     create_file_write_content(f"{data_path}/Query_Names_With_No_OK_Response_(QueryName_IsResponse)_[Counts]",
-                              query_names_with_no_ok_response_to_it)
+                              query_names_with_no_ok_response_to_it_no_reset_after_pl)
     create_file_write_content(f"{data_path}/Retr_Query_Names_and_Counts_Pl_(PL_QueryName)_[Counts]",
                               retransmitted_query_names_and_retr_counts)
+
+    # print(f"query_names_with_no_ok_response_to_it_no_reset_after_pl: {query_names_with_no_ok_response_to_it_no_reset_after_pl}")
 
     # for keys in list(all_query_names_pl.keys()):
     #     print(f"Key 2: {keys[2]}")

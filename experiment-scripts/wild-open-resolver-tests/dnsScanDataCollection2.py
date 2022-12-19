@@ -15,7 +15,6 @@ auth_ip_addr = "139.19.117.11"
 # The dictionaries to store extracted information
 latencies_by_pl_and_rcode = {}
 query_duplicate_by_pl = {}
-rcodes_by_pl = {}
 ip_plrate_to_response_rcodes = {}
 latencies_first_query_first_resp_OK = {}
 
@@ -96,15 +95,13 @@ def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
 
 
 # Initialize dictionaries with empty values
-def initialize_dictionaries(pcap_type):
+def initialize_dictionaries():
     rcodes = [0, 2, 5]
     for current_pl_rate in packetloss_rates:
         query_duplicate_by_pl[current_pl_rate] = 0
         latencies_first_query_first_resp_OK[current_pl_rate] = []
-
         for rcode in rcodes:
             latencies_by_pl_and_rcode[current_pl_rate, rcode] = []
-            rcodes_by_pl[current_pl_rate, rcode] = 0
 
 
 # Read the pcap file with the given packetloss rate
@@ -170,8 +167,8 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
 
                 # port = packet.sport
                 # proto = packet[IP].proto  # 6 is TCP, 17 is UDP
+                # dns_id = packet[DNS].id  # DNS ID
                 is_response_packet = int(packet[DNS].qr)  # Packet is a query (0), or a response (1)
-                dns_id = packet[DNS].id  # DNS ID
                 answer_count = int(packet[DNS].ancount)  # Count of answers
 
                 # Arrival time of the packet
@@ -246,7 +243,6 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     # We found a response to a query name, check if RCODE is 0 and calculate latency
                     if current_pl_rate not in already_ok_answered_queries:
                         already_ok_answered_queries[current_pl_rate] = []
-
                     if (query_name, 0) in first_latency_queries and rcode == 0 and answer_count > 0 \
                             and query_name not in already_ok_answered_queries[current_pl_rate]:
                         latency = float(packet_time - first_latency_queries[query_name, 0])
@@ -254,117 +250,37 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                         del first_latency_queries[query_name, 0]
                         already_ok_answered_queries[current_pl_rate].append(query_name)
 
+            # Don't print IndexErrors such as DNSQR Layer not found
             except (IndexError, UnicodeDecodeError):
-                # Don't print IndexErrors such as DNSQR Layer not found
                 pass
             except Exception as e:
                 print(f"  Error reading packet: {e}")
-                print(f"  Error Type: {type(e)}")  # the exception instance
+                print(f"  Error Type: {type(e)}")
                 traceback.print_exc()
                 # packet.show()
 
         # See how far we are when running the script
         if index % 3000000 == 0:
             print(f"      Packet number: ({datetime.now()}) {index}")
-            input("Press any key to continue: ")
-            print(f"Continuing...")
         index += 1
-
-
-# Input: "10" Output 1
-def get_index_of_packetloss_rate(input):
-    pl_rate = str(input)
-    if pl_rate == "0":
-        return 0
-    if pl_rate == "10":
-        return 1
-    if pl_rate == "20":
-        return 2
-    if pl_rate == "30":
-        return 3
-    if pl_rate == "40":
-        return 4
-    if pl_rate == "50":
-        return 5
-    if pl_rate == "60":
-        return 6
-    if pl_rate == "70":
-        return 7
-    if pl_rate == "80":
-        return 8
-    if pl_rate == "85":
-        return 9
-    if pl_rate == "90":
-        return 10
-    if pl_rate == "95":
-        return 11
-    if pl_rate == "100":
-        return 12
-    return None
-
-
-# Reset all the values (lists) of the given dictionary
-def reset_values_of_dict_to_zero(dictionary, init_value):
-    all_keys = list(dictionary.keys())
-    for key in all_keys:
-        dictionary[key] = init_value
 
 
 # Reset the dictionaries for the next plotting
 def reset_for_next_plot():
     global latencies_by_pl_and_rcode
     global query_duplicate_by_pl
-    global rcodes_by_pl
     global ip_plrate_to_response_rcodes
     global latencies_first_query_first_resp_OK
 
     latencies_by_pl_and_rcode = {}
     query_duplicate_by_pl = {}
-    rcodes_by_pl = {}
     ip_plrate_to_response_rcodes = {}
     latencies_first_query_first_resp_OK = {}
 
     # print(f"Clean up for next plotting DONE")
 
 
-# Split latencies into OK latencies and ServFail latencies
-def extract_latencies_from_dict():
-    global latencies_by_pl_and_rcode
-    keys_of_latency = list(latencies_by_pl_and_rcode.keys())
-    rcode_0_keys = []
-    rcode_2_keys = []
-    for key in keys_of_latency:
-        # Get only latencies of RCODE = 0
-        if key[1] == 0:
-            rcode_0_keys.append(key)
-        # ServFail
-        elif key[1] == 2:
-            rcode_2_keys.append(key)
-
-    ok_latencies = {}
-    servfail_latencies = {}
-    index = 0
-    for key in rcode_0_keys:
-        # print(f"latencies_by_pl_and_rcode[{key}]: {latencies_by_pl_and_rcode[key]}")
-        ok_latencies[key[0]] = latencies_by_pl_and_rcode[key]
-        index += 1
-
-    index = 0
-    for key in rcode_2_keys:
-        # print(f"latencies_by_pl_and_rcode[{key}]: {latencies_by_pl_and_rcode[key]}")
-        servfail_latencies[key[0]] = latencies_by_pl_and_rcode[key]
-
-    # If some pl rate lists are empty, for example when there is 0 servfails packets in packetloss rate 0,
-    # then pl 0 key of the dictionary wont exist. Fill the non existing keys with 0
-    for pl in packetloss_rates:
-        if pl not in ok_latencies:
-            ok_latencies[pl] = [0]
-        if pl not in servfail_latencies:
-            servfail_latencies[pl] = [0]
-
-    return [ok_latencies, servfail_latencies]
-
-
+# Read the pcaps of client or auth
 def extract_data_from(file_name, pcap_file_prefix):
 
     # Check if client or auth data, create root folder for datas
@@ -388,13 +304,13 @@ def extract_data_from(file_name, pcap_file_prefix):
         read_single_pcap(pcap_file_name, current_pl_rate)
 
     # Store all the extracted information as text files in the corresponding pcap type folder
-    create_file_write_content(f"{data_path}/RCODE_Counts_(PacketLoss_RCODE)_Count", rcodes_by_pl)
     create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
     create_file_write_content(f"{data_path}/IP_PLRate_to_RCODEs", ip_plrate_to_response_rcodes)
 
 
+# Read all the pcaps first for client and then for auth
 def extract_datas_from_pcap(file_name):
-    initialize_dictionaries("client")
+    initialize_dictionaries()
 
     # Prefixes of the pcap file names
     client_prefix = "tcpdump_log_client_eth2_pl"
@@ -407,7 +323,7 @@ def extract_datas_from_pcap(file_name):
     reset_for_next_plot()
 
     # Initialize dictionaries again
-    initialize_dictionaries("auth")
+    initialize_dictionaries()
 
     # Create auth plots
     extract_data_from(file_name, auth_prefix)

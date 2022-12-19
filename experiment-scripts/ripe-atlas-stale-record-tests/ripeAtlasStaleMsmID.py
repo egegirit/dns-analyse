@@ -26,16 +26,21 @@ file_name_of_msm_logs = "ripe-stale-experiment-logs.txt"
 # Store the extracted asn_id's in this list
 as_ids = []
 
-# Time to wait after one domain query is sent to all resolver IP Addresses
-# (Sleeping time between counters)
-sleep_time_between_prefetch_queries = 2
+# Send query every x seconds in prefetching phase
+prefetching_query_interval_in_seconds = 1
+# Keep sending queries in prefetching phase till the duration is reached
+prefetching_duration_in_seconds = 60
+# How long the stale phase should last
+stale_phase_duration_in_seconds = 7200
+# In stale phase, send queries from all probes every x seconds (interval)
+stale_phase_query_send_frequency_in_seconds = 60
+
 # Sleep for 10 Minutes for delayed packets after stale phase
 sleep_time_after_stale_phase = 600
 
-stale_phase_duration_in_seconds = 7200
-stale_phase_query_send_frequency_in_seconds = 60
-prefetching_query_count_for_each_probe = 60
-
+# TTL value of the A records in the auth server
+# After prefetching phase, we have to wait for TTL Value seconds to
+# wait for the records to become stale on probe resolvers
 ttl_value_of_a_records = 60
 
 # Timeout value of a dns query
@@ -155,6 +160,7 @@ def simulate_packetloss(packetloss_rate, interface_name_for_capture):
 # Start 2 packet captures with tcpdump and return the processes
 # In case of an exception, the list will be empty
 def start_packet_captures(directory_name, current_pl_rate, interface_name_for_capture):
+    print("    Starting packet capture")
     # Packet capture on authoritative server interface without the packetloss filter
     # source port should not be 53 but random.
     # The destination port is 53, but using that would only capture incoming, not outgoing traffic
@@ -191,17 +197,17 @@ def build_query_name_from_counter_and_pl():
     return "$p-$t.ripeatlas-stale.packetloss.syssec-research.mmci.uni-saarland.de"
 
 
-# Create a source from asn_id and send a query with domain_name as query name
-def start_prefetching_phase():
+# Send queries from probes using the ASN every x seconds till the duration of the experiment is reached
+def start_experiment(interval_value, experiment_duration):
     print(f"  Building query name")
     # Build the query name from the counter value
     query_name = build_query_name_from_counter_and_pl()
     print(f"    Built query name: {query_name}")
 
-    print(f"  Creating DNS Query")
+    print(f"  Creating DNS Query with interval {interval_value}")
     dns = Dns(
         key=ATLAS_API_KEY,
-        description=f"Ege Girit Stale Record Experiment Prefetching Phase",
+        description=f"Ege Girit Stale Record Experiment",
         protocol="UDP",
         af="4",
 
@@ -209,6 +215,10 @@ def start_prefetching_phase():
         include_abuf=True,
         include_qbuf=True,
         ttl=True,
+
+        interval=interval_value,
+        # start_time=,
+        # stop_time=stop_time_of_prefetch,
 
         # Configure the DNS query
         query_class="IN",
@@ -218,19 +228,16 @@ def start_prefetching_phase():
         use_macros=True,
         # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
         prepend_probe_id=True,
-
         # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
         use_probe_resolver=True,
         # Recursion Desired flag (RD, RFC1035)
         set_rd_bit=True,
         # DNSSEC OK flag (DO, RFC3225)
         set_do_bit=True,
-
         # Timeout in milliseconds
         timeout=timeout_value,
         # How often to retry the measurement
         retry=0,
-
         udp_payload_size=1200,
     )
 
@@ -251,184 +258,42 @@ def start_prefetching_phase():
         sources.append(source)
 
     print(f"  Source created")
+    print(f"  Starting Experiment")
+    print(f"    Creating request from source")
 
-    print(f"  Starting Prefetching Phase")
+    # Calculate stop time of prefetching phase by adding the variable prefetching_duration_in_seconds
+    # to the current time (MUST BE UTC time for ripe atlas!)
+    current_time = datetime.utcnow()
+    stop_time_of_experiment = current_time + timedelta(seconds=experiment_duration)
 
-    start_time = time.time()
-    print(f"    Start time: {start_time}")
-
-    # Send prefetching queries
-    for i in range(prefetching_query_count_for_each_probe):
-        print(f"    Creating request from source")
-
-        seconds_to_add = 1
-        # print(f"    Current time: {datetime.utcnow()}")
-
-        past_time = datetime.utcnow()
-        scheduled_time = past_time + timedelta(seconds=seconds_to_add)
-
-        # Create request from given probe ID
-        atlas_request = AtlasCreateRequest(
-            start_time=scheduled_time,
-            # stop_time=1671389437,
-            key=ATLAS_API_KEY,
-            measurements=[dns],
-            # All probes with the selected asn_id's
-            sources=sources,
-            # Always set this to true
-            # The measurement will only be run once
-            is_oneoff=False
-        )
-
-        print(f"    Request created and scheduled for: {scheduled_time}")
-
-        print(f"    {i}. Iteration in Prefetching Phase")
-        (is_success, response) = atlas_request.create()
-
-        time.sleep(sleep_time_between_prefetch_queries)
-        print(f"\n      Results of {i}. Prefetching Iteration:\n")
-        try:
-            print(f"      is_success: {is_success}")
-            print(f"      Response: {response}")
-            msm_ids_of_experiment = (is_success, response)
-            create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
-        except Exception:
-            print("      Error while fetching/logging results")
-
-    print(f"== Prefetching Phase Over ==")
-
-
-# Send queries from probes using the ASN every x seconds till the duration of the experiment is reached
-def start_stale_phase():
-    print(f"Building query name")
-    # Build the query name from the counter value
-    query_name = build_query_name_from_counter_and_pl()
-    print(f"    Built query name: {query_name}")
-
-    print(f"Creating DNS Query")
-    dns = Dns(
+    # Create request from given probe ID
+    atlas_request = AtlasCreateRequest(
+        # start_time=scheduled_time,  # No start time -> start as soon as possible
+        stop_time=stop_time_of_experiment,
         key=ATLAS_API_KEY,
-        description=f"Ege Girit Stale Record Experiment Prefetching Phase",
-        protocol="UDP",
-        af="4",
-
-        # Enable more values as results
-        include_abuf=True,
-        include_qbuf=True,
-        ttl=True,
-
-        # Configure the DNS query
-        query_class="IN",
-        query_type="A",
-        # Domain name: *.ripe-atlas-<counter>.packetloss.syssec-research.mmci.uni-saarland.de
-        query_argument=query_name,
-        use_macros=True,
-        # Each probe prepends its probe number and a timestamp to the DNS query argument to make it unique
-        prepend_probe_id=True,
-
-        # Use the probe's list of local resolvers instead of specifying a target to use as the resolver.
-        use_probe_resolver=True,
-        # Recursion Desired flag (RD, RFC1035)
-        set_rd_bit=True,
-        # DNSSEC OK flag (DO, RFC3225)
-        set_do_bit=True,
-
-        # Timeout in milliseconds
-        timeout=timeout_value,
-        # How often to retry the measurement
-        retry=0,
-
-        udp_payload_size=1200,
+        measurements=[dns],
+        # All probes with the selected asn_id's
+        sources=sources,
+        # Always set this to true
+        # The measurement will only be run once
+        is_oneoff=False
     )
 
-    global as_ids
-    print(f"Creating sources from the selected asn ID's")
+    print(f"    Request created and stop time set to: {stop_time_of_experiment}")
+    (is_success, response) = atlas_request.create()
 
-    # For each asn_id that is given in the probes_dict, create a source
-    # using the asn_id to the sources list
-    sources = []
-    for as_id in as_ids:
-        source = AtlasSource(
-            type="asn",
-            value=as_id,
-            requested=1,
-            tags_include=["system-resolves-a-correctly", "system-ipv4-works", "system-ipv4-stable-1d",
-                          "system-ipv4-stable-30d", "system-ipv4-stable-90d"]
-        )
-        sources.append(source)
-
-    print(f" Starting Stale Phase")
-
-    start_time = time.time()
-    print(f"    Start time: {start_time}")
-    current_time = 0
-    continue_experiment = True
-
-    # Send prefetching queries
-    i = 1
-    while continue_experiment:
-        print(f"    Creating request from source")
-
-        seconds_to_add = 1
-        # print(f"    Current time: {datetime.utcnow()}")
-
-        past_time = datetime.utcnow()
-        scheduled_time = past_time + timedelta(seconds=seconds_to_add)
-
-        # Create request from given probe ID
-        atlas_request = AtlasCreateRequest(
-            start_time=scheduled_time,
-            # stop_time=1671389437,
-            key=ATLAS_API_KEY,
-            measurements=[dns],
-            # All probes with the selected asn_id's
-            sources=sources,
-            # Always set this to true
-            # The measurement will only be run once
-            is_oneoff=False
-        )
-
-        print(f"    Request created and scheduled for: {scheduled_time}")
-
-        print(f"    {i}. Iteration in Stale Phase")
-        (is_success, response) = atlas_request.create()
-
-        time.sleep(sleep_time_between_prefetch_queries)
-        print(f"\n      Results of {i}. Stale Iteration:\n")
-        try:
-            print(f"      is_success: {is_success}")
-            print(f"      Response: {response}")
-            msm_ids_of_experiment = (is_success, response)
-            create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
-        except Exception:
-            print("      Error while fetching/logging results")
-
-        # Calculate the elapsed time and check if we reached the time limit for the experiment
-        current_time = time.time()
-        elapsed_time = current_time - start_time
-        remaining_time = stale_phase_duration_in_seconds - elapsed_time
-        if remaining_time <= 0:
-            continue_experiment = False
-        else:
-            print(f"        ({int(remaining_time)} seconds remaining)")
-
-        i += 1
-
-    print(f"== Stale Phase Over ==")
+    print(f"\n      Result:\n")
+    try:
+        print(f"      is_success: {is_success}")
+        print(f"      Response: {response}")
+        msm_ids_of_experiment = (is_success, response)
+        create_measurement_id_logs(directory_name_of_logs, file_name_of_msm_logs, msm_ids_of_experiment)
+    except Exception:
+        print("      Error while fetching/logging results")
 
 
 # Create measurement logs in runtime so that if the program crashes, we can see the results obtained till the crash
 def create_measurement_id_logs(directory_name, file_name_to_save, measurement_tuple):
-    # currrent_working_path = os.path.dirname(os.path.realpath(__file__))
-    # print(f"Working path: {currrent_working_path}")
-    # save_path = "/" + directory_name
-    #
-    # # Get the full path of the directory that we will save the log file into
-    # file_path = currrent_working_path + save_path
-    # #  os.path.join(currrent_working_path, save_path, file_name_to_save)
-    # print(f"Save: {save_path}")
-    # print(f"Full path of log directory: {file_path}")
-
     if not os.path.exists(directory_name):
         os.makedirs(directory_name)
         print(f"Creating directory {directory_name}")
@@ -465,17 +330,22 @@ print("\n==== Experiment starting ====\n")
 # Parallelized and automated query sending with different packetloss rates
 # For each packetloss rate, create subprocesses for each IP Address, and send queries to all of them at the same time.
 for current_packetloss_rate in packetloss_rates:
-    print(f"### Packetloss rate to simulate: {current_packetloss_rate} ###")
-
     # Start packet capture on interface_name of the authoritative server, store the pcap in directory_name_of_logs
     capture_processes = start_packet_captures(directory_name_of_logs, current_packetloss_rate, interface_name)
 
     # Start prefetching phase
-    start_prefetching_phase()
+    print(f"Starting prefetching phase")
+    start_experiment(prefetching_query_interval_in_seconds, prefetching_duration_in_seconds)
+    # Wait for the duration of the prefetching experiment
+    print(f"Sleeping for {prefetching_duration_in_seconds} during the ripe atlas experiment")
+    sleep_for_seconds(prefetching_duration_in_seconds)
+    print(f"Ending prefetching phase")
 
     # Sleep till the records are stale
-    sleep_for_seconds(ttl_value_of_a_records + 10)
+    print(f"Waiting for TTL ({ttl_value_of_a_records}) seconds before stale phase")
+    sleep_for_seconds(ttl_value_of_a_records + 2)
 
+    print(f"Packetloss rate to simulate: {current_packetloss_rate}")
     # Simulate 100% Packetloss on the server for the stale phase
     if current_packetloss_rate != 0:
         if simulate_packetloss(current_packetloss_rate, interface_name):
@@ -487,9 +357,15 @@ for current_packetloss_rate in packetloss_rates:
 
     # Start sending stale queries
     # Keep sending until the experiment finish time is reached
-    start_stale_phase()
+    print(f"Starting stale phase")
+    start_experiment(stale_phase_query_send_frequency_in_seconds, stale_phase_duration_in_seconds)
+    # Wait for the duration of the prefetching experiment
+    print(f"Sleeping for {stale_phase_duration_in_seconds} during the ripe atlas experiment")
+    sleep_for_seconds(stale_phase_duration_in_seconds)
+    print(f"Ending stale phase")
 
     # Sleep for 10 Minutes for delayed packets
+    print(f"Sleeping for {sleep_time_after_stale_phase} (Cooldown for delayed packets)")
     sleep_for_seconds(sleep_time_after_stale_phase)
 
     # Disable simulation on the authoritative server

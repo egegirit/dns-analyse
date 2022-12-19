@@ -61,29 +61,43 @@ print(f"Probe count: {probe_count}")
 
 prefetch_query_count_for_one_probe = calculate_prefetch_query_count(assumed_cache_count_of_probe_resolver,
                                                                     desired_probability)
-
-print(f"Prefetch query count for one probe: {prefetch_query_count_for_one_probe}")
-
 prefetching_phase_kredit_cost = prefetch_query_count_for_one_probe * probe_count * query_cost_of_oneoff_experiment
-print(f"Prefetching phase kredit cost: {prefetching_phase_kredit_cost}")
-
 query_count_to_send_per_probe_in_stale_phase = duration_of_stale_phase_in_secs / query_send_intervall_in_stale_in_secs
-print(f"Query amount to send per probe in stale phase: {query_count_to_send_per_probe_in_stale_phase}")
-
 kredit_cost_of_stale_phase_per_probe = query_count_to_send_per_probe_in_stale_phase * query_cost_of_oneoff_experiment
-
-print(f"Kredit cost of stale phase per probe: {kredit_cost_of_stale_phase_per_probe}")
-
 stale_phase_kredit_cost = kredit_cost_of_stale_phase_per_probe * probe_count
-
-print(f"Stale phase kredit cost: {stale_phase_kredit_cost}")
-
 total_kredit_cost = prefetching_phase_kredit_cost + stale_phase_kredit_cost
 
-print(f"Total kredit cost: {total_kredit_cost}")
 
-if total_kredit_cost > daily_kredit_limit:
-    print(f"Limit reached!")
+
+def calculate_kredit_cost(kredit_limit, query_cost, prefetch_interval, prefetch_duration,
+                          stale_interval, stale_duration, probe_count):
+    prefetch_query_count_for_one_probe = prefetch_duration / prefetch_interval
+    prefetching_phase_kredit_cost = prefetch_query_count_for_one_probe * probe_count * query_cost
+    query_count_to_send_per_probe_in_stale_phase = stale_duration / stale_interval
+    kredit_cost_of_stale_phase_per_probe = query_count_to_send_per_probe_in_stale_phase * query_cost
+    stale_phase_kredit_cost = kredit_cost_of_stale_phase_per_probe * probe_count
+    total_kredit_cost = prefetching_phase_kredit_cost + stale_phase_kredit_cost
+    print(f"Prefetch query count for one probe: {prefetch_query_count_for_one_probe}")
+    print(f"Prefetching phase kredit cost: {prefetching_phase_kredit_cost}")
+    print(f"Query amount to send per probe in stale phase: {query_count_to_send_per_probe_in_stale_phase}")
+    print(f"Kredit cost of stale phase per probe: {kredit_cost_of_stale_phase_per_probe}")
+    print(f"Stale phase kredit cost: {stale_phase_kredit_cost}")
+    print(f"Total kredit cost: {total_kredit_cost}")
+    if total_kredit_cost > kredit_limit:
+        print(f"Limit reached!")
+
+calculate_kredit_cost(1000000, query_cost_of_oneoff_experiment, query_send_intervall_in_prefetch, duration_of_prefetch_phase_in_secs,
+                          query_send_intervall_in_stale_in_secs, duration_of_stale_phase_in_secs, probe_count)
+
+# print(f"Prefetch query count for one probe: {prefetch_query_count_for_one_probe}")
+# print(f"Prefetching phase kredit cost: {prefetching_phase_kredit_cost}")
+# print(f"Query amount to send per probe in stale phase: {query_count_to_send_per_probe_in_stale_phase}")
+# print(f"Kredit cost of stale phase per probe: {kredit_cost_of_stale_phase_per_probe}")
+# print(f"Stale phase kredit cost: {stale_phase_kredit_cost}")
+# print(f"Total kredit cost: {total_kredit_cost}")
+#
+# if total_kredit_cost > daily_kredit_limit:
+#     print(f"Limit reached!")
 
 # With 500 Probes:
 # Prefetching -> 350.000 Kredits

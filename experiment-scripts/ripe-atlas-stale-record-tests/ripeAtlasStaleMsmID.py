@@ -68,6 +68,27 @@ interface_name = "bond0"  # The interface of authoritative server without the pa
 packetloss_rates = [100]
 
 
+# Calculate the kredit cost of experiment before beginning, stop script if limit reached
+def calculate_kredit_cost(kredit_limit, query_cost, prefetch_interval, prefetch_duration,
+                          stale_interval, stale_duration, probe_count):
+    print(f"  Calculating kredit cost")
+    prefetch_query_count_for_one_probe = prefetch_duration / prefetch_interval
+    prefetching_phase_kredit_cost = prefetch_query_count_for_one_probe * probe_count * query_cost
+    query_count_to_send_per_probe_in_stale_phase = stale_duration / stale_interval
+    kredit_cost_of_stale_phase_per_probe = query_count_to_send_per_probe_in_stale_phase * query_cost
+    stale_phase_kredit_cost = kredit_cost_of_stale_phase_per_probe * probe_count
+    total_kredit_cost = prefetching_phase_kredit_cost + stale_phase_kredit_cost
+    # print(f"Prefetch query count for one probe: {prefetch_query_count_for_one_probe}")
+    print(f"  Prefetching phase kredit cost: {prefetching_phase_kredit_cost}")
+    # print(f"Query amount to send per probe in stale phase: {query_count_to_send_per_probe_in_stale_phase}")
+    # print(f"Kredit cost of stale phase per probe: {kredit_cost_of_stale_phase_per_probe}")
+    print(f"  Stale phase kredit cost: {stale_phase_kredit_cost}")
+    print(f"  Total kredit cost: {total_kredit_cost}")
+    if total_kredit_cost > kredit_limit:
+        print(f"    Limit reached!")
+        sys.exit("    Experiment did not start")
+
+
 # Extract the asn values from the global probe_dict variable
 # and store them in the global list as_ids
 # We create atlas sources from the id's stored in as_ids
@@ -90,7 +111,10 @@ def extract_asn_values(text_file_name):
         print(f"No probes found: {probe_count}")
         sys.exit()
 
-    print(f"  Probe count: {probe_count}")
+    print(f"  Probe count: {probe_count}\n")
+
+    calculate_kredit_cost(1000000, 10, prefetching_query_interval_in_seconds, prefetching_duration_in_seconds,
+                          stale_phase_query_send_interval_in_seconds, stale_phase_duration_in_seconds, 750)
 
     # Extract the asn values from the given probes
     for index in range(probe_count):

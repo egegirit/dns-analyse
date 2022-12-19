@@ -36,7 +36,7 @@ prefetching_query_interval_in_seconds = 60
 # Keep sending queries in prefetching phase till the duration is reached
 prefetching_duration_in_seconds = 3180  # prefetching_query_interval_in_seconds * 60
 # In stale phase, send queries from all probes every x seconds (send frequency)
-stale_phase_query_send_interval_in_seconds = 60
+stale_phase_query_send_interval_in_seconds = 120
 # How long the stale phase should last
 stale_phase_duration_in_seconds = 7200
 

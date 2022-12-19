@@ -44,7 +44,7 @@ query_cost_of_oneoff_experiment = 10
 query_cost_of_timed_experiment = 20
 
 assumed_cache_count_of_probe_resolver = 18
-desired_probability = 0.95
+desired_probability = 0.96
 
 query_amount_per_minute_in_stale_phase = 1
 duration_of_stale_phase_in_minutes = 120  # 60

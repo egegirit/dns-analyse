@@ -1,0 +1,1 @@
+{(100, 'stale-216-146-35-35-100-fzu-ttl3600.packetloss.syssec-research.mmci.uni-saarland.de.', 17): 175}

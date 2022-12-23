@@ -4,6 +4,7 @@ import re
 import os
 from scapy.all import *
 from scapy.layers.dns import DNS, DNSQR
+import pyshark
 
 # The packetloss rates that are simulated in the experiment
 packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
@@ -19,8 +20,24 @@ ip_plrate_to_response_rcodes = {}
 latencies_first_query_first_resp_OK = {}
 
 # Compile search pattern for efficiency
-query_pattern = "^([A-Za-z0-9]{5})_([A-Za-z0-9]{8})\.public-pl([0-9]{1,2})\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$"
-compiled_pattern = re.compile(query_pattern, re.I)
+query_pattern = "(^[A-Za-z0-9]{5})_([A-Za-z0-9]{8})\.public-pl([0-9]{1,2})\.packetloss\.syssec-research\.mmci\.uni-saarland\.de\.$"
+compiled_pattern = re.compile(query_pattern)
+
+
+# If a query name does not have the defined structure, skip examining the packet
+def is_query_name_valid(query_name):
+    search_result = compiled_pattern.search(query_pattern, query_name, re.IGNORECASE)
+
+    if search_result is None:
+        # print(f"Invalid query name: {query_name}")
+        return []
+
+    # Extract the query parts using groups
+    random_5_chars = search_result.group(1)
+    encoded_ip = search_result.group(2)
+    pl_rate_of_query = search_result.group(3)
+
+    return [random_5_chars, encoded_ip, pl_rate_of_query]
 
 
 # Create a folder with the given name
@@ -72,27 +89,6 @@ def get_values_of_dict(dictionary):
     return all_values
 
 
-# If a query name does not have the defined structure, skip examining the packet
-def is_query_name_valid(query_name):
-    search_result = compiled_pattern.search(query_name)
-    # print(f"search_result: {search_result}")
-
-    if search_result is None:
-        # print(f"Invalid query name: {query_name}")
-        return []
-
-    # Extract the query parts using groups
-    random_5_chars = search_result.group(1)
-    encoded_ip = search_result.group(2)
-    pl_rate_of_query = search_result.group(3)
-
-    # print(f"    random_5_chars: {random_5_chars}")
-    # print(f"    encoded_ip: {encoded_ip}")
-    # print(f"    pl_rate_of_query: {pl_rate_of_query}")
-
-    return [random_5_chars, encoded_ip, pl_rate_of_query]
-
-
 # Check if the source or destination IP of the packet is valid, filter packets by IP Address
 def is_src_and_dst_ip_valid(pcap_name, src_ip, dst_ip):
     # Client IP is 139.19.117.1
@@ -132,37 +128,44 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
 
     # Read the packets in the pcap file one by one
     index = 1
-    for packet in PcapReader(pcap_file_name):
+    for packet in pyshark.FileCapture(pcap_file_name):  # PcapReader(pcap_file_name):
         # Examine only DNS packets
-        if packet.haslayer(DNS):
+        if packet.dns:  # packet.haslayer(DNS):
             # print(f"========================")
             # print(f"Showing packet ({index})")
             # packet.show()
             try:
-                rcode = int(packet[DNS].rcode)
-                # If the RCODE is format-error, skip packet
-                if rcode == 1:
-                    # print(f"RCODE format-error, skipping")
+                rcode_string = int(packet.dns.rcode)  # int(packet[DNS].rcode)
+                rcode = -1
+                if rcode_string == "NOERROR":
+                    rcode = 0
+                elif rcode_string == "SERVFAIL":
+                    rcode = 2
+                else:
                     continue
+                # If the RCODE is format-error, skip packet
+                # if rcode == 1:
+                #     # print(f"RCODE format-error, skipping")
+                #     continue
 
                 # Get source and destination IPs of packet
-                dst_ip = packet[IP].dst
-                src_ip = packet[IP].src
+                dst_ip = packet.ip.dst  # packet[IP].dst
+                src_ip = packet.ip.src  # packet[IP].src
                 # Filter packet if source or destination IP is not valid
                 if not is_src_and_dst_ip_valid(pcap_file_name, src_ip, dst_ip):
-                    # print(f" Invalid IP Skipping")
-                    # print(f"    dst_ip: {dst_ip}")
-                    # print(f"    src_ip: {src_ip}")
+                    print(f" Invalid IP Skipping")
+                    print(f"    dst_ip: {dst_ip}")
+                    print(f"    src_ip: {src_ip}")
                     continue
 
-                rec_type = packet[DNSQR].qtype  # Type 1 is A record
+                rec_type = packet.dns.qry_type  # packet[DNSQR].qtype  # Type 1 is A record
                 # Filter if query is not an A record query
                 if rec_type != 1:
-                    # print(f"  Query type is not an A record: {query_name}")
+                    print(f"  Query type is not an A record: {query_name}")
                     continue
 
                 # Query name of packet
-                query_name = packet[DNS].qd.qname.decode("utf-8").lower()
+                query_name = packet.dns.qry_name.lower()  # packet[DNS].qd.qname.decode("utf-8").lower()
                 # print(f"Qname: {query_name}")
                 query_extract_result = is_query_name_valid(query_name)
                 if len(query_extract_result) == 0:
@@ -174,37 +177,37 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     pl_rate_of_packet = query_extract_result[2]
 
                 # Extract ip address and pl rate from query name,
+                # pl_rate_of_packet = query_name.split("public-pl")[1].split(".")[0]
+                # random_5_character_of_query = query_name.split("_")[0]
+                # hex_decoded_ip = query_name.split("_")[1].split(".public-pl")[0]
                 ip_addr_of_query = decode_hexadecimal(hex_decoded_ip)
 
                 # Filter if packetloss rate of packet does not match the pl rate of pcap file
                 if str(current_pl_rate) != str(pl_rate_of_packet):
-                    # print(f"PL rate does not match for: {query}")
-                    # print(f" PL rate on query name does not match: {pl_rate_of_packet} != {current_pl_rate}")
+                    print(f" PL rate does not match for: {query}")
+                    print(f" PL rate on query name does not match: {pl_rate_of_packet} != {current_pl_rate}")
                     continue
 
                 # port = packet.sport
                 # proto = packet[IP].proto  # 6 is TCP, 17 is UDP
-                # dns_id = packet[DNS].id  # DNS ID
-                is_response_packet = int(packet[DNS].qr)  # Packet is a query (0), or a response (1)
-                answer_count = int(packet[DNS].ancount)  # Count of answers
+                # dns_id = packet.dns.id  # packet[DNS].id  # DNS ID
+                is_response_packet = packet.dns.flags_response  # int(packet[DNS].qr)  # Packet is a query (0), or a response (1)
+                answer_count = int(packet.dns.ancount)  # int(packet[DNS].ancount)  # Count of answers
 
                 # Arrival time of the packet
-                packet_time = float(packet.time)
+                packet_time = float(packet.sniff_time)  # float(packet.time)
 
-                # print(f"Query name: {query_name}")
-                # print(f"  Query type: {rec_type}")
-                # print(f"  Is response (0: Query, 1: Response): {is_response}")
-                # print(f"  DNS ID: {dns_id}")
-                # print(f"  RCODE: {rcode}")
-                # print(f"  Answer Count: {answer_count}")
-                # print(f"  SRC IP: {src_port}")
-                # print(f"  DST IP: {dst_port}")
-                # print(f"  Port: {port}")
-                # print(f"  Protocol: {proto}")
-                # print(f"  Packetloss rate of packet: {pl_rate_of_packet}")
-                # print(f"  Operator Name: {operator_name}")
-                # print(f"  Arrival time of packet: {packet_time}")
-                # print(f"  Time difference to previous packet: {time_diff_to_previous}")
+                print(f"Query name: {query_name}")
+                print(f"  Query type: {rec_type}")
+                print(f"  Is response (0: Query, 1: Response): {is_response}")
+                print(f"  DNS ID: {dns_id}")
+                print(f"  RCODE: {rcode}")
+                print(f"  Answer Count: {answer_count}")
+                print(f"  SRC IP: {src_port}")
+                print(f"  DST IP: {dst_port}")
+                print(f"  Packetloss rate of packet: {pl_rate_of_packet}")
+                print(f"  Arrival time of packet: {packet_time}")
+                print(f"  Time difference to previous packet: {time_diff_to_previous}")
 
                 # Packet is a query
                 if is_response_packet == 0:
@@ -259,13 +262,13 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     # Calculate latency between first query and first OK response to it
                     # We found a response to a query name, check if RCODE is 0 and calculate latency
                     if current_pl_rate not in already_ok_answered_queries:
-                        already_ok_answered_queries[current_pl_rate] = {}
+                        already_ok_answered_queries[current_pl_rate] = []
                     if (query_name, 0) in first_latency_queries and rcode == 0 and answer_count > 0 \
                             and query_name not in already_ok_answered_queries[current_pl_rate]:
                         latency = float(packet_time - first_latency_queries[query_name, 0])
                         latencies_first_query_first_resp_OK[current_pl_rate].append(latency)
                         del first_latency_queries[query_name, 0]
-                        already_ok_answered_queries[current_pl_rate].add(query_name)
+                        already_ok_answered_queries[current_pl_rate].append(query_name)
 
             # Don't print IndexErrors such as DNSQR Layer not found
             except (IndexError, UnicodeDecodeError):
@@ -277,8 +280,9 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 # packet.show()
 
         # See how far we are when running the script
-        if index % 3000000 == 0:
-            print(f"      Packet number: ({datetime.now()}) {index}")
+        # if index % 1000000 == 0:
+        #     print(f"      Packet number: ({datetime.now()}) {index}")
+        print(f"      Packet number: {index}")
         index += 1
 
 

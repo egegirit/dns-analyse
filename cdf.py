@@ -21,20 +21,20 @@ def read_dict_from_file(file_name):
 def create_folder(folder_name):
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
-        print(f"Folder {folder_name} created")
+        print(f"  Folder {folder_name} created")
     else:
-        print(f"Folder {folder_name} already exists")
+        print(f"  Folder {folder_name} already exists")
 
 
 def iterate_latency_dict(latency_dict, folder_name):
     for key, value in latency_dict.items():
         if value:
-            print(f"Length of latency list: {len(value)}")
-            plot_cdf(value, f"({folder_name} PL {key[0]} RCODE {key[1]})")
+            # print(f"  Length of latency list: {len(value)}")
+            plot_cdf(value, f"({folder_name} PL {key[0]} RCODE {key[1]})", folder_name)
 
 
 # Calculate latencies of all RCODE 0/2 packets (All packetloss rates combined)
-def calculate_all_pl_latencies(latency_dict):
+def calculate_all_pl_latencies(latency_dict, folder_name):
     rcode_0_latencies = []
     rcode_2_latencies = []
 
@@ -56,12 +56,15 @@ def calculate_all_pl_latencies(latency_dict):
     mean_rcode_2 = statistics.mean(rcode_2_latencies)
     all_mean_latencies["RCODE_2"].append(mean_rcode_2)
 
-    plot_cdf(rcode_0_latencies, "(RCODE 0)")
-    plot_cdf(rcode_2_latencies, "(RCODE 2)")
+    plot_cdf(rcode_0_latencies, f"({folder_name} RCODE 0)", folder_name)
+    plot_cdf(rcode_2_latencies, f"({folder_name} RCODE 2)", folder_name)
+
+    # print(f"rcode_0_latencies of {folder_name}: {rcode_0_latencies}")
+    # print(f"rcode_2_latencies of {folder_name}: {rcode_2_latencies}")
 
 
 # Create CDF
-def plot_cdf(latency_list, title):
+def plot_cdf(latency_list, title, operator_name):
     # evaluate the histogram
     count, bins_count = np.histogram(latency_list, bins=10)
 
@@ -87,15 +90,20 @@ def plot_cdf(latency_list, title):
 
     title_without_whitespace = title.replace(' ', '')
 
+    folder_to_save_plot = operator_name + "_CDF_Plots"
+
+    create_folder(folder_to_save_plot)
+
     # save plot as png
-    plt.savefig(f"{title_without_whitespace}_CDFPlot.png", dpi=100, bbox_inches='tight')
-    print(f"      Created plot")
+    plt.savefig(f"{folder_to_save_plot}/{title_without_whitespace}_CDFPlot.png", dpi=100, bbox_inches='tight')
+    print(f"      Created plot {title}")
 
     # Clear plots
     plt.cla()
     plt.close()
 
 
+# File name to read the latencies
 file_name = "Latencies_(PacketLoss_RCODE)_[Latencies].txt"
 
 # find mean/median of a packetloss rate, combine all the packetloss rates into 1 CDF plot
@@ -113,6 +121,7 @@ print(f"Folder names in the working directory: {folders}")
 # Iterate all the resolver data folders
 for folder in folders:
     try:
+        print(f" Current folder: {folder}")
         # Read Latencies_(PacketLoss_RCODE)_[Latencies].txt
         latency_dict = convert_string_to_dict(read_dict_from_file(os.path.join(folder, file_name)))
 
@@ -120,8 +129,9 @@ for folder in folders:
         iterate_latency_dict(latency_dict, folder)
 
         # Create CDF for all packetloss rates combined but separate RCODES
-        calculate_all_pl_latencies(latency_dict)
+        calculate_all_pl_latencies(latency_dict, folder)
     except Exception:
         print(f"  Error opening file in directory {folder}")
 
-
+# print(f"all_mean_latencies: {all_mean_latencies}")
+# print(f"all_median_latencies: {all_median_latencies}")

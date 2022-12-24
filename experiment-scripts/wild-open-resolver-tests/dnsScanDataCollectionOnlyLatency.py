@@ -19,7 +19,7 @@ ip_plrate_to_response_rcodes = {}
 latencies_first_query_first_resp_OK = {}
 
 # Compile search pattern for efficiency
-query_pattern = "^([A-Za-z0-9]{5})_([A-Za-z0-9]{8})\.public-pl([0-9]{1,2})\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$"
+query_pattern = "^([A-Za-z0-9]{5})_([A-Za-z0-9]{8})\.public-pl([0-9]{1,2})\.packetloss\.syssec-research\.mmci\.uni-saarland\.de\.$"
 compiled_pattern = re.compile(query_pattern, re.I)
 
 
@@ -166,7 +166,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                 # print(f"Qname: {query_name}")
                 query_extract_result = is_query_name_valid(query_name)
                 if len(query_extract_result) == 0:
-                    print(f" Query name does not match: {query_name}")
+                    # print(f" Query name does not match: {query_name}")
                     continue
                 else:
                     # random_5_character_of_query = query_extract_result[0]
@@ -259,7 +259,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
                     # Calculate latency between first query and first OK response to it
                     # We found a response to a query name, check if RCODE is 0 and calculate latency
                     if current_pl_rate not in already_ok_answered_queries:
-                        already_ok_answered_queries[current_pl_rate] = {}
+                        already_ok_answered_queries[current_pl_rate] = set()
                     if (query_name, 0) in first_latency_queries and rcode == 0 and answer_count > 0 \
                             and query_name not in already_ok_answered_queries[current_pl_rate]:
                         latency = float(packet_time - first_latency_queries[query_name, 0])
@@ -279,6 +279,7 @@ def read_single_pcap(pcap_file_name, current_pl_rate):
         # See how far we are when running the script
         if index % 3000000 == 0:
             print(f"      Packet number: ({datetime.now()}) {index}")
+        # print(f"      Packet number: {index}")
         index += 1
 
 
@@ -319,10 +320,11 @@ def extract_data_from(file_name, pcap_file_prefix):
         print(f"  Current packetloss rate: {current_pl_rate}")
         pcap_file_name = pcap_file_prefix + str(current_pl_rate) + ".pcap"
         read_single_pcap(pcap_file_name, current_pl_rate)
-
-    # Store all the extracted information as text files in the corresponding pcap type folder
-    create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]", latencies_by_pl_and_rcode)
-    create_file_write_content(f"{data_path}/IP_PLRate_to_RCODEs", ip_plrate_to_response_rcodes)
+        # Store all the extracted information as text files in the corresponding pcap type folder
+        create_file_write_content(f"{data_path}/Latencies_(PacketLoss_RCODE)_[Latencies]_PL{current_pl_rate}", latencies_first_query_first_resp_OK)
+        create_file_write_content(f"{data_path}/IP_PLRate_to_RCODEs_PL{current_pl_rate}", ip_plrate_to_response_rcodes)
+        reset_for_next_plot()
+        initialize_dictionaries()
 
 
 # Read all the pcaps first for client and then for auth

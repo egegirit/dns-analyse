@@ -77,8 +77,6 @@ for current_ttl in ttl_values:
             else:
                 print(f"Other RCODE!")
 
-        maximum_length_of_list = max(len(stale_timings), len(servfail_timings))
-
         # Find the minimum seconds to build the 0 point of axis
         # Stale list is empty
         if len(stale_timings) == 0:
@@ -102,7 +100,7 @@ for current_ttl in ttl_values:
                     minimum_latency = min(servfail_timings[0], minimum_latency)
 
     print(f"Minimum latency: {minimum_latency}")
-    print(f"Maximum list size: {maximum_length_of_list}")
+    # print(f"Maximum list size: {maximum_length_of_list}")
 
     for file_name in all_resolvers:
         print(f"  Reading file: {file_name}")
@@ -134,8 +132,14 @@ for current_ttl in ttl_values:
         if (file_name, "error") not in all_latencies_by_rcode_and_ip_normalised:
             all_latencies_by_rcode_and_ip_normalised[file_name, "error"] = servfail_timings
 
-    print(f"all_latencies_by_rcode_and_ip_normalised: {all_latencies_by_rcode_and_ip_normalised}")
+    maximum_length_of_list = -1
+    for key, val in all_latencies_by_rcode_and_ip_normalised.items():
+        if maximum_length_of_list < len(val):
+            maximum_length_of_list = len(val)
+    # print(f"Max length: {max_length}")
+    # maximum_length_of_list = max(len(stale_timings), len(servfail_timings))
 
+    print(f"all_latencies_by_rcode_and_ip_normalised: {all_latencies_by_rcode_and_ip_normalised}")
     for i in range(maximum_length_of_list):
         for file_name in all_resolvers:
             if i not in all_list_of_stales:
@@ -148,6 +152,14 @@ for current_ttl in ttl_values:
                 all_list_of_stales[i].append(dummy_value)
 
     print(f"all_list_of_stales: {all_list_of_stales}")
+
+    # a = all_latencies_by_rcode_and_ip_normalised[("Dyn-1", "stale")]
+    # print(f"\n\nDYN1: Length: {len(a)}\n {a}\n\n")
+    # dyn = []
+    # for key, value in all_list_of_stales.items():
+    #     # for x in range(len(all_list_of_stales)):
+    #     dyn.append(value[3])
+    # print(f"dyn all list of stales: Length: {len(dyn)}\n {dyn}\n\n")
 
     for i in range(maximum_length_of_list):
         for file_name in all_resolvers:

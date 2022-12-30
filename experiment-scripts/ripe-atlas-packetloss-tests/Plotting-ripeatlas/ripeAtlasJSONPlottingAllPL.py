@@ -472,7 +472,7 @@ x_axis_for_text = 1
 y_axis_for_text = 1
 
 bottom_limit = 0
-upper_limit = 20
+upper_limit = 30
 
 directory_name_of_plots = "ripe-probes-plot-results"
 

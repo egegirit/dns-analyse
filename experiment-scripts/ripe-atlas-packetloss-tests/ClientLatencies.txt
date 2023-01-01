@@ -1,0 +1,72 @@
+PL rate: 0 List length: 14899
+  Mean latency: 0.19730699429491913
+  Median latency: 0.099952
+  Max latency: 29.004328
+  Min latency: 0.000847
+  Latencies above 10: 7
+PL rate: 10 List length: 15000
+  Mean latency: 0.3464946837333333
+  Median latency: 0.133506
+  Max latency: 29.017377
+  Min latency: 0.0009170000000000001
+  Latencies above 10: 14
+PL rate: 20 List length: 14920
+  Mean latency: 0.4423888498659517
+  Median latency: 0.1609465
+  Max latency: 29.00594
+  Min latency: 0.000859
+  Latencies above 10: 14
+PL rate: 30 List length: 15018
+  Mean latency: 0.6159478882008257
+  Median latency: 0.228048
+  Max latency: 29.007746
+  Min latency: 0.000907
+  Latencies above 10: 30
+PL rate: 40 List length: 44686
+  Mean latency: 0.8166781299959719
+  Median latency: 0.332067
+  Max latency: 29.011654999999998
+  Min latency: 0.000537
+  Latencies above 10: 79
+PL rate: 50 List length: 14927
+  Mean latency: 1.1650579557178267
+  Median latency: 0.793121
+  Max latency: 29.00819
+  Min latency: 0.0010220000000000001
+  Latencies above 10: 171
+PL rate: 60 List length: 43606
+  Mean latency: 1.4669018688941888
+  Median latency: 1.012288
+  Max latency: 30.002926
+  Min latency: 0.0005380000000000001
+  Latencies above 10: 508
+PL rate: 70 List length: 42285
+  Mean latency: 1.9524766842379093
+  Median latency: 1.0611199999999998
+  Max latency: 30.026217
+  Min latency: 0.000517
+  Latencies above 10: 1123
+PL rate: 80 List length: 39832
+  Mean latency: 2.5428268727154046
+  Median latency: 1.5039250000000002
+  Max latency: 30.003266
+  Min latency: 0.00016
+  Latencies above 10: 2051
+PL rate: 85 List length: 14267
+  Mean latency: 3.813069823719072
+  Median latency: 2.004629
+  Max latency: 30.251797999999997
+  Min latency: 0.000155
+  Latencies above 10: 2405
+PL rate: 90 List length: 36440
+  Mean latency: 3.2428324169868277
+  Median latency: 2.004936
+  Max latency: 30.249406
+  Min latency: 0.00015099999999999998
+  Latencies above 10: 3666
+PL rate: 95 List length: 34111
+  Mean latency: 3.606684187681393
+  Median latency: 2.014665
+  Max latency: 30.003366000000003
+  Min latency: 0.00017999999999999998
+  Latencies above 10: 4393

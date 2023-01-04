@@ -40,6 +40,7 @@ count_of_answers_with_pl = {
 
 }
 
+
 def get_desired_attribute(string_to_search, attribute_string):
     if attribute_string in string_to_search:
         return string_to_search.split(attribute_string)[1].split(",")[0]
@@ -344,12 +345,18 @@ directory_name_of_plots = "ripe-probes-plot-results"
 if not os.path.exists(directory_name_of_plots):
     os.makedirs(directory_name_of_plots)
 
+file_to_write = open("JsonDecoded.txt", "w")
+
 file_name_to_read_jsons = "ripeAtlasAllJSONs.txt"
 file = open(file_name_to_read_jsons, "r")
 print(f"Reading file: {file_name_to_read_jsons}")
 
 line_count = 1
 for line in file:
+
+    print(f"\n ===== Line ({line_count}) =====")
+    file_to_write.write(f"\n ===== Line ({line_count}) =====\n")
+
     # print(f"=================")
     # print(f"Result ({line_count}):")
     stripped_line = line.rstrip()
@@ -385,17 +392,29 @@ for line in file:
 
         # print(f"\n  Report ({report_count}):")
 
+        print(f"\n     == Report ({report_count}) ==")
+        file_to_write.write(f"\n     == Report ({report_count}) ==\n")
+
         epoch_time = int(get_desired_attribute(report, "'time': "))
         epoch_to_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(epoch_time))
-        # print(f"Time: {epoch_time} -> {epoch_to_date}")
+        print(f"Time: {epoch_time} -> {epoch_to_date}")
+        file_to_write.write(f"Time: {epoch_time} -> {epoch_to_date}\n")
+
         src_ip = get_desired_attribute(report, "'src_addr': ")
-        # print(f"Source IP: {src_ip}")
+        print(f"Source IP: {src_ip}")
+        file_to_write.write(f"Source IP: {src_ip}\n")
+
         dst_ip = get_desired_attribute(report, "'dst_addr': ")
-        # print(f"Source IP: {dst_ip}")
+        print(f"Destination IP: {dst_ip}")
+        file_to_write.write(f"Destination IP: {dst_ip}\n")
+
         ttl = get_desired_attribute(report, "'ttl': ")
-        # print(f"TTL: {ttl}")
+        print(f"TTL: {ttl}")
+        file_to_write.write(f"TTL: {ttl}\n")
+
         protocol = get_desired_attribute(report, "'proto': ")
-        # print(f"Protocol: {protocol}")
+        print(f"Protocol: {protocol}")
+        file_to_write.write(f"Protocol: {protocol}\n")
 
         qbuf = get_desired_attribute(report, "'qbuf': ")
         if qbuf is not None:
@@ -404,10 +423,12 @@ for line in file:
                 qbuf_decoded = str(dns.message.from_wire(base64.b64decode(qbuf)))
             except Exception:
                 print(f"Qbuf error: {qbuf}")
+                file_to_write.write(f"Qbuf error: {qbuf}\n")
                 print(f"Skipping packet")
                 continue
 
-            # print(f"\nQBUF:\n{qbuf_decoded}")
+            print(f"\nQBUF:\n{qbuf_decoded}")
+            file_to_write.write(f"\nQBUF:\n{qbuf_decoded}\n")
             qbuf_rcode = extract_attribute_from_buf("rcode ", qbuf_decoded)
             qbuf_opcode = extract_attribute_from_buf("opcode ", qbuf_decoded)
             qbuf_question = extract_field_from_buf(';QUESTION', qbuf_decoded)
@@ -418,7 +439,8 @@ for line in file:
 
             # Count duplicates
             if qbuf_query_name in query_names_with_pl["query_names_0"]:
-                print("Dup")
+                print("  Duplicate query name")
+                file_to_write.write("  Duplicate query name\n")
                 duplicate_query_count_with_pl["duplicate_query_count_0"] += 1
 
             if qbuf_query_name != "" and qbuf_query_name not in query_names_with_pl["query_names_0"]:
@@ -432,7 +454,8 @@ for line in file:
             result_json = report.split("'result':")[1]
             # print(f"result_json: {result_json}")
             response_time = float(get_desired_attribute(report, "'rt': "))
-            # print(f"Response time: {response_time} (ms) -> {response_time/1000.0} (s)")
+            print(f"Response time: {response_time} (ms) -> {response_time/1000.0} (s)")
+            file_to_write.write(f"Response time: {response_time} (ms) -> {response_time/1000.0} (s)\n")
 
             latencies_with_pl["latency_0"].append(response_time / 1000.0)
 
@@ -443,9 +466,11 @@ for line in file:
                     abuf_decoded = str(dns.message.from_wire(base64.b64decode(abuf)))
                 except Exception:
                     print(f"Abuf error: {abuf}")
+                    file_to_write.write(f"Abuf error: {abuf}\n")
                     print(f"Skipping packet")
                     continue
-                # print(f"\nABUF:\n{abuf_decoded}")
+                print(f"\nABUF:\n{abuf_decoded}")
+                file_to_write.write(f"\nABUF:\n{abuf_decoded}\n")
                 abuf_opcode = extract_attribute_from_buf("opcode ", abuf_decoded)
                 abuf_rcode = extract_attribute_from_buf("rcode ", abuf_decoded)
 
@@ -462,12 +487,13 @@ for line in file:
 
                 # Count duplicates
                 if abuf_query_name in answer_names_with_pl["answer_names_0"]:
-                    print("Dup A")
+                    print("  Duplicate Answer")
+                    file_to_write.write("  Duplicate Answer\n")
                     duplicate_answer_count_with_pl["duplicate_answer_count_0"] += 1
 
                 # print(f"abuf_query_name: {abuf_query_name}")
                 if abuf_query_name != "" and abuf_query_name not in answer_names_with_pl[
-                    "answer_names_" + str(pl_rate)]:
+                    "answer_names_0"]:
                     answer_names_with_pl["answer_names_0"].append(abuf_query_name)
 
         report_count += 1
@@ -476,69 +502,70 @@ for line in file:
     line_count += 1
 
 file.close()
+file_to_write.close()
+#
+# index = 0
+# for latencies_of_pl in latencies_with_pl:
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of {pl_rate} Packetloss rate latencies: {len(latencies_of_pl)}")
+#     index += 1
+#
+# print(f"\n")
+#
+# index = 0
+# for answer_names_of_pl in answer_names_with_pl:
+#     values = list(answer_names_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of answer_names_of_pl {pl_rate}: {len(values)}")
+#     # index2 = 0
+#     # for query in values:
+#     #     print(f"  {index2}. Query: {query}")
+#     #     index2 += 1
+#     index += 1
+#
+# index = 0
+# for query_names_of_pl in query_names_with_pl:
+#     values = list(query_names_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of query_names_of_pl {pl_rate}: {len(values)}")
+#     # index2 = 0
+#     # for query in values:
+#     #     print(f"  {index2}. Query: {query}")
+#     #     index2 += 1
+#     index += 1
+#
+# print(f"\n")
+#
+# index = 0
+# for elem in duplicate_answer_count_with_pl:
+#     value = list(duplicate_answer_count_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of duplicate answer count for PL {pl_rate}: {value}")
+#     index += 1
+#
+# print(f"\n")
+#
+# index = 0
+# for elem in duplicate_query_count_with_pl:
+#     value = list(duplicate_query_count_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of duplicate query count for PL {pl_rate}: {value}")
+#     index += 1
+#
+# index = 0
+# for elem in servfail_count_with_pl:
+#     value = list(servfail_count_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of servfail_count_with_pl for PL {pl_rate}: {value}")
+#     index += 1
+#
+# index = 0
+# for elem in count_of_answers_with_pl:
+#     value = list(count_of_answers_with_pl.values())[index]
+#     pl_rate = get_pl_rate_of_index(index)
+#     print(f"Length of count_of_answers_with_pl for PL {pl_rate}: {value}")
+#     index += 1
 
-index = 0
-for latencies_of_pl in latencies_with_pl:
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of {pl_rate} Packetloss rate latencies: {len(latencies_of_pl)}")
-    index += 1
-
-print(f"\n")
-
-index = 0
-for answer_names_of_pl in answer_names_with_pl:
-    values = list(answer_names_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of answer_names_of_pl {pl_rate}: {len(values)}")
-    # index2 = 0
-    # for query in values:
-    #     print(f"  {index2}. Query: {query}")
-    #     index2 += 1
-    index += 1
-
-index = 0
-for query_names_of_pl in query_names_with_pl:
-    values = list(query_names_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of query_names_of_pl {pl_rate}: {len(values)}")
-    # index2 = 0
-    # for query in values:
-    #     print(f"  {index2}. Query: {query}")
-    #     index2 += 1
-    index += 1
-
-print(f"\n")
-
-index = 0
-for elem in duplicate_answer_count_with_pl:
-    value = list(duplicate_answer_count_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of duplicate answer count for PL {pl_rate}: {value}")
-    index += 1
-
-print(f"\n")
-
-index = 0
-for elem in duplicate_query_count_with_pl:
-    value = list(duplicate_query_count_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of duplicate query count for PL {pl_rate}: {value}")
-    index += 1
-
-index = 0
-for elem in servfail_count_with_pl:
-    value = list(servfail_count_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of servfail_count_with_pl for PL {pl_rate}: {value}")
-    index += 1
-
-index = 0
-for elem in count_of_answers_with_pl:
-    value = list(count_of_answers_with_pl.values())[index]
-    pl_rate = get_pl_rate_of_index(index)
-    print(f"Length of count_of_answers_with_pl for PL {pl_rate}: {value}")
-    index += 1
-
-create_overall_latency_violin_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
-create_overall_box_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
-create_overall_bar_plot_failure(directory_name_of_plots, "ripe-atlas")
+# create_overall_latency_violin_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
+# create_overall_box_plot(directory_name_of_plots, "ripe-atlas", bottom_limit, upper_limit, False)
+# create_overall_bar_plot_failure(directory_name_of_plots, "ripe-atlas")

@@ -1,167 +1,506 @@
+C:\Users\egegi\Desktop\Testing\venv\Scripts\python.exe C:\Users\egegi\Desktop\PL_NewIPs_capture_logs\packetlossDataPlottingV2.py 
+C:\Users\egegi\Desktop\Testing\venv\Lib\site-packages\scapy\layers\ipsec.py:471: CryptographyDeprecationWarning: Blowfish has been deprecated
+  cipher=algorithms.Blowfish,
+C:\Users\egegi\Desktop\Testing\venv\Lib\site-packages\scapy\layers\ipsec.py:485: CryptographyDeprecationWarning: CAST5 has been deprecated
+  cipher=algorithms.CAST5,
+Creating plot with name: OverallNoNortonAndNeustar
+Folder ClientPlots already exists
+  Creating rate plot for OverallNoNortonAndNeustar inside folder ClientPlots
+Folder ClientPlots/OverallNoNortonAndNeustar/RatePlots already exists
+ AAAAAAA bar_pos: [0.075 0.575 1.075 1.575 2.075 2.575 3.075 3.575 4.075 4.325 4.575 4.825
+ 5.075]
+      Created rate plot
     Creating violin plot: OverallNoNortonAndNeustar_OK
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [12]
+  PL 0 Length: 1072
   PL 0 Mean: 0.12122266105751493
   PL 0 Median: 0.03940248489379883
+  PL 0 Max: 3.5284340381622314
+  PL 0 Min: 0.011083126068115234
+  PL 10 Length: 1061
   PL 10 Mean: 0.08511523364513804
   PL 10 Median: 0.03946208953857422
+  PL 10 Max: 2.297339916229248
+  PL 10 Min: 0.011114835739135742
+  PL 20 Length: 1017
   PL 20 Mean: 0.11512563432564074
   PL 20 Median: 0.04026985168457031
+  PL 20 Max: 2.993917942047119
+  PL 20 Min: 0.011179924011230469
+  PL 30 Length: 996
   PL 30 Mean: 0.16255395287969504
   PL 30 Median: 0.0420529842376709
+  PL 30 Max: 4.235188961029053
+  PL 30 Min: 0.011070013046264648
+  PL 40 Length: 950
   PL 40 Mean: 0.24724635324980082
   PL 40 Median: 0.052138447761535645
+  PL 40 Max: 4.9298460483551025
+  PL 40 Min: 0.011130094528198242
+  PL 50 Length: 916
   PL 50 Mean: 0.27868430973660996
   PL 50 Median: 0.06707298755645752
+  PL 50 Max: 5.311028003692627
+  PL 50 Min: 0.011160850524902344
+  PL 60 Length: 859
   PL 60 Mean: 0.40609513034087813
   PL 60 Median: 0.10795807838439941
+  PL 60 Max: 5.493937015533447
+  PL 60 Min: 0.011198043823242188
+  PL 70 Length: 750
   PL 70 Mean: 0.7055779809951782
   PL 70 Median: 0.15455996990203857
+  PL 70 Max: 18.93586015701294
+  PL 70 Min: 0.011089086532592773
+  PL 80 Length: 577
   PL 80 Mean: 0.9741754131052688
   PL 80 Median: 0.41749000549316406
+  PL 80 Max: 41.955044984817505
+  PL 80 Min: 0.011240005493164062
+  PL 85 Length: 355
   PL 85 Mean: 1.7472458020062513
   PL 85 Median: 0.5155909061431885
+  PL 85 Max: 43.91952896118164
+  PL 85 Min: 0.011224031448364258
+  PL 90 Length: 262
   PL 90 Mean: 1.968131596805485
   PL 90 Median: 0.5712829828262329
+  PL 90 Max: 72.59163904190063
+  PL 90 Min: 0.011389017105102539
+  PL 95 Length: 95
   PL 95 Mean: 3.2111450446279424
   PL 95 Median: 0.7387640476226807
+  PL 95 Max: 153.74579405784607
+  PL 95 Min: 0.013138055801391602
+  PL 100 Length: 1
   PL 100 Mean: -1
   PL 100 Median: -1
-      
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in ClientPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_OK_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_OK
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
     Creating violin plot: OverallNoNortonAndNeustar_Error
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [0, 12]
+  PL 0 Length: 1
   PL 0 Mean: -1
   PL 0 Median: -1
+  PL 0 Max: -1
+  PL 0 Min: -1
+  PL 10 Length: 15
   PL 10 Mean: 1.5540750821431477
   PL 10 Median: 1.5218040943145752
+  PL 10 Max: 2.015275001525879
+  PL 10 Min: 1.0242300033569336
+  PL 20 Length: 59
   PL 20 Mean: 1.5804024591284282
   PL 20 Median: 1.5216548442840576
+  PL 20 Max: 2.145599126815796
+  PL 20 Min: 1.0068559646606445
+  PL 30 Length: 81
   PL 30 Mean: 1.5311956258467685
   PL 30 Median: 1.5205509662628174
+  PL 30 Max: 2.023758888244629
+  PL 30 Min: 1.0074310302734375
+  PL 40 Length: 123
   PL 40 Mean: 1.580889922816579
   PL 40 Median: 1.5255131721496582
+  PL 40 Max: 2.0948591232299805
+  PL 40 Min: 1.0068809986114502
+  PL 50 Length: 160
   PL 50 Mean: 1.6568594470620155
   PL 50 Median: 1.524595022201538
+  PL 50 Max: 4.081646919250488
+  PL 50 Min: 1.0067431926727295
+  PL 60 Length: 206
   PL 60 Mean: 1.7261754228073416
   PL 60 Median: 1.5271484851837158
+  PL 60 Max: 6.011289119720459
+  PL 60 Min: 0.0055429935455322266
+  PL 70 Length: 300
   PL 70 Mean: 1.9882350715001424
   PL 70 Median: 1.5288695096969604
+  PL 70 Max: 29.428328037261963
+  PL 70 Min: 0.005733966827392578
+  PL 80 Length: 448
   PL 80 Mean: 2.314937843808106
   PL 80 Median: 1.5334075689315796
+  PL 80 Max: 34.39353704452515
+  PL 80 Min: 0.005560874938964844
+  PL 85 Length: 653
   PL 85 Mean: 3.3457975781894933
   PL 85 Median: 1.532632827758789
+  PL 85 Max: 156.30340003967285
+  PL 85 Min: 0.0055179595947265625
+  PL 90 Length: 728
   PL 90 Mean: 4.185594077948686
   PL 90 Median: 2.003914475440979
+  PL 90 Max: 197.8867199420929
+  PL 90 Min: 0.0054819583892822266
+  PL 95 Length: 895
   PL 95 Mean: 4.916754757492236
   PL 95 Median: 1.5817677974700928
+  PL 95 Max: 387.91815185546875
+  PL 95 Min: 0.0055119991302490234
+  PL 100 Length: 1
   PL 100 Mean: -1
   PL 100 Median: -1
-    
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in ClientPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_Error_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_Error
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
     Creating violin plot: OverallNoNortonAndNeustar_1st-Query-1st-OK-Response
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [12]
+  PL 0 Length: 1072
   PL 0 Mean: 0.12122266105751493
   PL 0 Median: 0.03940248489379883
+  PL 0 Max: 3.5284340381622314
+  PL 0 Min: 0.011083126068115234
+  PL 10 Length: 1061
   PL 10 Mean: 0.08511523364513804
   PL 10 Median: 0.03946208953857422
+  PL 10 Max: 2.297339916229248
+  PL 10 Min: 0.011114835739135742
+  PL 20 Length: 1017
   PL 20 Mean: 0.11512563432564074
   PL 20 Median: 0.04026985168457031
+  PL 20 Max: 2.993917942047119
+  PL 20 Min: 0.011179924011230469
+  PL 30 Length: 996
   PL 30 Mean: 0.16255395287969504
   PL 30 Median: 0.0420529842376709
+  PL 30 Max: 4.235188961029053
+  PL 30 Min: 0.011070013046264648
+  PL 40 Length: 950
   PL 40 Mean: 0.24724635324980082
   PL 40 Median: 0.052138447761535645
+  PL 40 Max: 4.9298460483551025
+  PL 40 Min: 0.011130094528198242
+  PL 50 Length: 916
   PL 50 Mean: 0.27868430973660996
   PL 50 Median: 0.06707298755645752
+  PL 50 Max: 5.311028003692627
+  PL 50 Min: 0.011160850524902344
+  PL 60 Length: 859
   PL 60 Mean: 0.40609513034087813
   PL 60 Median: 0.10795807838439941
+  PL 60 Max: 5.493937015533447
+  PL 60 Min: 0.011198043823242188
+  PL 70 Length: 750
   PL 70 Mean: 0.7055779809951782
   PL 70 Median: 0.15455996990203857
+  PL 70 Max: 18.93586015701294
+  PL 70 Min: 0.011089086532592773
+  PL 80 Length: 577
   PL 80 Mean: 0.9741754131052688
   PL 80 Median: 0.41749000549316406
+  PL 80 Max: 41.955044984817505
+  PL 80 Min: 0.011240005493164062
+  PL 85 Length: 355
   PL 85 Mean: 1.7472458020062513
   PL 85 Median: 0.5155909061431885
+  PL 85 Max: 43.91952896118164
+  PL 85 Min: 0.011224031448364258
+  PL 90 Length: 262
   PL 90 Mean: 1.968131596805485
   PL 90 Median: 0.5712829828262329
+  PL 90 Max: 72.59163904190063
+  PL 90 Min: 0.011389017105102539
+  PL 95 Length: 95
   PL 95 Mean: 3.2111450446279424
   PL 95 Median: 0.7387640476226807
+  PL 95 Max: 153.74579405784607
+  PL 95 Min: 0.013138055801391602
+  PL 100 Length: 1
   PL 100 Mean: -1
   PL 100 Median: -1
-     
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in ClientPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_1st-Query-1st-OK-Response_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_1st-Query-1st-OK-Response
+Folder ClientPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
+    Creating unanswered bar plot
+Folder ClientPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots already exists
+      Created box plot: ClientPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots
+    Creating unanswered bar plot
+Folder ClientPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots already exists
+      Created box plot: ClientPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots
+    Creating multi bar plot
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created grouped retransmission bar plot
+    Creating multi bar plot
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created grouped retransmission bar plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder ClientPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+Folder AuthPlots already exists
+  Creating rate plot for OverallNoNortonAndNeustar inside folder AuthPlots
+Folder AuthPlots/OverallNoNortonAndNeustar/RatePlots already exists
+ AAAAAAA bar_pos: [0.075 0.575 1.075 1.575 2.075 2.575 3.075 3.575 4.075 4.325 4.575 4.825
+ 5.075]
+      Created rate plot
     Creating violin plot: OverallNoNortonAndNeustar_OK
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [12]
+  PL 0 Length: 1073
   PL 0 Mean: 0.00017525187631911023
   PL 0 Median: 0.00017189979553222656
+  PL 0 Max: 0.00026607513427734375
+  PL 0 Min: 5.507469177246094e-05
+  PL 10 Length: 1069
   PL 10 Mean: 0.005336403735225952
   PL 10 Median: 0.00017714500427246094
+  PL 10 Max: 0.5014088153839111
+  PL 10 Min: 5.316734313964844e-05
+  PL 20 Length: 1034
   PL 20 Mean: 0.009860689220391574
   PL 20 Median: 0.00016999244689941406
+  PL 20 Max: 0.503209114074707
+  PL 20 Min: 5.984306335449219e-05
+  PL 30 Length: 1032
   PL 30 Mean: 0.020076021436573
   PL 30 Median: 0.0001690387725830078
+  PL 30 Max: 0.5051789283752441
+  PL 30 Min: 6.794929504394531e-05
+  PL 40 Length: 1021
   PL 40 Mean: 0.01489000736090859
   PL 40 Median: 0.0001690387725830078
+  PL 40 Max: 0.502310037612915
+  PL 40 Min: 5.507469177246094e-05
+  PL 50 Length: 1046
   PL 50 Mean: 0.018847031301567705
   PL 50 Median: 0.00016999244689941406
+  PL 50 Max: 0.502223014831543
+  PL 50 Min: 4.00543212890625e-05
+  PL 60 Length: 1048
   PL 60 Mean: 0.018812207320264278
   PL 60 Median: 0.0001709461212158203
+  PL 60 Max: 0.5019941329956055
+  PL 60 Min: 4.482269287109375e-05
+  PL 70 Length: 999
   PL 70 Mean: 0.019722900352439843
   PL 70 Median: 0.00017213821411132812
+  PL 70 Max: 0.5020971298217773
+  PL 70 Min: 6.699562072753906e-05
+  PL 80 Length: 846
   PL 80 Mean: 0.01616029987380296
   PL 80 Median: 0.00017309188842773438
+  PL 80 Max: 0.5020270347595215
+  PL 80 Min: 9.608268737792969e-05
+  PL 85 Length: 553
   PL 85 Mean: 0.02698702277585352
   PL 85 Median: 0.00017499923706054688
+  PL 85 Max: 0.5019609928131104
+  PL 85 Min: 8.082389831542969e-05
+  PL 90 Length: 415
   PL 90 Mean: 0.025517734274806747
   PL 90 Median: 0.00017404556274414062
+  PL 90 Max: 0.5018460750579834
+  PL 90 Min: 4.696846008300781e-05
+  PL 95 Length: 171
   PL 95 Mean: 0.038248575221725374
   PL 95 Median: 0.00017404556274414062
+  PL 95 Max: 0.5018739700317383
+  PL 95 Min: 6.818771362304688e-05
+  PL 100 Length: 1
   PL 100 Mean: -1
   PL 100 Median: -1
-     
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in AuthPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_OK_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_OK
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
     Creating violin plot: OverallNoNortonAndNeustar_Error
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  PL 0 Length: 1
   PL 0 Mean: -1
   PL 0 Median: -1
+  PL 0 Max: -1
+  PL 0 Min: -1
+  PL 10 Length: 1
   PL 10 Mean: -1
   PL 10 Median: -1
+  PL 10 Max: -1
+  PL 10 Min: -1
+  PL 20 Length: 1
   PL 20 Mean: -1
   PL 20 Median: -1
+  PL 20 Max: -1
+  PL 20 Min: -1
+  PL 30 Length: 1
   PL 30 Mean: -1
   PL 30 Median: -1
+  PL 30 Max: -1
+  PL 30 Min: -1
+  PL 40 Length: 1
   PL 40 Mean: -1
   PL 40 Median: -1
+  PL 40 Max: -1
+  PL 40 Min: -1
+  PL 50 Length: 1
   PL 50 Mean: -1
   PL 50 Median: -1
+  PL 50 Max: -1
+  PL 50 Min: -1
+  PL 60 Length: 1
   PL 60 Mean: -1
   PL 60 Median: -1
+  PL 60 Max: -1
+  PL 60 Min: -1
+  PL 70 Length: 1
   PL 70 Mean: -1
   PL 70 Median: -1
+  PL 70 Max: -1
+  PL 70 Min: -1
+  PL 80 Length: 1
   PL 80 Mean: -1
   PL 80 Median: -1
+  PL 80 Max: -1
+  PL 80 Min: -1
+  PL 85 Length: 1
   PL 85 Mean: -1
   PL 85 Median: -1
+  PL 85 Max: -1
+  PL 85 Min: -1
+  PL 90 Length: 1
   PL 90 Mean: -1
   PL 90 Median: -1
+  PL 90 Max: -1
+  PL 90 Min: -1
+  PL 95 Length: 1
   PL 95 Mean: -1
   PL 95 Median: -1
+  PL 95 Max: -1
+  PL 95 Min: -1
+  PL 100 Length: 1
   PL 100 Mean: -1
   PL 100 Median: -1
-      
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in AuthPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_Error_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_Error
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
     Creating violin plot: OverallNoNortonAndNeustar_1st-Query-1st-OK-Response
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+  empty_list_indexes: [12]
+  PL 0 Length: 1073
   PL 0 Mean: 0.00017525187631911023
   PL 0 Median: 0.00017189979553222656
+  PL 0 Max: 0.00026607513427734375
+  PL 0 Min: 5.507469177246094e-05
+  PL 10 Length: 1061
   PL 10 Mean: 0.024911761171518915
   PL 10 Median: 0.0001800060272216797
+  PL 10 Max: 1.3528809547424316
+  PL 10 Min: 5.316734313964844e-05
+  PL 20 Length: 1018
   PL 20 Mean: 0.06040455526827829
   PL 20 Median: 0.00017118453979492188
+  PL 20 Max: 4.928640842437744
+  PL 20 Min: 5.984306335449219e-05
+  PL 30 Length: 996
   PL 30 Mean: 0.09196252923413932
   PL 30 Median: 0.00017189979553222656
+  PL 30 Max: 4.131813049316406
+  PL 30 Min: 7.104873657226562e-05
+  PL 40 Length: 952
   PL 40 Mean: 0.17567171995379344
   PL 40 Median: 0.00017595291137695312
+  PL 40 Max: 7.204268932342529
+  PL 40 Min: 5.507469177246094e-05
+  PL 50 Length: 918
   PL 50 Mean: 0.2142029164403612
   PL 50 Median: 0.0001780986785888672
+  PL 50 Max: 5.196203947067261
+  PL 50 Min: 5.1975250244140625e-05
+  PL 60 Length: 873
   PL 60 Mean: 0.4098821986308759
   PL 60 Median: 0.050047874450683594
+  PL 60 Max: 46.29761481285095
+  PL 60 Min: 4.482269287109375e-05
+  PL 70 Length: 798
   PL 70 Mean: 0.7418470328911803
   PL 70 Median: 0.10038399696350098
+  PL 70 Max: 46.22677302360535
+  PL 70 Min: 6.699562072753906e-05
+  PL 80 Length: 653
   PL 80 Mean: 1.0848476116361516
   PL 80 Median: 0.3872849941253662
+  PL 80 Max: 41.85153079032898
+  PL 80 Min: 9.608268737792969e-05
+  PL 85 Length: 439
   PL 85 Mean: 1.735843125671352
   PL 85 Median: 0.5168049335479736
+  PL 85 Max: 43.77649807929993
+  PL 85 Min: 8.082389831542969e-05
+  PL 90 Length: 345
   PL 90 Mean: 2.5544482334800387
   PL 90 Median: 0.8026411533355713
+  PL 90 Max: 125.25793313980103
+  PL 90 Min: 7.796287536621094e-05
+  PL 95 Length: 156
   PL 95 Mean: 2.9859821643584814
   PL 95 Median: 1.599208116531372
+  PL 95 Max: 58.09316301345825
+  PL 95 Min: 7.390975952148438e-05
+  PL 100 Length: 1
   PL 100 Mean: -1
-  PL 100 Median: -1     
+  PL 100 Median: -1
+  PL 100 Max: -1
+  PL 100 Min: -1
+      Created latency violin plot in AuthPlots/OverallNoNortonAndNeustar/LatencyPlots/OverallNoNortonAndNeustar_1st-Query-1st-OK-Response_LatencyViolinPlot.pdf
+    Creating box plot: OverallNoNortonAndNeustar_1st-Query-1st-OK-Response
+Folder AuthPlots/OverallNoNortonAndNeustar/LatencyPlots already exists
+      Created latency box plot
+    Creating unanswered bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots already exists
+      Created box plot: AuthPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots
+    Creating unanswered bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots already exists
+      Created box plot: AuthPlots/OverallNoNortonAndNeustar/UnansweredQueryPlots
+    Creating multi bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created grouped retransmission bar plot
+    Creating multi bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created grouped retransmission bar plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating violin plot: OverallNoNortonAndNeustar
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created retransmission violin plot
+    Creating unanswered bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/MissingQueryPlots already exists
+      Created box plot: AuthPlots/OverallNoNortonAndNeustar/MissingQueryPlots
+    Creating bar plot
+Folder AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots already exists
+      Created box plot: AuthPlots/OverallNoNortonAndNeustar/RetransmissionPlots
+
+Process finished with exit code 0

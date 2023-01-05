@@ -1233,6 +1233,8 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
 
 all_resolvers = list(operators.keys())
 
+create_plots_for("OverallNoNortonAndNeustar")
+
 # # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
     # try:
@@ -1242,5 +1244,3 @@ for resolver in all_resolvers:
     #     print(f"{str(e)}")
 #
 # create_plots_for("OverallBehaviour")
-
-create_plots_for("Overall_NoNortonAndNeustar")

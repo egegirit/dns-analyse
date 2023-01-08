@@ -29,6 +29,7 @@ for pl in packetloss_rates:
             count += 1
 
     write_to_file(f"IP_Count_Of_PL_{pl}.txt", str(count))
+    print(f"  Found: {count}")
 
 # for pl in packetloss_rates:
 #     print(f"Current PL rate: {pl}")

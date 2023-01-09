@@ -187,7 +187,6 @@ Query structure:
 ....._........\.public_pl(0|10|20|30|40|50|60|70|80|85|90|95)\.packetloss\.syssec-research\.mmci\.uni-saarland\.de$
 
 -------------
-
 Stale duration wireshark client filter:
 (dns.qry.name matches ".packetloss.syssec-research.mmci.uni-saarland.de") && (dns.qry.name matches "9-9-9-11")
 && (dns.qry.name matches "stale-") && (dns.qry.type == 1) && (ip.src == 139.19.117.1 || ip.dst == 139.19.117.1)

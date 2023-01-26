@@ -48,7 +48,7 @@ else:
     print("Invalid packetloss rates")
     sys.exit()
 
-ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
+ATLAS_API_KEY = ""
 
 # The measurement ID (integer) from the first experiment
 # This allows us to use the same probes again that are selected in the first experiment

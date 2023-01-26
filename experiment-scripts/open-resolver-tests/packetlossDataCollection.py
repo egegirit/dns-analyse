@@ -8,77 +8,77 @@ from scapy.all import *
 from scapy.layers.dns import DNS, DNSQR
 
 # The packetloss rates that are simulated in the experiment
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
 client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
 
 # TODO: OPERATORS FOR THE FIRST PCAP
-operators = {
-    "AdGuard-1": "94-140-14-14",
-    "AdGuard-2": "94-140-14-15",
-    "CleanBrowsing-1": "185-228-168-168",
-    "CleanBrowsing-2": "185-228-168-9",
-    "Cloudflare-1": "1-1-1-1",
-    "Cloudflare-2": "1-0-0-1",
-    "Dyn-1": "216-146-35-35",
-    "Dyn-2": "216-146-36-36",
-    "Google-1": "8-8-8-8",
-    "Google-2": "8-8-4-4",
-    "Neustar-1": "64-6-64-6",
-    "Neustar-2": "156-154-70-1",
-    "OpenDNS-1": "208-67-222-222",
-    "OpenDNS-2": "208-67-222-2",
-    "Quad9-1": "9-9-9-9",
-    "Quad9-2": "9-9-9-11",
-    "Yandex-1": "77-88-8-1",
-    "Yandex-2": "77-88-8-8"
-}
-
-# All operators with their IP Addresses with dashes
 # operators = {
 #     "AdGuard-1": "94-140-14-14",
 #     "AdGuard-2": "94-140-14-15",
-#     "AdGuard-3": "94-140-14-140",
-#
 #     "CleanBrowsing-1": "185-228-168-168",
 #     "CleanBrowsing-2": "185-228-168-9",
-#     "CleanBrowsing-3": "185-228-168-10",
-#
 #     "Cloudflare-1": "1-1-1-1",
-#     "Cloudflare-2": "1-1-1-2",
-#     "Cloudflare-3": "1-1-1-3",
-#
+#     "Cloudflare-2": "1-0-0-1",
 #     "Dyn-1": "216-146-35-35",
-#
+#     "Dyn-2": "216-146-36-36",
 #     "Google-1": "8-8-8-8",
-#
+#     "Google-2": "8-8-4-4",
 #     "Neustar-1": "64-6-64-6",
-#     "Neustar-2": "156-154-70-2",
-#     "Neustar-3": "156-154-70-3",
-#     "Neustar-4": "156-154-70-4",
-#     "Neustar-5": "156-154-70-5",
-#
+#     "Neustar-2": "156-154-70-1",
 #     "OpenDNS-1": "208-67-222-222",
 #     "OpenDNS-2": "208-67-222-2",
-#     "OpenDNS-3": "208-67-222-123",
-#
 #     "Quad9-1": "9-9-9-9",
 #     "Quad9-2": "9-9-9-11",
-#     "Quad9-3": "9-9-9-10",
-#
 #     "Yandex-1": "77-88-8-1",
-#     "Yandex-2": "77-88-8-2",
-#     "Yandex-3": "77-88-8-3",
-#
-#     "Level3-1": "209-244-0-3",
-#     "Level3-2": "209-244-0-4",
-#
-#     "Norton-1": "199-85-126-10",
-#     "Norton-2": "199-85-126-20",
-#     "Norton-3": "199-85-126-30",
-#
+#     "Yandex-2": "77-88-8-8"
 # }
+
+# All operators with their IP Addresses with dashes
+operators = {
+    "AdGuard-1": "94-140-14-14",
+    "AdGuard-2": "94-140-14-15",
+    "AdGuard-3": "94-140-14-140",
+
+    "CleanBrowsing-1": "185-228-168-168",
+    "CleanBrowsing-2": "185-228-168-9",
+    "CleanBrowsing-3": "185-228-168-10",
+
+    "Cloudflare-1": "1-1-1-1",
+    "Cloudflare-2": "1-1-1-2",
+    "Cloudflare-3": "1-1-1-3",
+
+    "Dyn-1": "216-146-35-35",
+
+    "Google-1": "8-8-8-8",
+
+    "Neustar-1": "64-6-64-6",
+    "Neustar-2": "156-154-70-2",
+    "Neustar-3": "156-154-70-3",
+    "Neustar-4": "156-154-70-4",
+    "Neustar-5": "156-154-70-5",
+
+    "OpenDNS-1": "208-67-222-222",
+    "OpenDNS-2": "208-67-222-2",
+    "OpenDNS-3": "208-67-222-123",
+
+    "Quad9-1": "9-9-9-9",
+    "Quad9-2": "9-9-9-11",
+    "Quad9-3": "9-9-9-10",
+
+    "Yandex-1": "77-88-8-1",
+    "Yandex-2": "77-88-8-2",
+    "Yandex-3": "77-88-8-3",
+
+    "Level3-1": "209-244-0-3",
+    "Level3-2": "209-244-0-4",
+
+    "Norton-1": "199-85-126-10",
+    "Norton-2": "199-85-126-20",
+    "Norton-3": "199-85-126-30",
+
+}
 
 all_responses_count_pl = {}
 all_queries_count_pl = {}
@@ -696,12 +696,12 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
 
     initialize_dictionaries("client")
 
-    global all_resolvers
-    resolvers_to_filter = all_resolvers.copy()
+    global operators
+    resolvers_to_filter = list(operators.keys()).copy()
 
     # Filter given resolver packets
     for selected in selected_resolvers_to_plot:
-        if selected in all_resolvers:
+        if selected in operators:
             resolvers_to_filter.remove(selected)
 
     print(f"Filtering: {resolvers_to_filter}")
@@ -739,7 +739,50 @@ def extract_datas_from_pcap(file_name, selected_resolvers_to_plot):
     reset_after_auth_pcaps()
 
 
-all_resolvers = list(operators.keys())
+# # Create separate plots for all resolver IPs
+# for resolver in all_resolvers:
+#     # try:
+#     extract_datas_from_pcap(resolver, [resolver])
+#     # except Exception as e:
+#     #     print(f"Error creating plots for: {resolver}")
+#     #     print(f"{str(e)}")
+#
+# extract_datas_from_pcap("OverallBehaviour", all_resolvers)
+
+operators_no_norton_no_neustar = {
+    "AdGuard-1": "94-140-14-14",
+    "AdGuard-2": "94-140-14-15",
+    "AdGuard-3": "94-140-14-140",
+
+    "CleanBrowsing-1": "185-228-168-168",
+    "CleanBrowsing-2": "185-228-168-9",
+    "CleanBrowsing-3": "185-228-168-10",
+
+    "Cloudflare-1": "1-1-1-1",
+    "Cloudflare-2": "1-1-1-2",
+    "Cloudflare-3": "1-1-1-3",
+
+    "Dyn-1": "216-146-35-35",
+
+    "Google-1": "8-8-8-8",
+
+    "OpenDNS-1": "208-67-222-222",
+    "OpenDNS-2": "208-67-222-2",
+    "OpenDNS-3": "208-67-222-123",
+
+    "Quad9-1": "9-9-9-9",
+    "Quad9-2": "9-9-9-11",
+    "Quad9-3": "9-9-9-10",
+
+    "Yandex-1": "77-88-8-1",
+    "Yandex-2": "77-88-8-2",
+    "Yandex-3": "77-88-8-3",
+
+    "Level3-1": "209-244-0-3",
+    "Level3-2": "209-244-0-4"
+
+}
+all_resolvers = list(operators_no_norton_no_neustar.keys())
 
 # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
@@ -749,4 +792,4 @@ for resolver in all_resolvers:
     #     print(f"Error creating plots for: {resolver}")
     #     print(f"{str(e)}")
 
-extract_datas_from_pcap("OverallBehaviour", all_resolvers)
+extract_datas_from_pcap("Overall_NoNortonAndNeustar", operators_no_norton_no_neustar)

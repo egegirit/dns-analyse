@@ -11,77 +11,66 @@ from scapy.layers.dns import DNS, DNSQR
 import ast
 
 # The packetloss rates that are simulated in the experiment
-packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95]
+packetloss_rates = [0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]
 
 client_ip_addr = "139.19.117.1"
 auth_ip_addr = "139.19.117.11"
 
 # TODO: OPERATORS FOR THE FIRST PCAP
-operators = {
-    "AdGuard-1": "94-140-14-14",
-    "AdGuard-2": "94-140-14-15",
-    "CleanBrowsing-1": "185-228-168-168",
-    "CleanBrowsing-2": "185-228-168-9",
-    "Cloudflare-1": "1-1-1-1",
-    "Cloudflare-2": "1-0-0-1",
-    "Dyn-1": "216-146-35-35",
-    "Dyn-2": "216-146-36-36",
-    "Google-1": "8-8-8-8",
-    "Google-2": "8-8-4-4",
-    "Neustar-1": "64-6-64-6",
-    "Neustar-2": "156-154-70-1",
-    "OpenDNS-1": "208-67-222-222",
-    "OpenDNS-2": "208-67-222-2",
-    "Quad9-1": "9-9-9-9",
-    "Quad9-2": "9-9-9-11",
-    "Yandex-1": "77-88-8-1",
-    "Yandex-2": "77-88-8-8"
-}
-
-# All operators with their IP Addresses with dashes
 # operators = {
 #     "AdGuard-1": "94-140-14-14",
 #     "AdGuard-2": "94-140-14-15",
-#     "AdGuard-3": "94-140-14-140",
-#
 #     "CleanBrowsing-1": "185-228-168-168",
 #     "CleanBrowsing-2": "185-228-168-9",
-#     "CleanBrowsing-3": "185-228-168-10",
-#
 #     "Cloudflare-1": "1-1-1-1",
-#     "Cloudflare-2": "1-1-1-2",
-#     "Cloudflare-3": "1-1-1-3",
-#
+#     "Cloudflare-2": "1-0-0-1",
 #     "Dyn-1": "216-146-35-35",
-#
+#     "Dyn-2": "216-146-36-36",
 #     "Google-1": "8-8-8-8",
-#
+#     "Google-2": "8-8-4-4",
 #     "Neustar-1": "64-6-64-6",
-#     "Neustar-2": "156-154-70-2",
-#     "Neustar-3": "156-154-70-3",
-#     "Neustar-4": "156-154-70-4",
-#     "Neustar-5": "156-154-70-5",
-#
+#     "Neustar-2": "156-154-70-1",
 #     "OpenDNS-1": "208-67-222-222",
 #     "OpenDNS-2": "208-67-222-2",
-#     "OpenDNS-3": "208-67-222-123",
-#
 #     "Quad9-1": "9-9-9-9",
 #     "Quad9-2": "9-9-9-11",
-#     "Quad9-3": "9-9-9-10",
-#
 #     "Yandex-1": "77-88-8-1",
-#     "Yandex-2": "77-88-8-2",
-#     "Yandex-3": "77-88-8-3",
-#
-#     "Level3-1": "209-244-0-3",
-#     "Level3-2": "209-244-0-4",
-#
-#     "Norton-1": "199-85-126-10",
-#     "Norton-2": "199-85-126-20",
-#     "Norton-3": "199-85-126-30",
-#
+#     "Yandex-2": "77-88-8-8"
 # }
+
+# All operators with their IP Addresses with dashes
+operators = {
+    "AdGuard-1": "94-140-14-14",
+    "AdGuard-2": "94-140-14-15",
+    "AdGuard-3": "94-140-14-140",
+
+    "CleanBrowsing-1": "185-228-168-168",
+    "CleanBrowsing-2": "185-228-168-9",
+    "CleanBrowsing-3": "185-228-168-10",
+
+    "Cloudflare-1": "1-1-1-1",
+    "Cloudflare-2": "1-1-1-2",
+    "Cloudflare-3": "1-1-1-3",
+
+    "Dyn-1": "216-146-35-35",
+
+    "Google-1": "8-8-8-8",
+
+    "OpenDNS-1": "208-67-222-222",
+    "OpenDNS-2": "208-67-222-2",
+    "OpenDNS-3": "208-67-222-123",
+
+    "Quad9-1": "9-9-9-9",
+    "Quad9-2": "9-9-9-11",
+    "Quad9-3": "9-9-9-10",
+
+    "Yandex-1": "77-88-8-1",
+    "Yandex-2": "77-88-8-2",
+    "Yandex-3": "77-88-8-3",
+
+    "Level3-1": "209-244-0-3",
+    "Level3-2": "209-244-0-4",
+}
 
 directory_of_client_datas = "ClientData"
 directory_of_auth_datas = "AuthData"
@@ -158,10 +147,12 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
 
     n = len(packetloss_rates)  # Amount of bars in the chart
     ind = np.arange(n)  # the x locations for the groups
-    width = 0.21  # the width of the bars
+    width = 0.15  # the width of the bars
     arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5]
     if n == 13:
         arr_to_use = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8.5, 9, 9.5, 10]
+    # Divide all list elements by 2 to make it more compact
+    arr_to_use[:] = [x / 2 for x in arr_to_use]
     arr = np.array(arr_to_use)  # Positions of the bars
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -286,24 +277,26 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     others_rects = ax.bar(bar_pos, other_rcode_rates, width, bottom=bottom_of_others, color='dodgerblue')
 
     # Title of the graph, x and y label
-    plot_title = f"Packetloss Experiment ({file_name})"
+    # plot_title = f"Packetloss Experiment ({file_name})"
     plt.xlabel("Packetloss rate")
     plt.ylabel("Rate of results")
 
     # Title position
-    plt.title(plot_title, x=0.5, y=1.1)
+    # plt.title(plot_title, x=0.5, y=1.1)
 
     # Limits of the X and Y axis
     plt.ylim(bottom=0, top=100)
+    print(f" AAAAAAA bar_pos: {bar_pos}")
 
     ax.set_xticks(bar_pos)
-    ax.set_xticklabels(tuple(packetloss_rates))
+    ax.set_xticklabels(tuple([0, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 95, 100]))
+    plt.xlim([0, 5])
 
     # Create legend at the top left of the plot
     ax.legend((others_rects[0], failure_rects[0], refused_rects[0], rcode_0_tcp_rects[0],
                rcode_0_udp_rects[0]),
               ('Other RCODE', 'Failure', 'Refused', 'OK (TCP)', 'OK (UDP)'), framealpha=0.5,
-              bbox_to_anchor=(0.1, 1.1))  # 'Unanswered queries', unanswered_rects[0]
+              loc=(0,1))  # 'Unanswered queries', unanswered_rects[0]
 
     # Write the exact count of the non-stale packets in the middle of non-stale bars
     def autolabel_rcode_0_udp_rects(rects):
@@ -435,8 +428,8 @@ def create_rate_plot(file_name, root_plot_directory_name, root_data_directory):
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(16, 6)  # set figure's size manually to your full screen (32x18)
 
-    # save plot as png
-    plt.savefig(f"{save_path}/{file_name}_RatePlot.png", dpi=100, bbox_inches='tight')
+    # save plot
+    plt.savefig(f"{save_path}/{file_name}_RatePlot.pdf", dpi=100, bbox_inches='tight')
     print(f"      Created rate plot")
 
     # Clear plots
@@ -464,7 +457,7 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
     rects = ax.bar(bar_pos, data_list, width, bottom=0, color='dodgerblue')
 
     # Title of the graph, x and y label
-    plot_title = f"{plot_title} ({file_name_prefix})"
+    # plot_title = f"{plot_title} ({file_name_prefix})"
     plt.xlabel("Packetloss rate")
     plt.ylabel(f"{y_label}")
 
@@ -500,10 +493,10 @@ def create_bar_plot(file_name_prefix, directory_name, data_list, root_directory_
 
     title_without_whitespace = plot_title.replace(' ', '')
 
-    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.png", dpi=100, bbox_inches='tight')
+    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.pdf", dpi=100, bbox_inches='tight')
 
-    # save plot as png
-    # plt.savefig((file_name + '_StaleRecordPlot.png'))
+    # save plot
+    # plt.savefig((file_name + '_StaleRecordPlot.pdf'))
     print(f"      Created box plot: {save_path}")
     # Clear plots
     plt.cla()
@@ -534,7 +527,7 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
     tcp_rects = ax.bar(arr + width, tcp_list, width, bottom=0, color='red')
 
     # Title of the graph, x and y label
-    plot_title = f"{plot_title} ({file_name})"
+    # plot_title = f"{plot_title} ({file_name})"
     plt.xlabel("Packetloss rate")
     plt.ylabel(f"{y_label}")
 
@@ -580,7 +573,7 @@ def create_multi_bar_plot(file_name, root_directory_of_plots, plot_title, y_labe
 
     title_without_whitespace = plot_title.replace(' ', '')
 
-    plt.savefig(f"{save_path}/{file_name}_{title_without_whitespace}Plot.png", dpi=100, bbox_inches='tight')
+    plt.savefig(f"{save_path}/{file_name}_{title_without_whitespace}Plot.pdf", dpi=100, bbox_inches='tight')
 
     print(f"      Created grouped retransmission bar plot")
     # Clear plots
@@ -643,7 +636,7 @@ def create_latency_box_plot(root_directory_name, file_name_prefix, bottom_limit,
     ax.boxplot(latency_list, positions=packetloss_rates,
                widths=4.4)
 
-    plt.savefig(f"{save_path}/{file_name_prefix}_LatencyBoxPlot.png", bbox_inches='tight')
+    plt.savefig(f"{save_path}/{file_name_prefix}_LatencyBoxPlot.pdf", bbox_inches='tight')
 
     # show plot
     # plt.show()
@@ -747,10 +740,10 @@ def create_latency_violin_plot(root_directory_name, file_name_prefix, bottom_lim
     # Add legend for mean and median
     blue_line = mlines.Line2D([], [], color='blue', marker='', markersize=15, label='mean')
     red_line = mlines.Line2D([], [], color='red', marker='', markersize=15, label='median')
-    ax.legend(handles=[blue_line, red_line], loc='upper left')
+    ax.legend(handles=[blue_line, red_line], loc=(0,1))
 
-    # save plot as png
-    plt.savefig(f"{save_path}/{file_name_prefix}_LatencyViolinPlot.png", bbox_inches='tight')
+    # save plot
+    plt.savefig(f"{save_path}/{file_name_prefix}_LatencyViolinPlot.pdf", bbox_inches='tight')
 
     # show plot
     # plt.show()
@@ -837,10 +830,10 @@ def create_violin_plot(root_directory_name, file_name_prefix, data_param, plot_t
     # Add legend for mean and median
     blue_line = mlines.Line2D([], [], color='blue', marker='', markersize=15, label='mean')
     red_line = mlines.Line2D([], [], color='red', marker='', markersize=15, label='median')
-    ax.legend(handles=[blue_line, red_line], loc='upper left')
+    ax.legend(handles=[blue_line, red_line], loc=(0,1))
 
     title_without_whitespace = plot_title.replace(' ', '')
-    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.png", bbox_inches='tight')
+    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.pdf", bbox_inches='tight')
 
     # show plot
     # plt.show()
@@ -1193,12 +1186,12 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
     rects = ax.bar(x_axis, data_list, width, bottom=0, color='dodgerblue')
 
     # Title of the graph, x and y label
-    plot_title = f"{plot_title} ({file_name_prefix})"
+    # plot_title = f"{plot_title} ({file_name_prefix})"
     plt.xlabel("Packetloss rate")
     plt.ylabel(f"{y_label}")
 
     # Title position
-    plt.title(plot_title, x=0.5, y=1.1)
+    # plt.title(plot_title, x=0.5, y=1.1)
 
     # Limits of the X and Y axis
     plt.ylim(bottom=0, top=100)
@@ -1220,7 +1213,7 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
                         ha='center', va='bottom')
             index += 1
 
-    autolabel(rects)
+    # autolabel(rects)
 
     # plt.show()
 
@@ -1229,10 +1222,9 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
 
     title_without_whitespace = plot_title.replace(' ', '')
 
-    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.png", dpi=100, bbox_inches='tight')
+    plt.savefig(f"{save_path}/{file_name_prefix}_{title_without_whitespace}Plot.pdf", dpi=100, bbox_inches='tight')
 
-    # save plot as png
-    # plt.savefig((file_name + '_StaleRecordPlot.png'))
+    # save plot
     print(f"      Created box plot: {save_path}")
     # Clear plots
     plt.cla()
@@ -1241,12 +1233,14 @@ def create_bar_plot_for_retransmission_success_rate(file_name_prefix, directory_
 
 all_resolvers = list(operators.keys())
 
-# Create separate plots for all resolver IPs
+create_plots_for("OverallNoNortonAndNeustar")
+
+# # Create separate plots for all resolver IPs
 for resolver in all_resolvers:
     # try:
     create_plots_for(resolver)
     # except Exception as e:
     #     print(f"Error creating plots for: {resolver}")
     #     print(f"{str(e)}")
-
-create_plots_for("OverallBehaviour")
+#
+# create_plots_for("OverallBehaviour")

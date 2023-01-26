@@ -12,7 +12,7 @@ import json
 # Execute this script as root user #
 ####################################
 
-ATLAS_API_KEY = "0c51be25-dfac-4e86-9d0d-5fef89ea4670"
+ATLAS_API_KEY = ""
 
 # File name of the Atlas API specification from https://ihr.iijlab.net/ihr/en-us/metis/selection
 asn_file_name = "750-probes.txt"

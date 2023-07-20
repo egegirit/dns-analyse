@@ -22,7 +22,7 @@ This repository contains the following resources:
 
 The research findings highlight the following key observations:
 
-- Despite failures in authoritative DNS servers, the DNS system demonstrates robustness and the ability to handle disruptions effectively. A resolver can be configured to implement mechanisms such as utilising dns retransmissions, caching and stale records to be more robust against authoritative server failures. 
+- Despite failures in authoritative DNS servers, the DNS system demonstrates robustness and the ability to handle disruptions effectively. A resolver can be configured to implement mechanisms such as utilizing dns retransmissions, caching and stale records to be more robust against authoritative server failures. 
 
 - When a dns resolver is able to utilize stale records, the resolution success rate remains relatively high even in the presence of partial or complete failures in authoritative servers.
 
